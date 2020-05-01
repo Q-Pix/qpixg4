@@ -1,0 +1,11 @@
+# example macro file
+
+/run/initialize
+
+/tracking/verbose 2
+
+/Inputs/output_file OUTPUT_FILE
+
+/Inputs/Particle_Type PARTICLE
+
+/run/beamOn N_EVENTS

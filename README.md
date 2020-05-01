@@ -50,20 +50,41 @@ export DYLD_LIBRARY_PATH=/Users/austinmcdonald/Documents/software/GEANT4/geant4.
 ```
 
 ## Building Q_PIX_GEANT4
-Once you have pulled the package and have your Geant4 enviorment setup you should go into the build directory and make the project
+Once you have pulled the package and have your Geant4 enviorment setup you should go into the build directory and make the project.
 ```bash
-cmake --build . -j 6
+cd Build
+cmake ../
+make
 ```
-
-
-
+This will build the project in the build directory.
 
 ## Usage
 
-```python
-import foobar
+This can be ran in a batch mode with a mcaro file such as the one included "Template.macro"
+where you set the output file, number of events, and particle type 
 
-foobar.pluralize('word') # returns 'words'
-foobar.pluralize('goose') # returns 'geese'
-foobar.singularize('phenomena') # returns 'phenomenon'
+to see the particle types and how they are generated see "PrimaryGeneration.cpp".
+Currently the particles included are 
+Ar39
+electrons
+protons
+muons
+
+This can be ran interactivly from the build directory by 
+```bash
+./app/G4Basic
 ```
+This loads Geant4 and we cna give it the following arguments to run some particles.
+
+```bash
+/run/initialize
+/tracking/verbose 2
+/Inputs/Particle_Type Electron
+/run/beamOn 1
+```
+If you want to save an interactive file you should set the output before runing 
+```bash
+/Inputs/output_file /path_to_your/tmp.txt
+```
+
+Need to add the batch mode information...
