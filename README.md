@@ -52,6 +52,7 @@ export DYLD_LIBRARY_PATH=/Users/austinmcdonald/Documents/software/GEANT4/geant4.
 ## Building Q_PIX_GEANT4
 Once you have pulled the package and have your Geant4 enviorment setup you should go into the build directory and make the project.
 ```bash
+mkdir Build
 cd Build
 cmake ../
 make
