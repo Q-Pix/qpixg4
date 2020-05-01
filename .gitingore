@@ -1,7 +1,4 @@
 # exclude everything
 Build/*
 
-# exception to the rule
-!Build/.gitkeep 
-
 .DS_Store
