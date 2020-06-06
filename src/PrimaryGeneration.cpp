@@ -24,12 +24,25 @@
 #include <stdlib.h>
 #include <math.h>
 
+// MARLEY includes
+#include "marley/Event.hh"
+#include "marley/Particle.hh"
+#include "marley/JSONConfig.hh"
+
+#include "G4ParticleTable.hh"
+#include "G4PhysicalConstants.hh"
+
+
 PrimaryGeneration::PrimaryGeneration():
   G4VUserPrimaryGeneratorAction()
 {
   msg_ = new G4GenericMessenger(this, "/Inputs/", "Control commands of the ion primary generator.");
   msg_->DeclareProperty("Particle_Type", Particle_Type_,  "which particle?");
+  msg_->DeclareProperty("MARLEY_json", MARLEY_json_,  "marley json file?");
+
   //msg_->DeclareProperty("Particle_energy", Particle_Energy_,  "Energy of the particle.");
+
+
 }
 
 
@@ -113,6 +126,41 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     vertex->SetPrimary(particle);
     event->AddPrimaryVertex(vertex);
   }
+
+  else if (Particle_Type_ ==  "MARLEY")
+  {
+    //chdir("/Users/austinmcdonald/software/MARLEY/marley/build");
+    
+    //for (int i = 0; i < 50; i++) {G4cout << "MARLEY ON "<< MARLEY_json_ << G4endl;}
+    marley::JSONConfig config( MARLEY_json_ );
+    marley_generator_= config.create_generator();
+ 
+    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0., 0. ,0.), 0.);
+
+    // Generate a new MARLEY event using the owned marley::Generator object
+    marley::Event ev = marley_generator_.create_event();
+    
+    // Loop over each of the final particles in the MARLEY event
+    for ( const auto& fp : ev.get_final_particles() ) {
+      // Convert each one from a marley::Particle into a G4PrimaryParticle.
+      // Do this by first setting the PDG code and the 4-momentum components.
+      G4PrimaryParticle* particle = new G4PrimaryParticle( fp->pdg_code(),
+        fp->px(), fp->py(), fp->pz(), fp->total_energy() );
+
+      // Also set the charge of the G4PrimaryParticle appropriately
+      particle->SetCharge( fp->charge() );
+
+      // Add the fully-initialized G4PrimaryParticle to the primary vertex
+      vertex->SetPrimary( particle );
+    }
+    
+    // The primary vertex has been fully populated with all final-state particles
+    // from the MARLEY event. Add it to the G4Event object so that Geant4 can
+    // begin tracking the particles through the simulated geometry.
+    event->AddPrimaryVertex( vertex );
+
+  }
+
   else
   {
     exit (EXIT_FAILURE);

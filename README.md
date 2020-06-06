@@ -89,3 +89,31 @@ If you want to save an interactive file you should set the output before runing
 ```
 
 Need to add the batch mode information...
+
+## MARLEY
+The code can now be ran with marley interfaced 
+https://github.com/MARLEY-MC/marley/tree/develop
+
+you will need to clone marley from the develop branch at the moment e.g.
+```bash
+git clone -b develop https://github.com/MARLEY-MC/marley.git
+```
+and make a slight tweak to the setup_marley.sh file by adding the flowing to the enf of the file 
+```bash
+# For building against MARLEY
+export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${THIS_DIRECTORY}/include
+export LIBRARY_PATH=${LIBRARY_PATH}:${THIS_DIRECTORY}/build
+```
+once that is done you will need to source the marley enviroment before building Q_PIX_GEANT4.
+
+The new additions to the package allow for you to pass a marley config file and it will generate the respective marley events. This also entails a new particle type e.g.
+
+```bash
+/run/initialize
+/tracking/verbose 2
+/Inputs/Particle_Type MARLEY
+/Inputs/MARLEY_json /PATH/TO/YOUR/config.js
+/run/beamOn 1
+```
+and the outputs can be save the same way as above.
+

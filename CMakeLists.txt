@@ -11,6 +11,10 @@
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
 project(G4BASIC)
 
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD_REQUIRED ON)
+set(CMAKE_CXX_EXTENSIONS OFF)
+
 ## Find Geant4 package, activating all available UI and Vis
 ## drivers by default. You can set WITH_GEANT4_UIVIS to OFF
 ## via the command line or ccmake/cmake-gui to build a batch
@@ -29,5 +33,3 @@ include(${Geant4_USE_FILE})
 add_subdirectory(src)
 add_subdirectory(app)
 add_subdirectory(cfg)
-
-
