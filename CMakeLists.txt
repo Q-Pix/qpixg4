@@ -29,6 +29,15 @@ endif()
 ## Setup Geant4 include directories and compile definitions.
 include(${Geant4_USE_FILE})
 
+## find the ROOT package
+find_package(ROOT REQUIRED)
+
+## include ROOT header files
+include(${ROOT_USE_FILE})
+
+## link ROOT libraries
+link_libraries(${ROOT_LIBRARIES})
+
 ## Recurse through sub-directories
 add_subdirectory(src)
 add_subdirectory(app)
