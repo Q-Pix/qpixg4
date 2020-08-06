@@ -8,6 +8,8 @@
 
 #include "DetectorConstruction.h"
 #include "PrimaryGeneration.h"
+#include "RunAction.h"
+#include "EventAction.h"
 #include "TrackingAction.h"
 #include "SteppingAction.h"
 
@@ -51,9 +53,9 @@ int main(int argc, char** argv)
   run_manager->SetUserInitialization(new DetectorConstruction());
 
   run_manager->SetUserAction(new PrimaryGeneration());
-
+  run_manager->SetUserAction(new RunAction());
+  run_manager->SetUserAction(new EventAction());
   run_manager->SetUserAction(new TrackingAction());
-
   run_manager->SetUserAction(new SteppingAction());
 
   // Initialize visualization
