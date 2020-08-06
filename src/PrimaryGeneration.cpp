@@ -7,6 +7,7 @@
 // -----------------------------------------------------------------------------
 
 #include "PrimaryGeneration.h"
+#include "AnalysisManager.h"
 
 #include <G4ParticleDefinition.hh>
 #include <G4SystemOfUnits.hh>
@@ -55,6 +56,8 @@ PrimaryGeneration::~PrimaryGeneration()
 
 void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 {
+  AnalysisManager * analysis_manager = AnalysisManager::Instance();
+
   if (Particle_Type_ ==  "Ar39")
   {
     G4ParticleDefinition* pdef = G4IonTable::GetIonTable()->GetIon(18, 39, 0.); // Ar39
@@ -139,8 +142,22 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     // Generate a new MARLEY event using the owned marley::Generator object
     marley::Event ev = marley_generator_.create_event();
 
+    // // print MARLEY event information
+    // ev.print_human_readable(G4cout);
+
+    // Loop over each of the initial particles in the MARLEY event
+    for (const auto& ip : ev.get_initial_particles())
+    {
+      // add initial MARLEY particle to the MARLEY event tree for analysis
+      analysis_manager->AddInitialMARLEYParticle(*ip);
+    }
+
     // Loop over each of the final particles in the MARLEY event
-    for ( const auto& fp : ev.get_final_particles() ) {
+    for (const auto& fp : ev.get_final_particles())
+    {
+      // add final MARLEY particle to the MARLEY event tree for analysis
+      analysis_manager->AddFinalMARLEYParticle(*fp);
+
       // Convert each one from a marley::Particle into a G4PrimaryParticle.
       // Do this by first setting the PDG code and the 4-momentum components.
 

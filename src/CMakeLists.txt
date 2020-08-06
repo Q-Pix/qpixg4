@@ -6,7 +6,8 @@
 ##   * Creation date: 14 Aug 2019
 ## ---------------------------------------------------------
 
-SET(SRC   DetectorConstruction.cpp
+SET(SRC   AnalysisManager.cpp
+          DetectorConstruction.cpp
           PrimaryGeneration.cpp
           RunAction.cpp
           EventAction.cpp
