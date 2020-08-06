@@ -8,6 +8,7 @@
 
 #include "DetectorConstruction.h"
 #include "PrimaryGeneration.h"
+#include "TrackingAction.h"
 #include "SteppingAction.h"
 
 #include <G4RunManager.hh>
@@ -41,17 +42,19 @@ int main(int argc, char** argv)
   }
 
   // Construct the run manager and set the initialization classes
-  G4RunManager* runmgr = new G4RunManager();
+  G4RunManager* run_manager = new G4RunManager();
 
   G4VModularPhysicsList* physics_list = new FTFP_BERT_HP();
   physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
-  runmgr->SetUserInitialization(physics_list);
+  run_manager->SetUserInitialization(physics_list);
 
-  runmgr->SetUserInitialization(new DetectorConstruction());
+  run_manager->SetUserInitialization(new DetectorConstruction());
 
-  runmgr->SetUserAction(new PrimaryGeneration());
+  run_manager->SetUserAction(new PrimaryGeneration());
 
-  runmgr->SetUserAction(new SteppingAction());
+  run_manager->SetUserAction(new TrackingAction());
+
+  run_manager->SetUserAction(new SteppingAction());
 
   // Initialize visualization
   G4VisManager* vismgr = new G4VisExecutive();
@@ -81,5 +84,5 @@ int main(int argc, char** argv)
   // in the main() program.
 
   delete vismgr;
-  delete runmgr;
+  delete run_manager;
 }
