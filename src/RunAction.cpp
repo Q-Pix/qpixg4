@@ -10,6 +10,7 @@
 
 // Q-Pix includes
 #include "AnalysisManager.h"
+#include "MARLEYManager.h"
 
 // GEANT4 includes
 #include "G4Run.hh"
@@ -20,6 +21,8 @@ RunAction::RunAction(): G4UserRunAction()
     messenger_ = new G4GenericMessenger(this, "/Inputs/");
     messenger_->DeclareProperty("root_output", root_output_path_,
                                 "path to output ROOT file");
+    messenger_->DeclareProperty("MARLEY_json", marley_json_,
+                                "MARLEY configuration file");
 }
 
 
@@ -32,6 +35,12 @@ RunAction::~RunAction()
 void RunAction::BeginOfRunAction(const G4Run* run)
 {
     G4cout << "RunAction::BeginOfRunAction: Run #" << run->GetRunID() << " start." << G4endl;
+
+    // get MARLEY manager
+    MARLEYManager * marley_manager = MARLEYManager::Instance();
+    // configure and create MARLEY generator
+    marley_manager->Initialize(marley_json_);
+
     // get run number
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
     analysis_manager->Book(root_output_path_);

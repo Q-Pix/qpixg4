@@ -7,31 +7,34 @@
 // -----------------------------------------------------------------------------
 
 #include "PrimaryGeneration.h"
+
+// Q-Pix includes
 #include "AnalysisManager.h"
-
-#include <G4ParticleDefinition.hh>
-#include <G4SystemOfUnits.hh>
-#include <G4IonTable.hh>
-#include <G4PrimaryParticle.hh>
-#include <G4PrimaryVertex.hh>
-#include <G4Event.hh>
-#include <G4Electron.hh>
-#include <G4MuonPlus.hh>
-#include <G4Proton.hh>
-
-#include <G4GenericMessenger.hh>
-#include <Randomize.hh>
-
-#include <stdlib.h>
-#include <math.h>
+#include "MARLEYManager.h"
 
 // MARLEY includes
 #include "marley/Event.hh"
 #include "marley/Particle.hh"
-#include "marley/JSONConfig.hh"
 
 // GEANT4 includes
 #include "G4PhysicalConstants.hh"
+
+#include "G4ParticleDefinition.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4IonTable.hh"
+#include "G4PrimaryParticle.hh"
+#include "G4PrimaryVertex.hh"
+#include "G4Event.hh"
+#include "G4Electron.hh"
+#include "G4MuonPlus.hh"
+#include "G4Proton.hh"
+
+#include "G4GenericMessenger.hh"
+#include "Randomize.hh"
+
+// C++ includes
+#include <stdlib.h>
+#include <math.h>
 
 
 PrimaryGeneration::PrimaryGeneration():
@@ -39,7 +42,6 @@ PrimaryGeneration::PrimaryGeneration():
 {
   msg_ = new G4GenericMessenger(this, "/Inputs/", "Control commands of the ion primary generator.");
   msg_->DeclareProperty("Particle_Type", Particle_Type_,  "which particle?");
-  msg_->DeclareProperty("MARLEY_json", MARLEY_json_,  "marley json file?");
 
   //msg_->DeclareProperty("Particle_energy", Particle_Energy_,  "Energy of the particle.");
 
@@ -133,14 +135,14 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
   else if (Particle_Type_ ==  "MARLEY")
   {
-
-    marley::JSONConfig config( MARLEY_json_ );
-    marley_generator_= config.create_generator();
+    // get MARLEY manager and generator
+    MARLEYManager * marley_manager = MARLEYManager::Instance();
+    marley::Generator & marley_generator = marley_manager->Generator();
 
     G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0., 0. ,0.), 0.);
 
     // Generate a new MARLEY event using the owned marley::Generator object
-    marley::Event ev = marley_generator_.create_event();
+    marley::Event ev = marley_generator.create_event();
 
     // // print MARLEY event information
     // ev.print_human_readable(G4cout);

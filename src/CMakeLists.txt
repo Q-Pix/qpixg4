@@ -7,6 +7,7 @@
 ## ---------------------------------------------------------
 
 SET(SRC   AnalysisManager.cpp
+          MARLEYManager.cpp
           DetectorConstruction.cpp
           PrimaryGeneration.cpp
           RunAction.cpp
