@@ -13,8 +13,10 @@
 #include <fstream>
 
 TrackingAction::TrackingAction()
-{
-}
+{}
+
+TrackingAction::~TrackingAction()
+{}
 
 // void TrackingAction::PreUserTrackingAction(const G4Track* track)
 void TrackingAction::PreUserTrackingAction(const G4Track*)
