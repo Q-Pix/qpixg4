@@ -26,7 +26,7 @@ MARLEYManager::~MARLEYManager()
 //-----------------------------------------------------------------------------
 MARLEYManager * MARLEYManager::Instance()
 {
-    if (instance_ == 0) instance_ = new MARLEYManager;
+    if (instance_ == 0) instance_ = new MARLEYManager();
     return instance_;
 }
 
