@@ -8,6 +8,8 @@
 
 SET(SRC   AnalysisManager.cpp
           MARLEYManager.cpp
+          MCTruthManager.cpp
+          MCParticle.cpp
           DetectorConstruction.cpp
           PrimaryGeneration.cpp
           RunAction.cpp

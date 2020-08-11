@@ -9,9 +9,15 @@
 #include "TrackingSD.h"
 #include "TrackingHit.h"
 
-#include <G4SDManager.hh>
-#include <G4SystemOfUnits.hh>
+// Q-Pix includes
+#include "MCTruthManager.h"
+#include "MCParticle.h"
 
+// GEANT4 includes
+#include "G4SDManager.hh"
+#include "G4SystemOfUnits.hh"
+
+// C++ includes
 #include <vector>
 
 
@@ -73,6 +79,23 @@ G4bool TrackingSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     aStep->GetPostStepPoint()->GetPosition()[2] + (5.0/2)*m <<"\t"<< 
     aStep->GetTotalEnergyDeposit()              <<"\t"<< std::endl;
   //G4cout << G4endl << "Austin " << aStep->GetPostStepPoint()->GetPosition() << G4endl;
+
+  //---------------------------------------------------------------------------
+  // begin add hit to MCParticle
+  //---------------------------------------------------------------------------
+
+  // get MC truth manager
+  MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
+
+  // get MC particle
+  MCParticle * particle = mc_truth_manager->GetMCParticle(aStep->GetTrack()->GetTrackID());
+
+  // add hit to MC particle
+  particle->AddTrajectoryHit(aStep);
+
+  //---------------------------------------------------------------------------
+  // end add hit to MCParticle
+  //---------------------------------------------------------------------------
 
   return true;
 }

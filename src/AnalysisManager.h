@@ -9,6 +9,9 @@
 #ifndef AnalysisManager_h
 #define AnalysisManager_h 1
 
+// Q-Pix includes
+#include "MCParticle.h"
+
 // GEANT4 includes
 #include "globals.hh"
 
@@ -22,6 +25,9 @@
 #include "TTree.h"
 #include "TBranch.h"
 
+// C++ includes
+#include <map>
+
 class AnalysisManager {
 
     public:
@@ -29,22 +35,24 @@ class AnalysisManager {
         AnalysisManager();
         ~AnalysisManager();
 
-        void Book(const std::string);
+        void Book(std::string const);
         void Save();
         void EventFill();
         void EventReset();
 
-        void SetRun(const int value);
-        void SetEvent(const int value);
+        void SetRun(int const value);
+        void SetEvent(int const value);
 
-        void AddInitialMARLEYParticle(const marley::Particle &);
-        void AddFinalMARLEYParticle(const marley::Particle &);
+        void AddInitialMARLEYParticle(marley::Particle const &);
+        void AddFinalMARLEYParticle(marley::Particle const &);
+
+        void AddMCParticle(MCParticle const *);
 
         static AnalysisManager* Instance();
 
     private:
 
-        static AnalysisManager* instance_;
+        static AnalysisManager * instance_;
 
         // ROOT objects
         TFile * tfile_;
@@ -54,6 +62,35 @@ class AnalysisManager {
         // variables that will go into the event trees
         int run_;
         int event_;
+
+        std::vector< int >    particle_track_id_;
+        std::vector< int >    particle_parent_track_id_;
+        std::vector< int >    particle_pdg_code_;
+        std::vector< double > particle_mass_;
+        std::vector< double > particle_charge_;
+        std::vector< int >    particle_end_process_id_;
+        std::vector< int >    particle_total_occupancy_;
+
+        std::vector< double > particle_initial_x_;
+        std::vector< double > particle_initial_y_;
+        std::vector< double > particle_initial_z_;
+        std::vector< double > particle_initial_t_;
+
+        std::vector< double > particle_initial_px_;
+        std::vector< double > particle_initial_py_;
+        std::vector< double > particle_initial_pz_;
+        std::vector< double > particle_initial_energy_;
+
+        std::vector< std::vector< double > > hit_start_x_;
+        std::vector< std::vector< double > > hit_start_y_;
+        std::vector< std::vector< double > > hit_start_z_;
+        std::vector< std::vector< double > > hit_start_t_;
+        std::vector< std::vector< double > > hit_end_x_;
+        std::vector< std::vector< double > > hit_end_y_;
+        std::vector< std::vector< double > > hit_end_z_;
+        std::vector< std::vector< double > > hit_end_t_;
+        std::vector< std::vector< double > > hit_length_;
+        std::vector< std::vector< double > > hit_energy_deposit_;
 
         // vectors for initial MARLEY particles
         std::vector< double > marley_initial_particle_px_;

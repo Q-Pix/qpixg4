@@ -9,8 +9,8 @@
 #include "PrimaryGeneration.h"
 
 // Q-Pix includes
-#include "AnalysisManager.h"
 #include "MARLEYManager.h"
+#include "MCTruthManager.h"
 
 // MARLEY includes
 #include "marley/Event.hh"
@@ -58,7 +58,7 @@ PrimaryGeneration::~PrimaryGeneration()
 
 void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 {
-  AnalysisManager * analysis_manager = AnalysisManager::Instance();
+  MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
   if (Particle_Type_ ==  "Ar39")
   {
@@ -150,15 +150,15 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     // Loop over each of the initial particles in the MARLEY event
     for (const auto& ip : ev.get_initial_particles())
     {
-      // add initial MARLEY particle to the MARLEY event tree for analysis
-      analysis_manager->AddInitialMARLEYParticle(*ip);
+      // add initial MARLEY particle to the MC truth manager
+      mc_truth_manager->AddInitialMARLEYParticle(*ip);
     }
 
     // Loop over each of the final particles in the MARLEY event
     for (const auto& fp : ev.get_final_particles())
     {
-      // add final MARLEY particle to the MARLEY event tree for analysis
-      analysis_manager->AddFinalMARLEYParticle(*fp);
+      // add final MARLEY particle to the MC truth manager
+      mc_truth_manager->AddFinalMARLEYParticle(*fp);
 
       // Convert each one from a marley::Particle into a G4PrimaryParticle.
       // Do this by first setting the PDG code and the 4-momentum components.
