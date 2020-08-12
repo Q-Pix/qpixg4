@@ -9,6 +9,10 @@
 #include "SteppingAction.h"
 
 
+#include "AnalysisManager.h"
+#include "G4VProcess.hh"
+
+
 SteppingAction::SteppingAction(): G4UserSteppingAction()
 {
 }
@@ -19,6 +23,9 @@ SteppingAction::~SteppingAction()
 }
 
 
-void SteppingAction::UserSteppingAction(const G4Step*)
+void SteppingAction::UserSteppingAction(const G4Step* step)
 {
+    AnalysisManager * analysis_manager = AnalysisManager::Instance();
+
+    analysis_manager->AddProcess(step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
 }

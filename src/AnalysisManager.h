@@ -27,6 +27,7 @@
 
 // C++ includes
 #include <map>
+#include <set>
 
 class AnalysisManager {
 
@@ -48,11 +49,18 @@ class AnalysisManager {
 
         void AddMCParticle(MCParticle const *);
 
+        int ProcessToKey(std::string const &);
+
+        inline void AddProcess(std::string const & process) { process_names_.insert(process); }
+        inline std::set< std::string > GetProcessNames() const { return process_names_; }
+
         static AnalysisManager* Instance();
 
     private:
 
         static AnalysisManager * instance_;
+
+        std::set< std::string > process_names_;
 
         // ROOT objects
         TFile * tfile_;
@@ -63,12 +71,14 @@ class AnalysisManager {
         int run_;
         int event_;
 
+        double energy_deposit_;
+
         std::vector< int >    particle_track_id_;
         std::vector< int >    particle_parent_track_id_;
         std::vector< int >    particle_pdg_code_;
         std::vector< double > particle_mass_;
         std::vector< double > particle_charge_;
-        std::vector< int >    particle_end_process_id_;
+        std::vector< int >    particle_process_key_;
         std::vector< int >    particle_total_occupancy_;
 
         std::vector< double > particle_initial_x_;
@@ -81,16 +91,18 @@ class AnalysisManager {
         std::vector< double > particle_initial_pz_;
         std::vector< double > particle_initial_energy_;
 
-        std::vector< std::vector< double > > hit_start_x_;
-        std::vector< std::vector< double > > hit_start_y_;
-        std::vector< std::vector< double > > hit_start_z_;
-        std::vector< std::vector< double > > hit_start_t_;
-        std::vector< std::vector< double > > hit_end_x_;
-        std::vector< std::vector< double > > hit_end_y_;
-        std::vector< std::vector< double > > hit_end_z_;
-        std::vector< std::vector< double > > hit_end_t_;
-        std::vector< std::vector< double > > hit_length_;
-        std::vector< std::vector< double > > hit_energy_deposit_;
+        std::vector< int >    hit_track_id_;
+        std::vector< double > hit_start_x_;
+        std::vector< double > hit_start_y_;
+        std::vector< double > hit_start_z_;
+        std::vector< double > hit_start_t_;
+        std::vector< double > hit_end_x_;
+        std::vector< double > hit_end_y_;
+        std::vector< double > hit_end_z_;
+        std::vector< double > hit_end_t_;
+        std::vector< double > hit_length_;
+        std::vector< double > hit_energy_deposit_;
+        std::vector< int >    hit_process_key_;
 
         // vectors for initial MARLEY particles
         std::vector< double > marley_initial_particle_px_;
