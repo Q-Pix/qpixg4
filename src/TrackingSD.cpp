@@ -103,25 +103,25 @@ G4bool TrackingSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
 
 void TrackingSD::EndOfEvent(G4HCofThisEvent*)
 {
-  G4int nofHits = hc_->entries();
-  G4cout
-    << G4endl
-    << "-------->Hits Collection: in this event there are " << nofHits
-    << " hits in the tracker." << G4endl;
-    
+  // G4int nofHits = hc_->entries();
+  // G4cout
+  //   << G4endl
+  //   << "-------->Hits Collection: in this event there are " << nofHits
+  //   << " hits in the tracker." << G4endl;
+  //   
 
-    G4cout<< Acounter << G4endl;
-    Acounter +=1;
+  //   G4cout<< Acounter << G4endl;
+  //   Acounter +=1;
 
-  for (int i = 0; i < nofHits; i++) 
-  { 
-    //G4cout<< Event_Vector.at(i)<< " ";
-    for (int j = 0; j < 4; j++)
-    { 
-      G4cout<< Event_Vector[i][j]<< " "; 
-    } 
-    G4cout<< "\n"; 
-  }
+  // for (int i = 0; i < nofHits; i++) 
+  // { 
+  //   //G4cout<< Event_Vector.at(i)<< " ";
+  //   for (int j = 0; j < 4; j++)
+  //   { 
+  //     G4cout<< Event_Vector[i][j]<< " "; 
+  //   } 
+  //   G4cout<< "\n"; 
+  // }
 
 }
 
