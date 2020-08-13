@@ -43,6 +43,9 @@ void AnalysisManager::Book(std::string const file_path)
     ttree_->Branch("run",   &run_,   "run/I");
     ttree_->Branch("event", &event_, "event/I");
 
+    ttree_->Branch("number_particles", &number_particles_, "number_particles/I");
+    ttree_->Branch("number_hits", &number_hits_, "number_hits/I");
+
     ttree_->Branch("energy_deposit", &energy_deposit_, "energy_deposit/D");
 
     ttree_->Branch("particle_track_id",        &particle_track_id_);
@@ -85,6 +88,7 @@ void AnalysisManager::Book(std::string const file_path)
     marley_event_tree_->Branch("run", &run_, "run/I");
     marley_event_tree_->Branch("event", &event_, "event/I");
 
+    marley_event_tree_->Branch("initial_number_particles", &marley_initial_number_particles_, "initial_number_particles/I");
     marley_event_tree_->Branch("initial_particle_px", &marley_initial_particle_px_);
     marley_event_tree_->Branch("initial_particle_py", &marley_initial_particle_py_);
     marley_event_tree_->Branch("initial_particle_pz", &marley_initial_particle_pz_);
@@ -93,6 +97,7 @@ void AnalysisManager::Book(std::string const file_path)
     marley_event_tree_->Branch("initial_particle_mass", &marley_initial_particle_mass_);
     marley_event_tree_->Branch("initial_particle_charge", &marley_initial_particle_charge_);
 
+    marley_event_tree_->Branch("final_number_particles", &marley_final_number_particles_, "final_number_particles/I");
     marley_event_tree_->Branch("final_particle_px", &marley_final_particle_px_);
     marley_event_tree_->Branch("final_particle_py", &marley_final_particle_py_);
     marley_event_tree_->Branch("final_particle_pz", &marley_final_particle_pz_);
@@ -116,6 +121,8 @@ void AnalysisManager::EventReset()
 {
     // reset event variables after filling TTree objects per event
     event_ = -1;
+    number_particles_ = 0;
+    number_hits_ = 0;
     energy_deposit_ = 0;
 
     particle_track_id_.clear();
@@ -164,6 +171,9 @@ void AnalysisManager::EventReset()
     marley_final_particle_pdg_code_.clear();
     marley_final_particle_mass_.clear();
     marley_final_particle_charge_.clear();
+
+    marley_initial_number_particles_ = 0;
+    marley_final_number_particles_ = 0;
 }
 
 //-----------------------------------------------------------------------------
@@ -197,9 +207,6 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
     particle_process_key_.push_back(this->ProcessToKey(particle->Process()));
     particle_total_occupancy_.push_back(particle->TotalOccupancy());
 
-    // inline TLorentzVector InitialPosition() const { return initial_position_; }
-    // inline TLorentzVector InitialMomentum() const { return initial_momentum_; }
-
     particle_initial_x_.push_back(particle->InitialPosition().X());
     particle_initial_y_.push_back(particle->InitialPosition().Y());
     particle_initial_z_.push_back(particle->InitialPosition().Z());
@@ -209,6 +216,8 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
     particle_initial_py_.push_back(particle->InitialMomentum().Y());
     particle_initial_pz_.push_back(particle->InitialMomentum().Z());
     particle_initial_energy_.push_back(particle->InitialMomentum().E());
+
+    number_particles_ += 1;
 
     std::vector< TrajectoryHit > const hits = particle->Hits();
 
@@ -232,6 +241,7 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
         hit_energy_deposit_.push_back(hit.Energy());
 
         hit_process_key_.push_back(this->ProcessToKey(hit.Process()));
+        number_hits_ += 1;
     }
 }
 
@@ -245,6 +255,7 @@ void AnalysisManager::AddInitialMARLEYParticle(marley::Particle const & particle
     marley_initial_particle_pdg_code_.push_back(particle.pdg_code());
     marley_initial_particle_mass_.push_back(particle.mass());
     marley_initial_particle_charge_.push_back(particle.charge());
+    marley_initial_number_particles_ += 1;
 }
 
 //-----------------------------------------------------------------------------
@@ -257,6 +268,7 @@ void AnalysisManager::AddFinalMARLEYParticle(marley::Particle const & particle)
     marley_final_particle_pdg_code_.push_back(particle.pdg_code());
     marley_final_particle_mass_.push_back(particle.mass());
     marley_final_particle_charge_.push_back(particle.charge());
+    marley_final_number_particles_ += 1;
 }
 
 //-----------------------------------------------------------------------------

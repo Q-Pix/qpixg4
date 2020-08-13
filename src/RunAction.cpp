@@ -11,6 +11,7 @@
 // Q-Pix includes
 #include "AnalysisManager.h"
 #include "MARLEYManager.h"
+#include "MCTruthManager.h"
 
 // GEANT4 includes
 #include "G4Run.hh"
@@ -45,6 +46,15 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
     analysis_manager->Book(root_output_path_);
     analysis_manager->SetRun(run->GetRunID());
+
+    // reset event variables
+    analysis_manager->EventReset();
+
+    // get MC truth manager
+    MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
+
+    // reset event in MC truth manager
+    mc_truth_manager->EventReset();
 }
 
 

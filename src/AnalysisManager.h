@@ -71,6 +71,9 @@ class AnalysisManager {
         int run_;
         int event_;
 
+        int number_particles_;
+        int number_hits_;
+
         double energy_deposit_;
 
         std::vector< int >    particle_track_id_;
@@ -103,6 +106,10 @@ class AnalysisManager {
         std::vector< double > hit_length_;
         std::vector< double > hit_energy_deposit_;
         std::vector< int >    hit_process_key_;
+
+        // number of MARLEY particles
+        int marley_initial_number_particles_;
+        int marley_final_number_particles_;
 
         // vectors for initial MARLEY particles
         std::vector< double > marley_initial_particle_px_;
