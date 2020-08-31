@@ -21,19 +21,11 @@ public:
   TrackingSD(const G4String&, const G4String&);
   virtual ~TrackingSD();
 
-  virtual void   Initialize(G4HCofThisEvent*);
+  // virtual void   Initialize(G4HCofThisEvent*);
   virtual G4bool ProcessHits(G4Step*, G4TouchableHistory*);
-  virtual void   EndOfEvent(G4HCofThisEvent*);
-  void OpenFile(G4String);
+  // virtual void   EndOfEvent(G4HCofThisEvent*);
 
 private:
-  TrackingHitsCollection* hc_;
-  int Acounter =0 ; 
-  //std::vector<double> Event_Vector;
-  std::vector< std::vector<double> > Event_Vector;
-  std::vector<double> Tmp_Vector;
-  std::ofstream Data_File;
-  G4GenericMessenger* msg_;
-  G4String file_out_;
+  // TrackingHitsCollection* hc_;
 };
 #endif
