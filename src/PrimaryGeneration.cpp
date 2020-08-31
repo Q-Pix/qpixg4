@@ -18,6 +18,7 @@
 
 // GEANT4 includes
 #include "G4PhysicalConstants.hh"
+#include "G4LogicalVolumeStore.hh"
 
 #include "G4ParticleDefinition.hh"
 #include "G4SystemOfUnits.hh"
@@ -28,6 +29,7 @@
 #include "G4Electron.hh"
 #include "G4MuonPlus.hh"
 #include "G4Proton.hh"
+
 
 #include "G4GenericMessenger.hh"
 #include "Randomize.hh"
@@ -58,6 +60,24 @@ PrimaryGeneration::~PrimaryGeneration()
 
 void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 {
+  // get detector dimensions
+  if (!detector_solid_vol_)
+  {
+    G4LogicalVolume* detector_logic_vol
+      = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
+    if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
+  }
+  if (detector_solid_vol_)
+  {
+    detector_length_x_ = detector_solid_vol_->GetXHalfLength() * 2.;
+    detector_length_y_ = detector_solid_vol_->GetYHalfLength() * 2.;
+    detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
+    // G4cout << "det. dim.: " << detector_length_x_ << " m × "
+    //                         << detector_length_y_ << " m × "
+    //                         << detector_length_z_ << " m"
+    //        << G4endl;
+  }
+
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
   if (Particle_Type_ ==  "Ar39")
@@ -69,9 +89,9 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     particle->SetMomentumDirection(G4ThreeVector(0.,1.,0.));
     particle->SetKineticEnergy(1.*eV); // just an ion sitting
 
-    double Ran_X = G4UniformRand()*(1.0/2)*m;
-    double Ran_Y = G4UniformRand()*(1.0/2)*m;
-    double Ran_Z = G4UniformRand()*(5.0/2)*m;
+    double Ran_X = G4UniformRand() * detector_length_x_/2.;
+    double Ran_Y = G4UniformRand() * detector_length_y_/2.;
+    double Ran_Z = G4UniformRand() * detector_length_z_/2.;
     if (G4UniformRand()>0.5){ Ran_X *= -1; }
     if (G4UniformRand()>0.5){ Ran_Y *= -1; }
     if (G4UniformRand()>0.5){ Ran_Z *= -1; }
@@ -81,9 +101,9 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
   }
   else if (Particle_Type_ ==  "Muon")
   {
-    double Ran_X = G4UniformRand()*(1.0/2)*m;
-    double Ran_Y = G4UniformRand()*(1.0/2)*m;
-    double Ran_Z = G4UniformRand()*(5.0/2)*m;
+    double Ran_X = G4UniformRand() * detector_length_x_/2.;
+    double Ran_Y = G4UniformRand() * detector_length_y_/2.;
+    double Ran_Z = G4UniformRand() * detector_length_z_/2.;
     if (G4UniformRand()>0.5){ Ran_X *= -1; }
     if (G4UniformRand()>0.5){ Ran_Y *= -1; }
     if (G4UniformRand()>0.5){ Ran_Z *= -1; }
@@ -94,16 +114,16 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     particle->SetKineticEnergy(10.*GeV); 
 
 
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0, -(1.0/2)*m ,Ran_Z), 0.);
+    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0, -detector_length_y_/2., Ran_Z), 0.);
     vertex->SetPrimary(particle);
     event->AddPrimaryVertex(vertex);
   }
   else if (Particle_Type_ ==  "Proton")
   {
 
-    double Ran_X = G4UniformRand()*(1.0/2)*m;
-    double Ran_Y = G4UniformRand()*(1.0/2)*m;
-    double Ran_Z = G4UniformRand()*(5.0/2)*m;
+    double Ran_X = G4UniformRand() * detector_length_x_/2.;
+    double Ran_Y = G4UniformRand() * detector_length_y_/2.;
+    double Ran_Z = G4UniformRand() * detector_length_z_/2.;
     if (G4UniformRand()>0.5){ Ran_X *= -1; }
     if (G4UniformRand()>0.5){ Ran_Y *= -1; }
     if (G4UniformRand()>0.5){ Ran_Z *= -1; }
@@ -139,7 +159,13 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     MARLEYManager * marley_manager = MARLEYManager::Instance();
     marley::Generator & marley_generator = marley_manager->Generator();
 
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0., 0. ,0.), 0.);
+    // G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0., 0., 0.), 0.);
+
+    G4ThreeVector offset(detector_length_x_/2.,
+                         detector_length_y_/2.,
+                         detector_length_z_/2.);
+
+    G4PrimaryVertex* vertex = new G4PrimaryVertex(offset, 0.);
 
     // Generate a new MARLEY event using the owned marley::Generator object
     marley::Event ev = marley_generator.create_event();

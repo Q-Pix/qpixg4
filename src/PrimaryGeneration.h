@@ -13,6 +13,7 @@
 #include "G4VUserPrimaryGeneratorAction.hh"
 #include "G4ParticleTable.hh"
 #include "G4String.hh"
+#include "G4Box.hh"
 
 class G4ParticleDefinition;
 class G4GenericMessenger;
@@ -36,6 +37,12 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     G4GenericMessenger* msg_; // Messenger for configuration parameters
     G4String Particle_Type_;
     //double Particle_Energy_;
+
+    double detector_length_x_;
+    double detector_length_y_;
+    double detector_length_z_;
+
+    G4Box* detector_solid_vol_;
 
 };
 

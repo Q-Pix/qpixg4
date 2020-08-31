@@ -29,7 +29,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 {
   // WORLD /////////////////////////////////////////////////
 
-  G4double world_size = 10.*m;
+  G4double world_size = 12.*m;
   G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
 
   G4Box* world_solid_vol =
@@ -55,7 +55,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4LogicalVolume* detector_logic_vol =
     new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
 
-  new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
+  G4ThreeVector offset(detector_width/2., detector_width/2., detector_length/2.);
+
+  new G4PVPlacement(0, offset,
                     detector_logic_vol, "detector.physical", world_logic_vol, false, 0, true);
 
   //////////////////////////////////////////////////////////
