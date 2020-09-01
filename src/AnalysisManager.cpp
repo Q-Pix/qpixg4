@@ -35,52 +35,59 @@ AnalysisManager * AnalysisManager::Instance()
 void AnalysisManager::Book(std::string const file_path)
 {
     // ROOT output file
-    tfile_ = new TFile(file_path.data(), "recreate", "q_pix_geant");
+    tfile_ = new TFile(file_path.data(), "recreate", "qpix");
 
-    // GEANT4 event tree
-    ttree_ = new TTree("g4_event_tree", "GEANT4 event tree");
+    // metadata tree
+    metadata_ = new TTree("metadata", "metadata");
 
-    ttree_->Branch("run",   &run_,   "run/I");
-    ttree_->Branch("event", &event_, "event/I");
+    metadata_->Branch("detector_length_x", &detector_length_x_, "detector_length_x/D");
+    metadata_->Branch("detector_length_y", &detector_length_y_, "detector_length_y/D");
+    metadata_->Branch("detector_length_z", &detector_length_z_, "detector_length_z/D");
 
-    ttree_->Branch("number_particles", &number_particles_, "number_particles/I");
-    ttree_->Branch("number_hits", &number_hits_, "number_hits/I");
+    // event tree
+    event_tree_ = new TTree("event_tree", "event tree");
 
-    ttree_->Branch("energy_deposit", &energy_deposit_, "energy_deposit/D");
+    event_tree_->Branch("run",   &run_,   "run/I");
+    event_tree_->Branch("event", &event_, "event/I");
 
-    ttree_->Branch("particle_track_id",        &particle_track_id_);
-    ttree_->Branch("particle_parent_track_id", &particle_parent_track_id_);
-    ttree_->Branch("particle_pdg_code",        &particle_pdg_code_);
-    ttree_->Branch("particle_mass",            &particle_mass_);
-    ttree_->Branch("particle_charge",          &particle_charge_);
-    ttree_->Branch("particle_process_key",     &particle_process_key_);
-    ttree_->Branch("particle_total_occupancy", &particle_total_occupancy_);
+    event_tree_->Branch("number_particles", &number_particles_, "number_particles/I");
+    event_tree_->Branch("number_hits", &number_hits_, "number_hits/I");
 
-    ttree_->Branch("particle_initial_x", &particle_initial_x_);
-    ttree_->Branch("particle_initial_y", &particle_initial_y_);
-    ttree_->Branch("particle_initial_z", &particle_initial_z_);
-    ttree_->Branch("particle_initial_t", &particle_initial_t_);
+    event_tree_->Branch("energy_deposit", &energy_deposit_, "energy_deposit/D");
 
-    ttree_->Branch("particle_initial_px", &particle_initial_px_);
-    ttree_->Branch("particle_initial_py", &particle_initial_py_);
-    ttree_->Branch("particle_initial_pz", &particle_initial_pz_);
-    ttree_->Branch("particle_initial_energy", &particle_initial_energy_);
+    event_tree_->Branch("particle_track_id",        &particle_track_id_);
+    event_tree_->Branch("particle_parent_track_id", &particle_parent_track_id_);
+    event_tree_->Branch("particle_pdg_code",        &particle_pdg_code_);
+    event_tree_->Branch("particle_mass",            &particle_mass_);
+    event_tree_->Branch("particle_charge",          &particle_charge_);
+    event_tree_->Branch("particle_process_key",     &particle_process_key_);
+    event_tree_->Branch("particle_total_occupancy", &particle_total_occupancy_);
 
-    ttree_->Branch("hit_track_id",       &hit_track_id_);
+    event_tree_->Branch("particle_initial_x", &particle_initial_x_);
+    event_tree_->Branch("particle_initial_y", &particle_initial_y_);
+    event_tree_->Branch("particle_initial_z", &particle_initial_z_);
+    event_tree_->Branch("particle_initial_t", &particle_initial_t_);
 
-    ttree_->Branch("hit_start_x",        &hit_start_x_);
-    ttree_->Branch("hit_start_y",        &hit_start_y_);
-    ttree_->Branch("hit_start_z",        &hit_start_z_);
-    ttree_->Branch("hit_start_t",        &hit_start_t_);
+    event_tree_->Branch("particle_initial_px", &particle_initial_px_);
+    event_tree_->Branch("particle_initial_py", &particle_initial_py_);
+    event_tree_->Branch("particle_initial_pz", &particle_initial_pz_);
+    event_tree_->Branch("particle_initial_energy", &particle_initial_energy_);
 
-    ttree_->Branch("hit_end_x",          &hit_end_x_);
-    ttree_->Branch("hit_end_y",          &hit_end_y_);
-    ttree_->Branch("hit_end_z",          &hit_end_z_);
-    ttree_->Branch("hit_end_t",          &hit_end_t_);
+    event_tree_->Branch("hit_track_id",       &hit_track_id_);
 
-    ttree_->Branch("hit_energy_deposit", &hit_energy_deposit_);
-    ttree_->Branch("hit_length",         &hit_length_);
-    ttree_->Branch("hit_process_key",    &hit_process_key_);
+    event_tree_->Branch("hit_start_x",        &hit_start_x_);
+    event_tree_->Branch("hit_start_y",        &hit_start_y_);
+    event_tree_->Branch("hit_start_z",        &hit_start_z_);
+    event_tree_->Branch("hit_start_t",        &hit_start_t_);
+
+    event_tree_->Branch("hit_end_x",          &hit_end_x_);
+    event_tree_->Branch("hit_end_y",          &hit_end_y_);
+    event_tree_->Branch("hit_end_z",          &hit_end_z_);
+    event_tree_->Branch("hit_end_t",          &hit_end_t_);
+
+    event_tree_->Branch("hit_energy_deposit", &hit_energy_deposit_);
+    event_tree_->Branch("hit_length",         &hit_length_);
+    event_tree_->Branch("hit_process_key",    &hit_process_key_);
 
     // MARLEY event tree
     marley_event_tree_ = new TTree("marley_event_tree", "MARLEY event tree");
@@ -111,7 +118,8 @@ void AnalysisManager::Book(std::string const file_path)
 void AnalysisManager::Save()
 {
     // write TTree objects to file and close file
-    ttree_->Write();
+    metadata_->Write();
+    event_tree_->Write();
     marley_event_tree_->Write();
     tfile_->Close();
 }
@@ -180,7 +188,7 @@ void AnalysisManager::EventReset()
 void AnalysisManager::EventFill()
 {
     // fill TTree objects per event
-    ttree_->Fill();
+    event_tree_->Fill();
     marley_event_tree_->Fill();
 }
 
@@ -194,6 +202,17 @@ void AnalysisManager::SetRun(int const value)
 void AnalysisManager::SetEvent(int const value)
 {
     event_ = value;
+}
+
+//-----------------------------------------------------------------------------
+void AnalysisManager::FillMetadata(double const & detector_length_x,
+                                   double const & detector_length_y,
+                                   double const & detector_length_z)
+{
+    detector_length_x_ = detector_length_x;
+    detector_length_y_ = detector_length_y;
+    detector_length_z_ = detector_length_z;
+    metadata_->Fill();
 }
 
 //-----------------------------------------------------------------------------

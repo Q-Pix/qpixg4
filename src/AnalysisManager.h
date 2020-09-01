@@ -44,6 +44,8 @@ class AnalysisManager {
         void SetRun(int const value);
         void SetEvent(int const value);
 
+        void FillMetadata(double const &, double const &, double const &);
+
         void AddInitialMARLEYParticle(marley::Particle const &);
         void AddFinalMARLEYParticle(marley::Particle const &);
 
@@ -64,8 +66,14 @@ class AnalysisManager {
 
         // ROOT objects
         TFile * tfile_;
-        TTree * ttree_;
+        TTree * metadata_;
+        TTree * event_tree_;
         TTree * marley_event_tree_;
+
+        // variables that will go into the metadata tree
+        double detector_length_x_;
+        double detector_length_y_;
+        double detector_length_z_;
 
         // variables that will go into the event trees
         int run_;

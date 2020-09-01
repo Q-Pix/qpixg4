@@ -39,7 +39,7 @@ std::vector< std::string > file_list_ = {
     "path/to/output/file_2.root",
 };
 
-TChain * chain_ = new TChain("g4_event_tree");
+TChain * chain_ = new TChain("event_tree");
 
 //------------------------------------------------------------
 // set up branch variables

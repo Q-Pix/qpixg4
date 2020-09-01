@@ -14,6 +14,8 @@
 #include "MCTruthManager.h"
 
 // GEANT4 includes
+#include "G4Box.hh"
+#include "G4LogicalVolumeStore.hh"
 #include "G4Run.hh"
 
 
@@ -60,7 +62,32 @@ void RunAction::BeginOfRunAction(const G4Run* run)
 
 void RunAction::EndOfRunAction(const G4Run*)
 {
-    // save run to ROOT file
+    // get analysis manager
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
+
+    // get detector dimensions
+    G4LogicalVolume* detector_logic_vol
+      = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
+    if (detector_logic_vol)
+    {
+      G4Box * detector_solid_vol
+        = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
+
+      double const detector_length_x = detector_solid_vol->GetXHalfLength() * 2. / CLHEP::cm;
+      double const detector_length_y = detector_solid_vol->GetYHalfLength() * 2. / CLHEP::cm;
+      double const detector_length_z = detector_solid_vol->GetZHalfLength() * 2. / CLHEP::cm;
+
+      // G4cout << "det. dim.: " << detector_length_x << " cm × "
+      //                         << detector_length_y << " cm × "
+      //                         << detector_length_z << " cm"
+      //        << G4endl;
+
+      // save detector dimensions as metadata
+      analysis_manager->FillMetadata(detector_length_x,
+                                     detector_length_y,
+                                     detector_length_z);
+    }
+
+    // save run to ROOT file
     analysis_manager->Save();
 }
