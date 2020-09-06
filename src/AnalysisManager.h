@@ -16,10 +16,6 @@
 // GEANT4 includes
 #include "globals.hh"
 
-// MARLEY includes
-#include "marley/Event.hh"
-#include "marley/Particle.hh"
-
 // ROOT includes
 #include "TROOT.h"
 #include "TFile.h"
@@ -47,9 +43,6 @@ class AnalysisManager {
 
         void FillMetadata(double const &, double const &, double const &);
 
-        void AddInitialMARLEYParticle(marley::Particle const &);
-        void AddFinalMARLEYParticle(marley::Particle const &);
-
         void AddInitialGeneratorParticle(GeneratorParticle const *);
         void AddFinalGeneratorParticle(GeneratorParticle const *);
 
@@ -72,7 +65,6 @@ class AnalysisManager {
         TFile * tfile_;
         TTree * metadata_;
         TTree * event_tree_;
-        TTree * marley_event_tree_;
 
         // variables that will go into the metadata tree
         double detector_length_x_;
@@ -146,28 +138,6 @@ class AnalysisManager {
         std::vector< int >    generator_final_particle_pdg_code_;
         std::vector< double > generator_final_particle_mass_;
         std::vector< double > generator_final_particle_charge_;
-
-        // number of MARLEY particles
-        int marley_initial_number_particles_;
-        int marley_final_number_particles_;
-
-        // vectors for initial MARLEY particles
-        std::vector< double > marley_initial_particle_px_;
-        std::vector< double > marley_initial_particle_py_;
-        std::vector< double > marley_initial_particle_pz_;
-        std::vector< double > marley_initial_particle_energy_;
-        std::vector< int >    marley_initial_particle_pdg_code_;
-        std::vector< double > marley_initial_particle_mass_;
-        std::vector< double > marley_initial_particle_charge_;
-
-        // vectors for final MARLEY particles
-        std::vector< double > marley_final_particle_px_;
-        std::vector< double > marley_final_particle_py_;
-        std::vector< double > marley_final_particle_pz_;
-        std::vector< double > marley_final_particle_energy_;
-        std::vector< int >    marley_final_particle_pdg_code_;
-        std::vector< double > marley_final_particle_mass_;
-        std::vector< double > marley_final_particle_charge_;
 
 };
 

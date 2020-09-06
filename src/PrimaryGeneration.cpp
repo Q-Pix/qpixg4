@@ -108,9 +108,6 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     // Loop over each of the initial particles in the MARLEY event
     for (const auto& ip : ev.get_initial_particles())
     {
-      // add initial MARLEY particle to the MC truth manager
-      mc_truth_manager->AddInitialMARLEYParticle(*ip);
-
       // create generator particle
       GeneratorParticle * generatorParticle = new GeneratorParticle();
       generatorParticle->SetPDGCode (ip->pdg_code());
@@ -124,16 +121,13 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
       generatorParticle->SetPz      (ip->pz());
       generatorParticle->SetEnergy  (ip->total_energy());
 
-      // add to MC truth manager
+      // add initial MARLEY particle to the MC truth manager
       mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
     }
 
     // Loop over each of the final particles in the MARLEY event
     for (const auto& fp : ev.get_final_particles())
     {
-      // add final MARLEY particle to the MC truth manager
-      mc_truth_manager->AddFinalMARLEYParticle(*fp);
-
       // create generator particle
       GeneratorParticle * generatorParticle = new GeneratorParticle();
       generatorParticle->SetPDGCode (fp->pdg_code());
@@ -147,7 +141,7 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
       generatorParticle->SetPz      (fp->pz());
       generatorParticle->SetEnergy  (fp->total_energy());
 
-      // add to MC truth manager
+      // add final MARLEY particle to the MC truth manager
       mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
 
       // Convert each one from a marley::Particle into a G4PrimaryParticle.

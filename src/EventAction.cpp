@@ -51,18 +51,6 @@ void EventAction::EndOfEventAction(const G4Event* event)
         analysis_manager->AddFinalGeneratorParticle(particle);
     }
 
-    // add initial MARLEY particles to analysis manager
-    for (auto const& particle : mc_truth_manager->GetInitialMARLEYParticles())
-    {
-        analysis_manager->AddInitialMARLEYParticle(particle);
-    }
-
-    // add final MARLEY particles to analysis manager
-    for (auto const& particle : mc_truth_manager->GetFinalMARLEYParticles())
-    {
-        analysis_manager->AddFinalMARLEYParticle(particle);
-    }
-
     // get map of particles from MC truth manager
     auto const MCParticleMap = mc_truth_manager->GetMCParticleMap();
 
