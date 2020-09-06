@@ -41,13 +41,13 @@ class MCTruthManager {
         void SetRun(int const);
         void SetEvent(int const);
 
-        void AddInitialMARLEYParticle(marley::Particle const &);
-        void AddFinalMARLEYParticle(marley::Particle const &);
-
         static MCTruthManager* Instance();
 
         void AddInitialGeneratorParticle(GeneratorParticle *);
         void AddFinalGeneratorParticle(GeneratorParticle *);
+
+        void AddInitialMARLEYParticle(marley::Particle const &);
+        void AddFinalMARLEYParticle(marley::Particle const &);
 
         void AddMCParticle(MCParticle *);
         MCParticle * GetMCParticle(int const);
