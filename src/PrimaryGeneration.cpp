@@ -11,6 +11,7 @@
 // Q-Pix includes
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
+#include "GeneratorParticle.h"
 
 // MARLEY includes
 #include "marley/Event.hh"
@@ -39,13 +40,14 @@
 #include <math.h>
 
 
-PrimaryGeneration::PrimaryGeneration():
-  G4VUserPrimaryGeneratorAction()
+PrimaryGeneration::PrimaryGeneration()
+  : G4VUserPrimaryGeneratorAction(),
+    particle_gun_(0)
 {
   msg_ = new G4GenericMessenger(this, "/Inputs/", "Control commands of the ion primary generator.");
   msg_->DeclareProperty("Particle_Type", Particle_Type_,  "which particle?");
 
-  //msg_->DeclareProperty("Particle_energy", Particle_Energy_,  "Energy of the particle.");
+  particle_gun_ = new G4GeneralParticleSource();
 
   // get dictionary of particles
   particle_table_ = G4ParticleTable::GetParticleTable();
@@ -55,111 +57,41 @@ PrimaryGeneration::PrimaryGeneration():
 PrimaryGeneration::~PrimaryGeneration()
 {
   delete msg_;
+  delete particle_gun_;
 }
 
 
 void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 {
-  // get detector dimensions
-  if (!detector_solid_vol_)
-  {
-    G4LogicalVolume* detector_logic_vol
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
-    if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
-  }
-  if (detector_solid_vol_)
-  {
-    detector_length_x_ = detector_solid_vol_->GetXHalfLength() * 2.;
-    detector_length_y_ = detector_solid_vol_->GetYHalfLength() * 2.;
-    detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
-    // G4cout << "det. dim.: " << detector_length_x_ << " m × "
-    //                         << detector_length_y_ << " m × "
-    //                         << detector_length_z_ << " m"
-    //        << G4endl;
-  }
-
+  // get MC truth manager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
-  if (Particle_Type_ ==  "Ar39")
-  {
-    G4ParticleDefinition* pdef = G4IonTable::GetIonTable()->GetIon(18, 39, 0.); // Ar39
-    if (!pdef)G4Exception("SetParticleDefinition()", "[IonGun]",FatalException, " can not create ion ");
-
-    G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
-    particle->SetMomentumDirection(G4ThreeVector(0.,1.,0.));
-    particle->SetKineticEnergy(1.*eV); // just an ion sitting
-
-    double Ran_X = G4UniformRand() * detector_length_x_/2.;
-    double Ran_Y = G4UniformRand() * detector_length_y_/2.;
-    double Ran_Z = G4UniformRand() * detector_length_z_/2.;
-    if (G4UniformRand()>0.5){ Ran_X *= -1; }
-    if (G4UniformRand()>0.5){ Ran_Y *= -1; }
-    if (G4UniformRand()>0.5){ Ran_Z *= -1; }
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(Ran_X,Ran_Y,Ran_Z), 0.);
-    vertex->SetPrimary(particle);
-    event->AddPrimaryVertex(vertex);
-  }
-  else if (Particle_Type_ ==  "Muon")
-  {
-    double Ran_X = G4UniformRand() * detector_length_x_/2.;
-    double Ran_Y = G4UniformRand() * detector_length_y_/2.;
-    double Ran_Z = G4UniformRand() * detector_length_z_/2.;
-    if (G4UniformRand()>0.5){ Ran_X *= -1; }
-    if (G4UniformRand()>0.5){ Ran_Y *= -1; }
-    if (G4UniformRand()>0.5){ Ran_Z *= -1; }
-    G4ParticleDefinition* pdef = G4MuonPlus::Definition();
-
-    G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
-    particle->SetMomentumDirection(G4ThreeVector(0.,1.,0.));
-    particle->SetKineticEnergy(10.*GeV); 
-
-
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0, -detector_length_y_/2., Ran_Z), 0.);
-    vertex->SetPrimary(particle);
-    event->AddPrimaryVertex(vertex);
-  }
-  else if (Particle_Type_ ==  "Proton")
-  {
-
-    double Ran_X = G4UniformRand() * detector_length_x_/2.;
-    double Ran_Y = G4UniformRand() * detector_length_y_/2.;
-    double Ran_Z = G4UniformRand() * detector_length_z_/2.;
-    if (G4UniformRand()>0.5){ Ran_X *= -1; }
-    if (G4UniformRand()>0.5){ Ran_Y *= -1; }
-    if (G4UniformRand()>0.5){ Ran_Z *= -1; }
-    double NorXY = sqrt(Ran_X*Ran_X+Ran_Y*Ran_Y) ;
-
-    G4ParticleDefinition* pdef = G4Proton::Definition();
-
-    G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
-    particle->SetMomentumDirection(G4ThreeVector(Ran_X/NorXY , Ran_Y/NorXY, 0.));
-    particle->SetKineticEnergy(100.*MeV); // just an ion sitting
-
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(Ran_X,Ran_Y,Ran_Z), 0.);
-    vertex->SetPrimary(particle);
-    event->AddPrimaryVertex(vertex);
-  }
-  else if (Particle_Type_ ==  "Electron")
-  {
-    G4ParticleDefinition* pdef = G4Electron::Definition();
-
-    G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
-    particle->SetMomentumDirection(G4ThreeVector(0.,1.,0.));
-    particle->SetKineticEnergy(3.*MeV); 
-
-
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0, 0 ,0.5), 0.);
-    vertex->SetPrimary(particle);
-    event->AddPrimaryVertex(vertex);
-  }
-
-  else if (Particle_Type_ ==  "MARLEY")
+  if (Particle_Type_ ==  "MARLEY")
   {
     // get MARLEY manager and generator
     MARLEYManager * marley_manager = MARLEYManager::Instance();
     marley::Generator & marley_generator = marley_manager->Generator();
 
     // G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0., 0., 0.), 0.);
+
+    // get detector dimensions
+    if (!detector_solid_vol_)
+    {
+      G4LogicalVolume* detector_logic_vol
+        = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
+      if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
+    }
+    if (detector_solid_vol_)
+    {
+      detector_length_x_ = detector_solid_vol_->GetXHalfLength() * 2.;
+      detector_length_y_ = detector_solid_vol_->GetYHalfLength() * 2.;
+      detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
+      // G4cout << "det. dim.: " << detector_length_x_ << " m × "
+      //                         << detector_length_y_ << " m × "
+      //                         << detector_length_z_ << " m"
+      //        << G4endl;
+    }
+
 
     G4ThreeVector offset(detector_length_x_/2.,
                          detector_length_y_/2.,
@@ -178,6 +110,22 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     {
       // add initial MARLEY particle to the MC truth manager
       mc_truth_manager->AddInitialMARLEYParticle(*ip);
+
+      // create generator particle
+      GeneratorParticle * generatorParticle = new GeneratorParticle();
+      generatorParticle->SetPDGCode (ip->pdg_code());
+      generatorParticle->SetMass    (ip->mass());
+      generatorParticle->SetCharge  (ip->charge());
+      generatorParticle->SetX       (vertex->GetX0() / CLHEP::cm);
+      generatorParticle->SetY       (vertex->GetY0() / CLHEP::cm);
+      generatorParticle->SetZ       (vertex->GetZ0() / CLHEP::cm);
+      generatorParticle->SetPx      (ip->px());
+      generatorParticle->SetPy      (ip->py());
+      generatorParticle->SetPz      (ip->pz());
+      generatorParticle->SetEnergy  (ip->total_energy());
+
+      // add to MC truth manager
+      mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
     }
 
     // Loop over each of the final particles in the MARLEY event
@@ -185,6 +133,22 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     {
       // add final MARLEY particle to the MC truth manager
       mc_truth_manager->AddFinalMARLEYParticle(*fp);
+
+      // create generator particle
+      GeneratorParticle * generatorParticle = new GeneratorParticle();
+      generatorParticle->SetPDGCode (fp->pdg_code());
+      generatorParticle->SetMass    (fp->mass());
+      generatorParticle->SetCharge  (fp->charge());
+      generatorParticle->SetX       (vertex->GetX0() / CLHEP::cm);
+      generatorParticle->SetY       (vertex->GetY0() / CLHEP::cm);
+      generatorParticle->SetZ       (vertex->GetZ0() / CLHEP::cm);
+      generatorParticle->SetPx      (fp->px());
+      generatorParticle->SetPy      (fp->py());
+      generatorParticle->SetPz      (fp->pz());
+      generatorParticle->SetEnergy  (fp->total_energy());
+
+      // add to MC truth manager
+      mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
 
       // Convert each one from a marley::Particle into a G4PrimaryParticle.
       // Do this by first setting the PDG code and the 4-momentum components.
@@ -252,14 +216,55 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     // from the MARLEY event. Add it to the G4Event object so that Geant4 can
     // begin tracking the particles through the simulated geometry.
     event->AddPrimaryVertex( vertex );
-
   }
 
   else
   {
-    exit (EXIT_FAILURE);
-    //G4Exception(FatalException, " Pick a defined particle... ");
-  }
+    particle_gun_->GeneratePrimaryVertex(event);
 
+    // get generated particle
+    G4ParticleDefinition * const particle_definition = particle_gun_->GetParticleDefinition();
+
+    int const pdg_code = particle_definition->GetPDGEncoding();
+    double const charge = particle_definition->GetPDGCharge();
+    double const mass = particle_definition->GetPDGMass() * CLHEP::MeV;
+
+    G4ThreeVector const & position = particle_gun_->GetParticlePosition();
+    G4ThreeVector const & direction = particle_gun_->GetParticleMomentumDirection();
+
+    double const x = position.x() / CLHEP::cm;
+    double const y = position.y() / CLHEP::cm;
+    double const z = position.z() / CLHEP::cm;
+
+    double const dx = direction.x();
+    double const dy = direction.y();
+    double const dz = direction.z();
+
+    double const kinetic_energy = particle_gun_->GetParticleEnergy() * CLHEP::MeV;
+    double const energy = kinetic_energy + mass;
+
+    double const momentum = std::sqrt(energy*energy - mass*mass);
+
+    double const px = momentum * dx;
+    double const py = momentum * dy;
+    double const pz = momentum * dz;
+
+    // create generator particle
+    GeneratorParticle * particle = new GeneratorParticle();
+    particle->SetPDGCode (pdg_code);
+    particle->SetMass    (mass    );
+    particle->SetCharge  (charge  );
+    particle->SetX       (x       );
+    particle->SetY       (y       );
+    particle->SetZ       (z       );
+    particle->SetPx      (px      );
+    particle->SetPy      (py      );
+    particle->SetPz      (pz      );
+    particle->SetEnergy  (energy  );
+
+    // add to MC truth manager
+    mc_truth_manager->AddInitialGeneratorParticle(particle);
+    mc_truth_manager->AddFinalGeneratorParticle(particle);
+  }
 
 }

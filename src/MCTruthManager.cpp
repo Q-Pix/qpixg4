@@ -28,6 +28,10 @@ MCTruthManager * MCTruthManager::Instance()
 //-----------------------------------------------------------------------------
 void MCTruthManager::EventReset()
 {
+    // clear containers of generator particles
+    initial_generator_particles_.clear();
+    final_generator_particles_.clear();
+
     // clear containers of MARLEY particles
     initial_marley_particles_.clear();
     final_marley_particles_.clear();
@@ -52,6 +56,18 @@ void MCTruthManager::SetRun(int const value)
 void MCTruthManager::SetEvent(int const value)
 {
     event_ = value;
+}
+
+//-----------------------------------------------------------------------------
+void MCTruthManager::AddInitialGeneratorParticle(GeneratorParticle * particle)
+{
+    initial_generator_particles_.push_back(particle);
+}
+
+//-----------------------------------------------------------------------------
+void MCTruthManager::AddFinalGeneratorParticle(GeneratorParticle * particle)
+{
+    final_generator_particles_.push_back(particle);
 }
 
 //-----------------------------------------------------------------------------

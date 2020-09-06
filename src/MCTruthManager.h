@@ -10,6 +10,7 @@
 #define MCTruthManager_h 1
 
 // Q-Pix includes
+#include "GeneratorParticle.h"
 #include "MCParticle.h"
 
 // GEANT4 includes
@@ -45,8 +46,14 @@ class MCTruthManager {
 
         static MCTruthManager* Instance();
 
+        void AddInitialGeneratorParticle(GeneratorParticle *);
+        void AddFinalGeneratorParticle(GeneratorParticle *);
+
         void AddMCParticle(MCParticle *);
         MCParticle * GetMCParticle(int const);
+
+        inline std::vector< GeneratorParticle * > GetInitialGeneratorParticles() const { return initial_generator_particles_; }
+        inline std::vector< GeneratorParticle * > GetFinalGeneratorParticles()   const { return final_generator_particles_;   }
 
         inline std::vector< marley::Particle > GetInitialMARLEYParticles() const { return initial_marley_particles_; }
         inline std::vector< marley::Particle > GetFinalMARLEYParticles()   const { return final_marley_particles_;   }
@@ -59,6 +66,10 @@ class MCTruthManager {
 
         int run_;
         int event_;
+
+        // containers of generator particles
+        std::vector< GeneratorParticle * > initial_generator_particles_;
+        std::vector< GeneratorParticle * > final_generator_particles_;
 
         // containers of MARLEY particles
         std::vector< marley::Particle > initial_marley_particles_;

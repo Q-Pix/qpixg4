@@ -10,6 +10,7 @@
 #define AnalysisManager_h 1
 
 // Q-Pix includes
+#include "GeneratorParticle.h"
 #include "MCParticle.h"
 
 // GEANT4 includes
@@ -41,13 +42,16 @@ class AnalysisManager {
         void EventFill();
         void EventReset();
 
-        void SetRun(int const value);
-        void SetEvent(int const value);
+        void SetRun(int const);
+        void SetEvent(int const);
 
         void FillMetadata(double const &, double const &, double const &);
 
         void AddInitialMARLEYParticle(marley::Particle const &);
         void AddFinalMARLEYParticle(marley::Particle const &);
+
+        void AddInitialGeneratorParticle(GeneratorParticle const *);
+        void AddFinalGeneratorParticle(GeneratorParticle const *);
 
         void AddMCParticle(MCParticle const *);
 
@@ -114,6 +118,34 @@ class AnalysisManager {
         std::vector< double > hit_length_;
         std::vector< double > hit_energy_deposit_;
         std::vector< int >    hit_process_key_;
+
+        // number of generator particles
+        int generator_initial_number_particles_;
+        int generator_final_number_particles_;
+
+        // vectors for initial generator particles
+        std::vector< double > generator_initial_particle_x_;
+        std::vector< double > generator_initial_particle_y_;
+        std::vector< double > generator_initial_particle_z_;
+        std::vector< double > generator_initial_particle_px_;
+        std::vector< double > generator_initial_particle_py_;
+        std::vector< double > generator_initial_particle_pz_;
+        std::vector< double > generator_initial_particle_energy_;
+        std::vector< int >    generator_initial_particle_pdg_code_;
+        std::vector< double > generator_initial_particle_mass_;
+        std::vector< double > generator_initial_particle_charge_;
+
+        // vectors for final generator particles
+        std::vector< double > generator_final_particle_x_;
+        std::vector< double > generator_final_particle_y_;
+        std::vector< double > generator_final_particle_z_;
+        std::vector< double > generator_final_particle_px_;
+        std::vector< double > generator_final_particle_py_;
+        std::vector< double > generator_final_particle_pz_;
+        std::vector< double > generator_final_particle_energy_;
+        std::vector< int >    generator_final_particle_pdg_code_;
+        std::vector< double > generator_final_particle_mass_;
+        std::vector< double > generator_final_particle_charge_;
 
         // number of MARLEY particles
         int marley_initial_number_particles_;

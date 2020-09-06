@@ -11,6 +11,8 @@
 
 // GEANT4 includes
 #include "G4VUserPrimaryGeneratorAction.hh"
+
+#include "G4GeneralParticleSource.hh"
 #include "G4ParticleTable.hh"
 #include "G4String.hh"
 #include "G4Box.hh"
@@ -37,6 +39,8 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     G4GenericMessenger* msg_; // Messenger for configuration parameters
     G4String Particle_Type_;
     //double Particle_Energy_;
+
+    G4GeneralParticleSource * particle_gun_;
 
     double detector_length_x_;
     double detector_length_y_;

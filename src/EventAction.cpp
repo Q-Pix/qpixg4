@@ -39,6 +39,18 @@ void EventAction::EndOfEventAction(const G4Event* event)
     // set event number
     analysis_manager->SetEvent(event->GetEventID());
 
+    // add initial generator particles to analysis manager
+    for (auto const& particle : mc_truth_manager->GetInitialGeneratorParticles())
+    {
+        analysis_manager->AddInitialGeneratorParticle(particle);
+    }
+
+    // add final generator particles to analysis manager
+    for (auto const& particle : mc_truth_manager->GetFinalGeneratorParticles())
+    {
+        analysis_manager->AddFinalGeneratorParticle(particle);
+    }
+
     // add initial MARLEY particles to analysis manager
     for (auto const& particle : mc_truth_manager->GetInitialMARLEYParticles())
     {

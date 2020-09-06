@@ -7,6 +7,7 @@
 ## ---------------------------------------------------------
 
 SET(SRC   AnalysisManager.cpp
+          GeneratorParticle.cpp
           MARLEYManager.cpp
           MCTruthManager.cpp
           MCParticle.cpp
