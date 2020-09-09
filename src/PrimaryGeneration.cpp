@@ -42,10 +42,13 @@
 
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
+    decay_at_time_zero_(false),
     particle_gun_(0)
 {
   msg_ = new G4GenericMessenger(this, "/Inputs/", "Control commands of the ion primary generator.");
   msg_->DeclareProperty("Particle_Type", Particle_Type_,  "which particle?");
+  msg_->DeclareProperty("decay_at_time_zero", decay_at_time_zero_,
+                        "Set to true to make unstable isotopes decay at t=0.");
 
   particle_gun_ = new G4GeneralParticleSource();
 
@@ -222,6 +225,16 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     int const pdg_code = particle_definition->GetPDGEncoding();
     double const charge = particle_definition->GetPDGCharge();
     double const mass = particle_definition->GetPDGMass() * CLHEP::MeV;
+
+    // if the particle is a nucleus
+    if (pdg_code > 1000000000)
+    {
+      if (decay_at_time_zero_ && !(particle_definition->GetPDGStable()))
+      {
+          // make unstable isotopes decay at t=0
+          particle_definition->SetPDGLifeTime(1.*CLHEP::ps);
+      }
+    } // if the particle is a nucleus
 
     G4ThreeVector const & position = particle_gun_->GetParticlePosition();
     G4ThreeVector const & direction = particle_gun_->GetParticleMomentumDirection();

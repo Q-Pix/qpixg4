@@ -40,6 +40,8 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     G4String Particle_Type_;
     //double Particle_Energy_;
 
+    bool decay_at_time_zero_;
+
     G4GeneralParticleSource * particle_gun_;
 
     double detector_length_x_;
