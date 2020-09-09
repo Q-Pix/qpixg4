@@ -4,7 +4,7 @@
 /tracking/verbose 0
 
 # output path
-/Inputs/root_output ./argon39.root
+/Inputs/root_output ./output/argon39.root
 
 # initialize run
 /run/initialize
@@ -37,4 +37,4 @@
 /gps/ene/mono 1 eV
 
 # run
-/run/beamOn 1000
+/run/beamOn 5000

@@ -8,7 +8,7 @@
 /Inputs/MARLEY_json ./cfg/marley_config.js
 
 # output path
-/Inputs/root_output ./marley.root
+/Inputs/root_output ./output/marley.root
 
 # initialize run
 /run/initialize
