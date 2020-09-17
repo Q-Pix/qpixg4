@@ -1,0 +1,32 @@
+# set verbosity
+/control/verbose 1
+/run/verbose 1
+/tracking/verbose 0
+
+# output path
+/Inputs/root_output ../output/mitch.root
+
+# initialize run
+/run/initialize
+/random/setSeeds 0 31
+
+# limit radioactive decays
+/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+
+# particle type
+# e-, e+, mu-, mu+, neutron, proton, anti_proton, pi-, pi+, pi0, kaon-, kaon+,
+# gamma, opticalphoton, ...
+/gps/particle e-
+
+# spherical volume source
+/gps/pos/type Volume
+/gps/pos/shape Sphere
+/gps/pos/centre 50. 50. 1. cm
+/gps/pos/radius 0.01 cm
+
+
+# energy distribution
+/gps/ene/mono 3 MeV
+
+# run
+/run/beamOn 100

@@ -29,7 +29,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 {
   // WORLD /////////////////////////////////////////////////
 
-  G4double world_size = 12.*m;
+  G4double world_size = 15.*m;
   G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
 
   G4Box* world_solid_vol =
@@ -44,18 +44,19 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                       world_logic_vol, "world.physical", 0, false, 0, true);
 
   // DETECTOR //////////////////////////////////////////////
-
-  G4double detector_width   = 1.0*m;
-  G4double detector_length  = 5.0*m;
+  // resemble an APA size
+  G4double detector_width   = 2.3*m;
+  G4double detector_height  = 6.0*m;
+  G4double detector_length  = 3.6*m;
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
 
   G4Box* detector_solid_vol =
-    new G4Box("detector.solid", detector_width/2., detector_width/2., detector_length/2.);
+    new G4Box("detector.solid", detector_width/2., detector_height/2., detector_length/2.);
 
   G4LogicalVolume* detector_logic_vol =
     new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
 
-  G4ThreeVector offset(detector_width/2., detector_width/2., detector_length/2.);
+  G4ThreeVector offset(detector_width/2., detector_height/2., detector_length/2.);
 
   new G4PVPlacement(0, offset,
                     detector_logic_vol, "detector.physical", world_logic_vol, false, 0, true);
