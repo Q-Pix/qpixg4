@@ -1,0 +1,45 @@
+# set verbosity
+/control/verbose 1
+/run/verbose 1
+/tracking/verbose 0
+
+# output path
+/Inputs/root_output ../output/argon39_rect.root
+
+# make unstable isotopes decay at t=0
+/Inputs/decay_at_time_zero true  # this is set to false by default
+
+# initialize run
+/run/initialize
+/random/setSeeds 0 31
+
+# limit radioactive decays
+# /grdm/nucleusLimits 1 39 1 19  # aMin aMax zMin zMax
+
+# particle type
+/gps/particle ion
+
+# /gps/ion Z A Q E  # After /gps/particle ion, sets the properties (atomic
+#                   # number Z, atomic mass A, ionic charge Q, excitation
+#                   # energy E in keV) of the ion.
+
+# /gps/ionLvl Z A Q lvl  # After /gps/particle ion, sets the properties
+#                        # (atomic number Z, atomic mass A, ionic charge Q,
+#                        # Number of metastable state excitation level (0-9)
+#                        # of the ion.
+
+/gps/ion 18 39 0 0
+
+# Rectangular volume source of the whole APA
+/gps/pos/type Volume
+/gps/pos/shape Para
+/gps/pos/centre 115. 300. 180. cm
+/gps/pos/halfx 115. cm
+/gps/pos/halfy 300. cm
+/gps/pos/halfz 180. cm
+
+# energy distribution
+/gps/ene/mono 1 eV
+
+# run
+/run/beamOn 7000
