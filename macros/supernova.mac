@@ -14,19 +14,10 @@
 /random/setSeeds 0 31
 
 # limit radioactive decays
-/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+#/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+/grdm/nucleusLimits 1 39 1 19  # aMin aMax zMin zMax
+
 
 # run
-/run/beamOn 100
+/run/beamOn 1000
 
-
-
-/control/verbose 1
-/tracking/verbose 2
-
-/Inputs/Particle_Type soup
-/Inputs/root_output ../output/tmp.root
-
-/run/initialize
-/random/setSeeds 0 31
-/run/beamOn 100

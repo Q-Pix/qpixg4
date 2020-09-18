@@ -12,6 +12,8 @@
 #include "Randomize.hh"
 #include "G4LogicalVolumeStore.hh"
 
+#include "G4ParticleDefinition.hh"
+
 #include "Supernova.h"
 
 #include <math.h> 
@@ -40,7 +42,7 @@ void Supernova::Gen_test(G4Event* event)
     G4ParticleDefinition* pdef = G4IonTable::GetIonTable()->GetIon(18, 39, 0.); // Ar39
     if (!pdef)G4Exception("SetParticleDefinition()", "[IonGun]",FatalException, " can not create ion ");
 
-    pdef->SetPDGLifeTime(1.*s);
+    pdef->SetPDGLifeTime(10000.*s);
 
     G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
 
