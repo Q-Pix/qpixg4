@@ -18,10 +18,29 @@ class Supernova {
         Supernova();
         ~Supernova();
         void Gen_test(G4Event*);
+        void Gen_test_APA(G4Event*);
+        void Get_Detector_Dimensions(double detector_x_, double detector_y_, double detector_z_);
 
     private:
+        double detector_length_x_;
+        double detector_length_y_;
+        double detector_length_z_;
 
-    G4Box* detector_solid_vol_;
+        double Ran_X ;
+        double Ran_Y ;
+        double Ran_Z ;
+
+        double Px_hat ;
+        double Py_hat ;
+        double Pz_hat ;
+
+        inline void Random_Direction(double& dx, double& dy, double& dz, const double length);
+
+        void Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
+        void Gen_CPA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
+        void Gen_Uniform_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
+
+        
 
 };
 

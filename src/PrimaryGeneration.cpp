@@ -65,6 +65,7 @@ PrimaryGeneration::~PrimaryGeneration()
 {
   delete msg_;
   delete particle_gun_;
+  delete super;
 }
 
 
@@ -73,32 +74,30 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
   // get MC truth manager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
+  //get detector dimensions
+  if (!detector_solid_vol_)
+  {
+    G4LogicalVolume* detector_logic_vol
+    = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
+    if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
+  }
+  if (detector_solid_vol_)
+  {
+    detector_length_x_ = detector_solid_vol_->GetXHalfLength() * 2.;
+    detector_length_y_ = detector_solid_vol_->GetYHalfLength() * 2.;
+    detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
+  }
+
+
   if (Particle_Type_ ==  "soup")
   {
-    //super->Gen_test(event);
+    super->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
 
-    // get detector dimensions
-    if (!detector_solid_vol_)
-    {
-        G4LogicalVolume* detector_logic_vol
-        = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
-        if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
-    }
-    G4ParticleDefinition* pdef = G4IonTable::GetIonTable()->GetIon(18, 39, 0.); // Ar39
-    if (!pdef)G4Exception("SetParticleDefinition()", "[IonGun]",FatalException, " can not create ion ");
-
-    G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
-    particle->SetMomentumDirection(G4ThreeVector(0.,1.,0.));
-    particle->SetKineticEnergy(1.*eV); // just an ion sitting
-
-    double Ran_X = G4UniformRand() * detector_solid_vol_->GetXHalfLength();
-    double Ran_Y = G4UniformRand() * detector_solid_vol_->GetYHalfLength();
-    double Ran_Z = G4UniformRand() * detector_solid_vol_->GetZHalfLength();
-    
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(Ran_X,Ran_Y,Ran_Z), 0.);
-    vertex->SetPrimary(particle);
-    event->AddPrimaryVertex(vertex); 
-
+    // for(int i=0; i<100; i++)
+    // {
+    //   super->Gen_test(event);
+    // }
+    super->Gen_test(event);
 
   }
   
@@ -109,25 +108,6 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     marley::Generator & marley_generator = marley_manager->Generator();
 
     // G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0., 0., 0.), 0.);
-
-    // get detector dimensions
-    if (!detector_solid_vol_)
-    {
-      G4LogicalVolume* detector_logic_vol
-        = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
-      if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
-    }
-    if (detector_solid_vol_)
-    {
-      detector_length_x_ = detector_solid_vol_->GetXHalfLength() * 2.;
-      detector_length_y_ = detector_solid_vol_->GetYHalfLength() * 2.;
-      detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
-      // G4cout << "det. dim.: " << detector_length_x_ << " m × "
-      //                         << detector_length_y_ << " m × "
-      //                         << detector_length_z_ << " m"
-      //        << G4endl;
-    }
-
 
     G4ThreeVector offset(detector_length_x_/2.,
                          detector_length_y_/2.,
