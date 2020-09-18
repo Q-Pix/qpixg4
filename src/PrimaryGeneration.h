@@ -17,6 +17,8 @@
 #include "G4String.hh"
 #include "G4Box.hh"
 
+#include "Supernova.h"
+
 class G4ParticleDefinition;
 class G4GenericMessenger;
 
@@ -43,6 +45,7 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     bool decay_at_time_zero_;
 
     G4GeneralParticleSource * particle_gun_;
+    Supernova * super;
 
     double detector_length_x_;
     double detector_length_y_;

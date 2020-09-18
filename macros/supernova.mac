@@ -1,0 +1,32 @@
+# set verbosity
+/control/verbose 1
+/run/verbose 1
+/tracking/verbose 0
+
+# configure marley
+/Inputs/Particle_Type soup
+
+# output path
+/Inputs/root_output ../output/tmp.root
+
+# initialize run
+/run/initialize
+/random/setSeeds 0 31
+
+# limit radioactive decays
+/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+
+# run
+/run/beamOn 100
+
+
+
+/control/verbose 1
+/tracking/verbose 2
+
+/Inputs/Particle_Type soup
+/Inputs/root_output ../output/tmp.root
+
+/run/initialize
+/random/setSeeds 0 31
+/run/beamOn 100

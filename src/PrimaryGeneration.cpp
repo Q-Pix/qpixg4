@@ -40,6 +40,8 @@
 #include <math.h>
 
 
+#include "Supernova.h"
+
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
     decay_at_time_zero_(false),
@@ -54,6 +56,8 @@ PrimaryGeneration::PrimaryGeneration()
 
   // get dictionary of particles
   particle_table_ = G4ParticleTable::GetParticleTable();
+
+  super = new Supernova();
 }
 
 
@@ -69,7 +73,36 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
   // get MC truth manager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
-  if (Particle_Type_ ==  "MARLEY")
+  if (Particle_Type_ ==  "soup")
+  {
+    //super->Gen_test(event);
+
+    // get detector dimensions
+    if (!detector_solid_vol_)
+    {
+        G4LogicalVolume* detector_logic_vol
+        = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
+        if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
+    }
+    G4ParticleDefinition* pdef = G4IonTable::GetIonTable()->GetIon(18, 39, 0.); // Ar39
+    if (!pdef)G4Exception("SetParticleDefinition()", "[IonGun]",FatalException, " can not create ion ");
+
+    G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
+    particle->SetMomentumDirection(G4ThreeVector(0.,1.,0.));
+    particle->SetKineticEnergy(1.*eV); // just an ion sitting
+
+    double Ran_X = G4UniformRand() * detector_solid_vol_->GetXHalfLength();
+    double Ran_Y = G4UniformRand() * detector_solid_vol_->GetYHalfLength();
+    double Ran_Z = G4UniformRand() * detector_solid_vol_->GetZHalfLength();
+    
+    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(Ran_X,Ran_Y,Ran_Z), 0.);
+    vertex->SetPrimary(particle);
+    event->AddPrimaryVertex(vertex); 
+
+
+  }
+  
+  else if (Particle_Type_ ==  "MARLEY")
   {
     // get MARLEY manager and generator
     MARLEYManager * marley_manager = MARLEYManager::Instance();
