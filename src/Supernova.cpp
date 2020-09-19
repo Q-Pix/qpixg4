@@ -13,6 +13,7 @@
 #include "G4LogicalVolumeStore.hh"
 
 #include "G4ParticleDefinition.hh"
+#include "G4GenericMessenger.hh"
 
 #include "Supernova.h"
 
@@ -21,28 +22,52 @@
 
 //-----------------------------------------------------------------------------
 Supernova::Supernova()
-{}
+{
+    msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
+    msg_->DeclareProperty("Event_Window", Event_Window_,  "window to simulate the times");
+
+    msg_->DeclareProperty("N_Ar39_Decays", N_Ar39_Decays_,  "number of Ar39 decays");
+
+    // msg_->DeclareProperty("decay", decay_,  "which particle?");
+
+}
 
 //-----------------------------------------------------------------------------
 Supernova::~Supernova()
-{}
-
-
-
-void Supernova::Get_Detector_Dimensions(double detector_x_, double detector_y_, double detector_z_)
 {
-    detector_length_x_ = detector_x_;
-    detector_length_y_ = detector_y_;
-    detector_length_z_ = detector_z_;
+    delete msg_;
 }
 
+
+//-----------------------------------------------------------------------------
 void Supernova::Gen_test(G4Event* event)
 {
+    // double detector_vol = detector_length_x_*detector_length_y_*detector_length_z_;
+    // double LAr_density = 1.369e-6; // kg/mm^3
+    // double detector_mass = detector_vol*LAr_density;
+    // G4cout << "det. dim.: " << detector_length_x_ << " mm × "
+    //                         << detector_length_y_ << " mm × "
+    //                         << detector_length_z_ << " mm" << G4endl;
+    // G4cout << "det. vol.: " << detector_vol << G4endl;
+    // G4cout << "det. mass.: " << detector_vol*LAr_density << G4endl;
+    // G4cout << "\n" << G4endl;
 
-    G4ParticleDefinition* pdef = G4IonTable::GetIonTable()->GetIon(18, 39, 0.); // Ar39
+    for (int ct=0; ct<N_Ar39_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 18, 39, decay_time, "APA"); //Ar39
+
+    }
+    
+}
+
+//-----------------------------------------------------------------------------
+void Supernova::Generate_Radioisotope(G4Event* event, int Atomic_Number, int Atomic_Mass, double Decay_Time, std::string Region)
+{
+    G4ParticleDefinition* pdef = G4IonTable::GetIonTable()->GetIon(Atomic_Number, Atomic_Mass, 0.); // Ar39
     if (!pdef)G4Exception("SetParticleDefinition()", "[IonGun]",FatalException, " can not create ion ");
 
-    pdef->SetPDGLifeTime(10000.*s);
+    pdef->SetPDGLifeTime(1.*CLHEP::ps);
 
     G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
 
@@ -50,17 +75,31 @@ void Supernova::Gen_test(G4Event* event)
     particle->SetMomentumDirection(G4ThreeVector(Px_hat, Py_hat, Pz_hat));
     particle->SetKineticEnergy(1.*eV); // just an ion sitting
 
-    // Gen_Uniform_Position( Ran_X,  Ran_Y,  Ran_Z);
-    // Gen_APA_Position( Ran_X,  Ran_Y,  Ran_Z);
-    Gen_CPA_Position( Ran_X,  Ran_Y,  Ran_Z);
+    if (Region == "Vol")
+    {
+        Gen_Uniform_Position( Ran_X,  Ran_Y,  Ran_Z);
+    }
+    else if (Region == "APA")
+    {
+        Gen_APA_Position( Ran_X,  Ran_Y,  Ran_Z);
+    }
+    else if (Region == "CPA")
+    {
+        Gen_CPA_Position( Ran_X,  Ran_Y,  Ran_Z);
+    }
+    else
+    {
+        G4Exception("invilad ion region", "[supernova]",FatalException, " can not fet Region");
+    }
     
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(Ran_X,Ran_Y,Ran_Z), 0.);
+    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(Ran_X,Ran_Y,Ran_Z), Decay_Time);
     vertex->SetPrimary(particle);
     event->AddPrimaryVertex(vertex);    
-
 }
 
 
+
+//-----------------------------------------------------------------------------
 void Supernova::Gen_Uniform_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
 {
     Ran_X = G4UniformRand() * detector_length_x_;
@@ -68,6 +107,7 @@ void Supernova::Gen_Uniform_Position(double& Ran_X, double& Ran_Y, double& Ran_Z
     Ran_Z = G4UniformRand() * detector_length_z_;
 }
 
+//-----------------------------------------------------------------------------
 void Supernova::Gen_CPA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
 {
     Ran_X = G4UniformRand() * detector_length_x_;
@@ -75,6 +115,7 @@ void Supernova::Gen_CPA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
     Ran_Z = detector_length_z_ - 1 *um;
 }
 
+//-----------------------------------------------------------------------------
 void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
 {
 
@@ -166,6 +207,7 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
     
 }
 
+//-----------------------------------------------------------------------------
 inline void Supernova::Random_Direction(double& dx, double& dy, double& dz, const double length = 1.) 
 {
     const double phi = 2*M_PI * G4UniformRand();
@@ -174,6 +216,14 @@ inline void Supernova::Random_Direction(double& dx, double& dy, double& dz, cons
     dx = length * cos(phi) * stheta;
     dy = length * sin(phi) * stheta;
     dz = length * ctheta;
+}
+
+//-----------------------------------------------------------------------------
+void Supernova::Get_Detector_Dimensions(double detector_x_, double detector_y_, double detector_z_)
+{
+    detector_length_x_ = detector_x_;
+    detector_length_y_ = detector_y_;
+    detector_length_z_ = detector_z_;
 }
 
 

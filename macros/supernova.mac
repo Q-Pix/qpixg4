@@ -17,7 +17,10 @@
 #/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 /grdm/nucleusLimits 1 39 1 19  # aMin aMax zMin zMax
 
+# Supernova configs
+/Supernova/Event_Window 10 s
+/Supernova/N_Ar39_Decays 1000
 
 # run
-/run/beamOn 1000
+/run/beamOn 1
 

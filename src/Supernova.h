@@ -9,7 +9,10 @@
 #ifndef Supernova_h
 #define Supernova_h 1
 
-#include "G4Box.hh"
+// #include "G4Box.hh"
+// #include "G4String.hh"
+
+class G4GenericMessenger;
 
 class Supernova {
 
@@ -22,6 +25,12 @@ class Supernova {
         void Get_Detector_Dimensions(double detector_x_, double detector_y_, double detector_z_);
 
     private:
+        G4GenericMessenger* msg_; // Messenger for configuration parameters
+        double Event_Window_;
+        double N_Ar39_Decays_;
+
+        double decay_time;
+        
         double detector_length_x_;
         double detector_length_y_;
         double detector_length_z_;
@@ -39,6 +48,8 @@ class Supernova {
         void Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
         void Gen_CPA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
         void Gen_Uniform_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
+
+        void Generate_Radioisotope(G4Event* event, int Atomic_Number, int Atomic_Mass, double Decay_Time, std::string Region);
 
         
 
