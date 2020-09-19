@@ -48,6 +48,8 @@ class Supernova {
         void Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
         void Gen_CPA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
         void Gen_Uniform_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
+        void Gen_Buttons_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
+
 
         void Generate_Radioisotope(G4Event* event, int Atomic_Number, int Atomic_Mass, double Decay_Time, std::string Region);
 
