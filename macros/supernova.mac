@@ -8,6 +8,7 @@
 
 # output path
 /Inputs/root_output ../output/tmp.root
+#/Inputs/root_output ../output/crazy.root
 
 # initialize run
 /run/initialize
@@ -18,9 +19,9 @@
 #/grdm/nucleusLimits 1 39 1 19  # aMin aMax zMin zMax
 
 # Supernova configs
-/Supernova/Event_Window 10 s
-/Supernova/N_Ar39_Decays 1000
+/Supernova/Event_Window 1 s
+/Supernova/N_Ar39_Decays 200
 
 # run
-/run/beamOn 10
+/run/beamOn 100
 

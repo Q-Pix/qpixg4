@@ -22,15 +22,22 @@
 
 
 TrackingSD::TrackingSD(const G4String& sd_name, const G4String& hc_name):
-  G4VSensitiveDetector(sd_name)
+  G4VSensitiveDetector(sd_name),
+  Event_Window_(0.0)
   // hc_(nullptr)
 {
   collectionName.insert(hc_name);
+
+  msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
+  msg_->DeclareProperty("Event_Window", Event_Window_,  "window to simulate the times");
+
 }
 
 
 TrackingSD::~TrackingSD()
-{}
+{
+  delete msg_;
+}
 
 
 // void TrackingSD::Initialize(G4HCofThisEvent* hce)
@@ -48,6 +55,14 @@ G4bool TrackingSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   G4double edep = aStep->GetTotalEnergyDeposit();
 
   if (edep==0.) return false;
+
+  if (Event_Window_ != 0.0)
+  {
+    G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
+    // G4StepPoint* preStepPoint = aStep->GetPostStepPoint();
+    G4double hitTime = preStepPoint->GetGlobalTime(); 
+    if (hitTime<0. || hitTime>Event_Window_) return false;
+  }
 
   // TrackingHit* newHit = new TrackingHit();
 

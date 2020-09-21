@@ -15,6 +15,8 @@
 
 #include <vector>
 
+class G4GenericMessenger;
+
 class TrackingSD: public G4VSensitiveDetector
 {
 public:
@@ -27,5 +29,7 @@ public:
 
 private:
   // TrackingHitsCollection* hc_;
+  G4GenericMessenger* msg_; // Messenger for configuration parameters
+  double Event_Window_;
 };
 #endif
