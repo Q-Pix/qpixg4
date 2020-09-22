@@ -21,14 +21,27 @@
 
 
 //-----------------------------------------------------------------------------
-Supernova::Supernova()
+Supernova::Supernova():
+N_Ar39_Decays_(0),N_Ar42_Decays_(0),
+N_Co60_Decays_(0),N_K40_Decays_(0),
+N_K42_Decays_(0),N_Bi214_Decays_(0),
+N_Pb214_Decays_(0),N_Po210_Decays_(0),
+N_Rn222_Decays_(0),N_Am241_Decays_(0)
 {
     msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
     msg_->DeclareProperty("Event_Window", Event_Window_,  "window to simulate the times");
 
     msg_->DeclareProperty("N_Ar39_Decays", N_Ar39_Decays_,  "number of Ar39 decays");
+    msg_->DeclareProperty("N_Ar42_Decays", N_Ar42_Decays_,  "number of Ar42 decays");
+    msg_->DeclareProperty("N_Co60_Decays", N_Co60_Decays_,  "number of Co60 decays");
+    msg_->DeclareProperty("N_K40_Decays", N_K40_Decays_,  "number of K40 decays");
+    msg_->DeclareProperty("N_K42_Decays", N_K42_Decays_,  "number of K42 decays");
+    msg_->DeclareProperty("N_Bi214_Decays", N_Bi214_Decays_,  "number of Bi214 decays");
+    msg_->DeclareProperty("N_Pb214_Decays", N_Pb214_Decays_,  "number of Pb214 decays");
+    msg_->DeclareProperty("N_Po210_Decays", N_Po210_Decays_,  "number of Po210 decays");
+    msg_->DeclareProperty("N_Rn222_Decays", N_Rn222_Decays_,  "number of Rn222 decays");
+    msg_->DeclareProperty("N_Am241_Decays", N_Am241_Decays_,  "number of Am241 decays");
 
-    // msg_->DeclareProperty("decay", decay_,  "which particle?");
 
 }
 
@@ -42,24 +55,79 @@ Supernova::~Supernova()
 //-----------------------------------------------------------------------------
 void Supernova::Gen_test(G4Event* event)
 {
-    // double detector_vol = detector_length_x_*detector_length_y_*detector_length_z_;
-    // double LAr_density = 1.369e-6; // kg/mm^3
-    // double detector_mass = detector_vol*LAr_density;
-    // G4cout << "det. dim.: " << detector_length_x_ << " mm × "
-    //                         << detector_length_y_ << " mm × "
-    //                         << detector_length_z_ << " mm" << G4endl;
-    // G4cout << "det. vol.: " << detector_vol << G4endl;
-    // G4cout << "det. mass.: " << detector_vol*LAr_density << G4endl;
-    // G4cout << "\n" << G4endl;
-
+    // Generate Ar39
     for (int ct=0; ct<N_Ar39_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        Generate_Radioisotope(event, 18, 39, decay_time, "APA"); //Ar39
-        // Generate_Radioisotope(event, 95, 241, decay_time, "Button"); //Am241
+        Generate_Radioisotope(event, 18, 39, decay_time, "Vol"); //Ar39 from Volume
+    }
+
+    // Generate Ar42
+    for (int ct=0; ct<N_Ar42_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 18, 42, decay_time, "Vol"); //Ar42 from Volume
+    }
+
+    // Generate Co60
+    for (int ct=0; ct<N_Co60_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 27, 60, decay_time, "CPA"); //Co60 from CPA
     }
     
+    // Generate K40
+    for (int ct=0; ct<N_K40_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 19, 40, decay_time, "APA"); //K40 from APA
+    }
+
+    // Generate K42
+    for (int ct=0; ct<N_K42_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 19, 42, decay_time, "Vol"); //K42 from Volume
+    }
+
+    // Generate Bi214
+    for (int ct=0; ct<N_Bi214_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 83, 214, decay_time, "Vol"); //Bi214 from Volume
+    }
+
+    // Generate Pb214
+    for (int ct=0; ct<N_Pb214_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 82, 214, decay_time, "Vol"); //Pb214 from Volume
+    }
+
+    // Generate Po210
+    for (int ct=0; ct<N_Po210_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 84, 210, decay_time, "APA"); //Po210 from APA
+    }
+    
+    // Generate Rn222
+    for (int ct=0; ct<N_Rn222_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 86, 222, decay_time, "Vol"); //Rn222 from Volume
+    }
+
+    // Generate Am241
+    for (int ct=0; ct<N_Am241_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        Generate_Radioisotope(event, 95, 241, decay_time, "Button"); //Am241 from buttons
+    }
+
+
 }
+
 
 //-----------------------------------------------------------------------------
 void Supernova::Generate_Radioisotope(G4Event* event, int Atomic_Number, int Atomic_Mass, double Decay_Time, std::string Region)

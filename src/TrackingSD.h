@@ -30,6 +30,6 @@ public:
 private:
   // TrackingHitsCollection* hc_;
   G4GenericMessenger* msg_; // Messenger for configuration parameters
-  double Event_Window_;
+  double Event_Cutoff_;
 };
 #endif

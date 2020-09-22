@@ -27,7 +27,16 @@ class Supernova {
     private:
         G4GenericMessenger* msg_; // Messenger for configuration parameters
         double Event_Window_;
-        double N_Ar39_Decays_;
+        int N_Ar39_Decays_;
+        int N_Ar42_Decays_;
+        int N_Co60_Decays_;
+        int N_K40_Decays_;
+        int N_K42_Decays_;
+        int N_Bi214_Decays_;
+        int N_Pb214_Decays_;
+        int N_Po210_Decays_;
+        int N_Rn222_Decays_;
+        int N_Am241_Decays_;
 
         double decay_time;
         

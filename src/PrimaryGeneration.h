@@ -18,6 +18,7 @@
 #include "G4Box.hh"
 
 #include "Supernova.h"
+#include "MARLEYManager.h"
 
 class G4ParticleDefinition;
 class G4GenericMessenger;
@@ -46,6 +47,8 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
 
     G4GeneralParticleSource * particle_gun_;
     Supernova * super;
+
+    MARLEYManager * MMMM;
 
     double detector_length_x_;
     double detector_length_y_;

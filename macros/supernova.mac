@@ -8,20 +8,27 @@
 
 # output path
 /Inputs/root_output ../output/tmp.root
-#/Inputs/root_output ../output/crazy.root
 
 # initialize run
 /run/initialize
 /random/setSeeds 0 31
 
-# limit radioactive decays
-#/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
-#/grdm/nucleusLimits 1 39 1 19  # aMin aMax zMin zMax
 
 # Supernova configs
-/Supernova/Event_Window 1 s
-/Supernova/N_Ar39_Decays 200
+/Supernova/Event_Window 10 s
+/Supernova/Event_Cutoff 10 s
+
+/Supernova/N_Ar39_Decays 1
+
+#/Supernova/N_Ar42_Decays 60
+#/Supernova/N_Co60_Decays 250
+#/Supernova/N_K40_Decays 11340
+#/Supernova/N_K42_Decays 60
+#/Supernova/N_Bi214_Decays 6930
+#/Supernova/N_Pb214_Decays 6930
+#/Supernova/N_Po210_Decays 10
+#/Supernova/N_Rn222_Decays 27740
 
 # run
-/run/beamOn 100
+/run/beamOn 1000
 
