@@ -96,14 +96,12 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
   if (Particle_Type_ ==  "soup")
   {
     super->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
-
     super->Gen_test(event);
   }
   
   else if (Particle_Type_ ==  "MARLEY")
   {
     MMMM->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
-
     MMMM->Light_Em_Up(event);
   }
 

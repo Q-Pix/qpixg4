@@ -15,8 +15,8 @@
 
 
 # Supernova configs
-/Supernova/Event_Window 10 s
-/Supernova/Event_Cutoff 10 s
+/Supernova/Event_Window 0.001 s
+/Supernova/Event_Cutoff 0.001 s
 
 /Supernova/N_Ar39_Decays 1
 
