@@ -19,7 +19,8 @@ SET(SRC   AnalysisManager.cpp
           TrackingAction.cpp
           TrackingSD.cpp
           TrackingHit.cpp
-          Supernova.cpp)
+          Supernova.cpp
+          SupernovaTiming.cpp)
 
 add_library(${CMAKE_PROJECT_NAME} OBJECT ${SRC})
 
