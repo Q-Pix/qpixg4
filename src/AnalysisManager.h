@@ -119,6 +119,7 @@ class AnalysisManager {
         std::vector< double > generator_initial_particle_x_;
         std::vector< double > generator_initial_particle_y_;
         std::vector< double > generator_initial_particle_z_;
+        std::vector< double > generator_initial_particle_t_;
         std::vector< double > generator_initial_particle_px_;
         std::vector< double > generator_initial_particle_py_;
         std::vector< double > generator_initial_particle_pz_;
@@ -131,6 +132,7 @@ class AnalysisManager {
         std::vector< double > generator_final_particle_x_;
         std::vector< double > generator_final_particle_y_;
         std::vector< double > generator_final_particle_z_;
+        std::vector< double > generator_final_particle_t_;
         std::vector< double > generator_final_particle_px_;
         std::vector< double > generator_final_particle_py_;
         std::vector< double > generator_final_particle_pz_;

@@ -54,6 +54,7 @@ void AnalysisManager::Book(std::string const file_path)
     event_tree_->Branch("generator_initial_particle_x",        &generator_initial_particle_x_);
     event_tree_->Branch("generator_initial_particle_y",        &generator_initial_particle_y_);
     event_tree_->Branch("generator_initial_particle_z",        &generator_initial_particle_z_);
+    event_tree_->Branch("generator_initial_particle_t",        &generator_initial_particle_t_);
     event_tree_->Branch("generator_initial_particle_px",       &generator_initial_particle_px_);
     event_tree_->Branch("generator_initial_particle_py",       &generator_initial_particle_py_);
     event_tree_->Branch("generator_initial_particle_pz",       &generator_initial_particle_pz_);
@@ -66,6 +67,7 @@ void AnalysisManager::Book(std::string const file_path)
     event_tree_->Branch("generator_final_particle_x",          &generator_final_particle_x_);
     event_tree_->Branch("generator_final_particle_y",          &generator_final_particle_y_);
     event_tree_->Branch("generator_final_particle_z",          &generator_final_particle_z_);
+    event_tree_->Branch("generator_final_particle_t",          &generator_final_particle_t_);
     event_tree_->Branch("generator_final_particle_px",         &generator_final_particle_px_);
     event_tree_->Branch("generator_final_particle_py",         &generator_final_particle_py_);
     event_tree_->Branch("generator_final_particle_pz",         &generator_final_particle_pz_);
@@ -130,6 +132,7 @@ void AnalysisManager::EventReset()
     generator_initial_particle_x_.clear();
     generator_initial_particle_y_.clear();
     generator_initial_particle_z_.clear();
+    generator_initial_particle_t_.clear();
     generator_initial_particle_px_.clear();
     generator_initial_particle_py_.clear();
     generator_initial_particle_pz_.clear();
@@ -142,6 +145,7 @@ void AnalysisManager::EventReset()
     generator_final_particle_x_.clear();
     generator_final_particle_y_.clear();
     generator_final_particle_z_.clear();
+    generator_final_particle_t_.clear();
     generator_final_particle_px_.clear();
     generator_final_particle_py_.clear();
     generator_final_particle_pz_.clear();
@@ -225,6 +229,7 @@ void AnalysisManager::AddInitialGeneratorParticle(GeneratorParticle const * part
     generator_initial_particle_x_.push_back(particle->X());
     generator_initial_particle_y_.push_back(particle->Y());
     generator_initial_particle_z_.push_back(particle->Z());
+    generator_initial_particle_t_.push_back(particle->T());
     generator_initial_particle_px_.push_back(particle->Px());
     generator_initial_particle_py_.push_back(particle->Py());
     generator_initial_particle_pz_.push_back(particle->Pz());
@@ -241,6 +246,7 @@ void AnalysisManager::AddFinalGeneratorParticle(GeneratorParticle const * partic
     generator_final_particle_x_.push_back(particle->X());
     generator_final_particle_y_.push_back(particle->Y());
     generator_final_particle_z_.push_back(particle->Z());
+    generator_final_particle_t_.push_back(particle->T());
     generator_final_particle_px_.push_back(particle->Px());
     generator_final_particle_py_.push_back(particle->Py());
     generator_final_particle_pz_.push_back(particle->Pz());
