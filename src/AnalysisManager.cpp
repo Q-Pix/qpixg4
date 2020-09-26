@@ -113,6 +113,7 @@ void AnalysisManager::Book(std::string const file_path)
 void AnalysisManager::Save()
 {
     // write TTree objects to file and close file
+    tfile_->cd();
     metadata_->Write();
     event_tree_->Write();
     tfile_->Close();
