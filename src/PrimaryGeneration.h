@@ -12,13 +12,15 @@
 // GEANT4 includes
 #include "G4VUserPrimaryGeneratorAction.hh"
 
+#include "G4Box.hh"
+#include "G4Event.hh"
 #include "G4GeneralParticleSource.hh"
 #include "G4ParticleTable.hh"
 #include "G4String.hh"
-#include "G4Box.hh"
 
+// Q-Pix includes
 #include "Supernova.h"
-#include "MARLEYManager.h"
+#include "SupernovaTiming.h"
 
 class G4ParticleDefinition;
 class G4GenericMessenger;
@@ -46,15 +48,18 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     bool decay_at_time_zero_;
 
     G4GeneralParticleSource * particle_gun_;
-    Supernova * super;
 
-    MARLEYManager * MMMM;
+    SupernovaTiming * supernova_timing_;
+
+    Supernova * super;
 
     double detector_length_x_;
     double detector_length_y_;
     double detector_length_z_;
 
     G4Box* detector_solid_vol_;
+
+    void MARLEYGeneratePrimaries(G4Event*);
 
 };
 
