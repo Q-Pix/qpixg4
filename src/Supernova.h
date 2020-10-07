@@ -44,9 +44,9 @@ class Supernova {
         double detector_length_y_;
         double detector_length_z_;
 
-        double Ran_X ;
-        double Ran_Y ;
-        double Ran_Z ;
+        double Ran_X_;
+        double Ran_Y_;
+        double Ran_Z_;
 
         double Px_hat ;
         double Py_hat ;

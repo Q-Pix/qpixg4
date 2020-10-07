@@ -22,6 +22,7 @@ class GeneratorParticle {
         inline double  X()       const { return x_;        }
         inline double  Y()       const { return y_;        }
         inline double  Z()       const { return z_;        }
+        inline double  T()       const { return t_;        }
         inline double  Px()      const { return px_;       }
         inline double  Py()      const { return py_;       }
         inline double  Pz()      const { return pz_;       }
@@ -33,6 +34,7 @@ class GeneratorParticle {
         inline void SetX       (double const x      ) { x_        = x;       }
         inline void SetY       (double const y      ) { y_        = y;       }
         inline void SetZ       (double const z      ) { z_        = z;       }
+        inline void SetT       (double const t      ) { t_        = t;       }
         inline void SetPx      (double const px     ) { px_       = px;      }
         inline void SetPy      (double const py     ) { py_       = py;      }
         inline void SetPz      (double const pz     ) { pz_       = pz;      }
@@ -47,7 +49,7 @@ class GeneratorParticle {
         double x_;
         double y_;
         double z_;
-        double time_;
+        double t_;
 
         double px_;
         double py_;

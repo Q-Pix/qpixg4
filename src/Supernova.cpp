@@ -145,26 +145,26 @@ void Supernova::Generate_Radioisotope(G4Event* event, int Atomic_Number, int Ato
 
     if (Region == "Vol")
     {
-        Gen_Uniform_Position( Ran_X,  Ran_Y,  Ran_Z);
+        Gen_Uniform_Position( Ran_X_,  Ran_Y_,  Ran_Z_);
     }
     else if (Region == "APA")
     {
-        Gen_APA_Position( Ran_X,  Ran_Y,  Ran_Z);
+        Gen_APA_Position( Ran_X_,  Ran_Y_,  Ran_Z_);
     }
     else if (Region == "CPA")
     {
-        Gen_CPA_Position( Ran_X,  Ran_Y,  Ran_Z);
+        Gen_CPA_Position( Ran_X_,  Ran_Y_,  Ran_Z_);
     }
     else if (Region == "Button")
     {
-        Gen_Buttons_Position( Ran_X,  Ran_Y,  Ran_Z);
+        Gen_Buttons_Position( Ran_X_,  Ran_Y_,  Ran_Z_);
     }
     else
     {
         G4Exception("invilad ion region", "[supernova]",FatalException, " can not fet Region");
     }
     
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(Ran_X,Ran_Y,Ran_Z), Decay_Time);
+    G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(Ran_X_,Ran_Y_,Ran_Z_), Decay_Time);
     vertex->SetPrimary(particle);
     event->AddPrimaryVertex(vertex);    
 }
@@ -283,31 +283,31 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
 void Supernova::Gen_Buttons_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
 {
 
-    Ran_X = -10 *m;
-    Ran_Y = -10 *m;
-    Ran_Z = detector_length_z_ - 1 *mm;
+    Ran_X = -10 *CLHEP::m;
+    Ran_Y = -10 *CLHEP::m;
+    Ran_Z = detector_length_z_ - 1 *CLHEP::mm;
 
     int case_number = ceil(G4UniformRand()*4);
 
     if (case_number == 1)
     {
-        Ran_X = (1.15+.5) *m + G4UniformRand() * 0.01 *m;
-        Ran_Y = (3.00+.5) *m + G4UniformRand() * 0.01 *m;
+        Ran_X = (1.15+.5) *CLHEP::m + G4UniformRand() * 0.01 *CLHEP::m;
+        Ran_Y = (3.00+.5) *CLHEP::m + G4UniformRand() * 0.01 *CLHEP::m;
     }
     else if (case_number == 2 )
     {
-        Ran_X = (1.15+.5) *m + G4UniformRand() * 0.01 *m;
-        Ran_Y = (3.00-.5) *m - G4UniformRand() * 0.01 *m;
+        Ran_X = (1.15+.5) *CLHEP::m + G4UniformRand() * 0.01 *CLHEP::m;
+        Ran_Y = (3.00-.5) *CLHEP::m - G4UniformRand() * 0.01 *CLHEP::m;
     }
     else if (case_number == 3 )
     {
-        Ran_X = (1.15-.5) *m - G4UniformRand() * 0.01 *m;
-        Ran_Y = (3.00+.5) *m + G4UniformRand() * 0.01 *m;
+        Ran_X = (1.15-.5) *CLHEP::m - G4UniformRand() * 0.01 *CLHEP::m;
+        Ran_Y = (3.00+.5) *CLHEP::m + G4UniformRand() * 0.01 *CLHEP::m;
     }
     else if (case_number == 4 )
     {
-        Ran_X = (1.15-.5) *m - G4UniformRand() * 0.01 *m;
-        Ran_Y = (3.00-.5) *m - G4UniformRand() * 0.01 *m;
+        Ran_X = (1.15-.5) *CLHEP::m - G4UniformRand() * 0.01 *CLHEP::m;
+        Ran_Y = (3.00-.5) *CLHEP::m - G4UniformRand() * 0.01 *CLHEP::m;
     }
 }
 
