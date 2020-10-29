@@ -7,7 +7,7 @@
 /Inputs/Particle_Type soup
 
 # output path
-/Inputs/root_output ../output/tmp.root
+/Inputs/root_output ../output/RADIO_DEBUG.root
 
 # initialize run
 /run/initialize
@@ -15,10 +15,10 @@
 
 
 # Supernova configs
-/Supernova/Event_Window 0.001 s
-/Supernova/Event_Cutoff 0.001 s
+/Supernova/Event_Window 10 s
+/Supernova/Event_Cutoff 10 s
 
-/Supernova/N_Ar39_Decays 1
+/Supernova/N_Po210_Decays 1
 
 #/Supernova/N_Ar42_Decays 60
 #/Supernova/N_Co60_Decays 250
@@ -30,5 +30,5 @@
 #/Supernova/N_Rn222_Decays 27740
 
 # run
-/run/beamOn 1000
+/run/beamOn 10000
 

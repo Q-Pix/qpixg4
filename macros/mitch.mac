@@ -4,7 +4,8 @@
 /tracking/verbose 0
 
 # output path
-/Inputs/root_output ../output/mitch.root
+#/Inputs/root_output ../output/mitch_100cm.root
+/Inputs/root_output ../output/mitch_proton_10cm.root
 
 # initialize run
 /run/initialize
@@ -16,17 +17,19 @@
 # particle type
 # e-, e+, mu-, mu+, neutron, proton, anti_proton, pi-, pi+, pi0, kaon-, kaon+,
 # gamma, opticalphoton, ...
-/gps/particle e-
+#/gps/particle e-
+/gps/particle proton
 
 # spherical volume source
 /gps/pos/type Volume
 /gps/pos/shape Sphere
-/gps/pos/centre 50. 50. 1. cm
+/gps/pos/centre 50. 50. 10. cm
 /gps/pos/radius 0.01 cm
 
 
 # energy distribution
-/gps/ene/mono 3 MeV
+#/gps/ene/mono 3 MeV
+/gps/ene/mono 500 MeV
 
 # run
 /run/beamOn 100

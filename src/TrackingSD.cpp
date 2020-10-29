@@ -62,7 +62,8 @@ G4bool TrackingSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
     // G4StepPoint* preStepPoint = aStep->GetPreStepPoint();
     G4StepPoint* preStepPoint = aStep->GetPostStepPoint();
     G4double hitTime = preStepPoint->GetGlobalTime(); 
-    if (hitTime<0. || hitTime>Event_Cutoff_) return false;
+    // if (hitTime<0. || hitTime>Event_Cutoff_) return false;
+    if (hitTime>Event_Cutoff_) return false;
   }
 
   // TrackingHit* newHit = new TrackingHit();

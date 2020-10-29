@@ -5,23 +5,23 @@
 
 # configure marley
 /Inputs/Particle_Type MARLEY
-#/Inputs/MARLEY_json ../cfg/marley_config.js
-/Inputs/MARLEY_json ./cfg/marley_config_supernova.js
+/Inputs/MARLEY_json ../cfg/marley_config.js
+#/Inputs/MARLEY_json ../cfg/marley_config_supernova.js
 
 # configure supernova timing
-/supernova/timing/on         true
-/supernova/timing/input_file /path/to/nusperbin2d.root
-/supernova/timing/th2_name   nusperbin2d_nue
+#/supernova/timing/on         true
+#/supernova/timing/input_file /path/to/nusperbin2d.root
+#/supernova/timing/th2_name   nusperbin2d_nue
 
 # output path
-/Inputs/root_output ./output/marley.root
+/Inputs/root_output ../output/marley.root
 
 # initialize run
 /run/initialize
 /random/setSeeds 0 31
 
 # Supernova configs
-/Supernova/Event_Cutoff 10 s
+#/Supernova/Event_Cutoff 10 s
 
 
 # limit radioactive decays

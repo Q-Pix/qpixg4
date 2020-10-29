@@ -59,6 +59,8 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_Ar39_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+
         Generate_Radioisotope(event, 18, 39, decay_time, "Vol"); //Ar39 from Volume
     }
 
@@ -66,6 +68,7 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_Ar42_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 18, 42, decay_time, "Vol"); //Ar42 from Volume
     }
 
@@ -73,6 +76,7 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_Co60_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 27, 60, decay_time, "CPA"); //Co60 from CPA
     }
     
@@ -80,6 +84,7 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_K40_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 19, 40, decay_time, "APA"); //K40 from APA
     }
 
@@ -87,6 +92,7 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_K42_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 19, 42, decay_time, "Vol"); //K42 from Volume
     }
 
@@ -94,6 +100,7 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_Bi214_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 83, 214, decay_time, "Vol"); //Bi214 from Volume
     }
 
@@ -101,6 +108,7 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_Pb214_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 82, 214, decay_time, "Vol"); //Pb214 from Volume
     }
 
@@ -108,6 +116,7 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_Po210_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 84, 210, decay_time, "APA"); //Po210 from APA
     }
     
@@ -115,6 +124,7 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_Rn222_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 86, 222, decay_time, "Vol"); //Rn222 from Volume
     }
 
@@ -122,6 +132,7 @@ void Supernova::Gen_test(G4Event* event)
     for (int ct=0; ct<N_Am241_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 95, 241, decay_time, "Button"); //Am241 from buttons
     }
 
@@ -135,7 +146,8 @@ void Supernova::Generate_Radioisotope(G4Event* event, int Atomic_Number, int Ato
     G4ParticleDefinition* pdef = G4IonTable::GetIonTable()->GetIon(Atomic_Number, Atomic_Mass, 0.); // Ar39
     if (!pdef)G4Exception("SetParticleDefinition()", "[IonGun]",FatalException, " can not create ion ");
 
-    pdef->SetPDGLifeTime(1.*CLHEP::ps);
+    // pdef->SetPDGLifeTime(1.*CLHEP::ps);
+    pdef->SetPDGLifeTime(1.*ps);
 
     G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
 
@@ -161,7 +173,7 @@ void Supernova::Generate_Radioisotope(G4Event* event, int Atomic_Number, int Ato
     }
     else
     {
-        G4Exception("invilad ion region", "[supernova]",FatalException, " can not fet Region");
+        G4Exception("invilad ion region", "[supernova]",FatalException, " can not get Region");
     }
     
     G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(Ran_X_,Ran_Y_,Ran_Z_), Decay_Time);
@@ -238,7 +250,7 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         if (case_number == 1 )
         {
             Ran_X = 0.10 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 1.115*1 *m + G4UniformRand() * (0.05 *m);
+            Ran_Y = 0.15 *m + 1.115*1 *m + G4UniformRand() * (0.05 *m);
         }
         else if (case_number == 2 )
         {

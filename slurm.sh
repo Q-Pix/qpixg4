@@ -1,6 +1,6 @@
 #!/bin/bash                                                                                                                                                                                                                            
 
-#SBATCH -J QPIX Marley      # A single job name for the array                                                                                                                                                                          
+#SBATCH -J QPIX_Marley      # A single job name for the array                                                                                                                                                                          
 #SBATCH -n 1                # Number of cores                                                                                                                                                                                          
 #SBATCH -N 1                # All cores on one machine                                                                                                                                                                                 
 #SBATCH -p guenette         # Partition                                                                                                                                                                                                
