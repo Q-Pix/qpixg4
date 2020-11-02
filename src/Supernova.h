@@ -29,6 +29,7 @@ class Supernova {
         double Event_Window_;
         int N_Ar39_Decays_;
         int N_Ar42_Decays_;
+        int N_Kr85_Decays_;
         int N_Co60_Decays_;
         int N_K40_Decays_;
         int N_K42_Decays_;

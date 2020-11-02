@@ -23,16 +23,18 @@
 //-----------------------------------------------------------------------------
 Supernova::Supernova():
 N_Ar39_Decays_(0),N_Ar42_Decays_(0),
-N_Co60_Decays_(0),N_K40_Decays_(0),
-N_K42_Decays_(0),N_Bi214_Decays_(0),
-N_Pb214_Decays_(0),N_Po210_Decays_(0),
-N_Rn222_Decays_(0),N_Am241_Decays_(0)
+N_Kr85_Decays_(0),N_Co60_Decays_(0),
+N_K40_Decays_(0),N_K42_Decays_(0),
+N_Bi214_Decays_(0),N_Pb214_Decays_(0),
+N_Po210_Decays_(0),N_Rn222_Decays_(0),
+N_Am241_Decays_(0)
 {
     msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
     msg_->DeclareProperty("Event_Window", Event_Window_,  "window to simulate the times");
 
     msg_->DeclareProperty("N_Ar39_Decays", N_Ar39_Decays_,  "number of Ar39 decays");
     msg_->DeclareProperty("N_Ar42_Decays", N_Ar42_Decays_,  "number of Ar42 decays");
+    msg_->DeclareProperty("N_Kr85_Decays", N_Kr85_Decays_,  "number of Kr85 decays");
     msg_->DeclareProperty("N_Co60_Decays", N_Co60_Decays_,  "number of Co60 decays");
     msg_->DeclareProperty("N_K40_Decays", N_K40_Decays_,  "number of K40 decays");
     msg_->DeclareProperty("N_K42_Decays", N_K42_Decays_,  "number of K42 decays");
@@ -70,6 +72,15 @@ void Supernova::Gen_test(G4Event* event)
         decay_time = G4UniformRand() * Event_Window_;
         if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 18, 42, decay_time, "Vol"); //Ar42 from Volume
+    }
+
+    // Generate Kr85
+    for (int ct=0; ct<N_Kr85_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+
+        Generate_Radioisotope(event, 36, 85, decay_time, "Vol"); //Kr85 from Volume
     }
 
     // Generate Co60
