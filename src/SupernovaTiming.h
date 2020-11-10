@@ -48,9 +48,9 @@ class SupernovaTiming {
         std::string th2_name_;
 
         // ROOT objects
-        TFile * tfile_;
         TH1D  * th1_;
         TH2D  * th2_;
+        TFile * tfile_;
 
 };
 

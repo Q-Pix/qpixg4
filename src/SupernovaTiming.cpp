@@ -25,9 +25,12 @@ SupernovaTiming::SupernovaTiming()
 //-----------------------------------------------------------------------------
 SupernovaTiming::~SupernovaTiming()
 {
-    delete th1_;
-    delete th2_;
-    delete tfile_;
+    if (initialized_ && on_)
+    {
+        delete th1_;
+        delete th2_;
+        delete tfile_;
+    }
 }
 
 //-----------------------------------------------------------------------------
