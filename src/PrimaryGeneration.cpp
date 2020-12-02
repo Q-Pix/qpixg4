@@ -194,9 +194,17 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
   //   //        << G4endl;
   // }
 
-  G4ThreeVector offset(detector_length_x_/2.,
-                       detector_length_y_/2.,
-                       detector_length_z_/2.);
+  // G4ThreeVector offset(detector_length_x_/2.,
+  //                      detector_length_y_/2.,
+  //                      detector_length_z_/2.);
+
+  // add padding so that electron tracks don't get truncated near the
+  // boundaries of an APA drift volume
+  double const padding = 20 * CLHEP::cm;
+
+  G4ThreeVector offset(G4UniformRand() * (detector_length_x_-2*padding) + padding,
+                       G4UniformRand() * (detector_length_y_-2*padding) + padding,
+                       G4UniformRand() * (detector_length_z_-2*padding) + padding);
 
   // G4PrimaryVertex* vertex = new G4PrimaryVertex(offset, 0.);
 
