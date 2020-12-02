@@ -30,7 +30,7 @@ N_Po210_Decays_(0),N_Rn222_Decays_(0),
 N_Am241_Decays_(0)
 {
     msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
-    msg_->DeclareProperty("Event_Window", Event_Window_,  "window to simulate the times");
+    msg_->DeclareProperty("Event_Window", Event_Window_,  "window to simulate the times").SetUnit("ns");
 
     msg_->DeclareProperty("N_Ar39_Decays", N_Ar39_Decays_,  "number of Ar39 decays");
     msg_->DeclareProperty("N_Ar42_Decays", N_Ar42_Decays_,  "number of Ar42 decays");

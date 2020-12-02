@@ -29,7 +29,7 @@ TrackingSD::TrackingSD(const G4String& sd_name, const G4String& hc_name):
   collectionName.insert(hc_name);
 
   msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
-  msg_->DeclareProperty("Event_Cutoff", Event_Cutoff_,  "window to simulate the times");
+  msg_->DeclareProperty("Event_Cutoff", Event_Cutoff_,  "window to simulate the times").SetUnit("ns");
 
 }
 

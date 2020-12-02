@@ -220,15 +220,16 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
   }
 
   // timing
-  double time = 0.;  // sec
+  double time = 0.;  // ns
   if (!supernova_timing_->Initialized())
   {
     supernova_timing_->Initialize();
   }
   if (supernova_timing_->Status())
   {
-    time = supernova_timing_->Sample(neutrinoEnergy);  // sec
-    // std::cout << "time [s]: " << time << std::endl;
+    time = supernova_timing_->Sample(neutrinoEnergy);  // s
+    time *= 1e9; // ns
+    // std::cout << "time [ns]: " << time << std::endl;
   }
 
   // initialize vertex
