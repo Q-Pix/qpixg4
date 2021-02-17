@@ -10,4 +10,4 @@ module load root/6.14.00-fasrc01
 module load gcc/9.2.0-fasrc01 geant/4.10.06.p01-fasrc02
 source geant4.sh
 
-cd /n/holystore01/LABS/guenette_lab/Users/jh/software/marley/build && source ../setup_marley.sh && cd /path/to/Q_PIX_GEANT4
+cd /n/holystore01/LABS/guenette_lab/Users/jh/software/marley/build && source ../setup_marley.sh && cd /n/home04/sruppert/Q_PIX_GEANT4
