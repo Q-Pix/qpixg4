@@ -46,6 +46,21 @@ void SupernovaTiming::Initialize()
         // open supernova ROOT file for reading
         tfile_ = new TFile(input_file_.data(), "read");
 
+        // check to see if time vs. energy histogram exists
+        bool th2_status = tfile_->GetListOfKeys()->Contains(th2_name_.data());
+
+        // throw exception if time vs. energy histogram does not exist
+        if (!th2_status)
+        {
+            std::cerr << "\nERROR: TObject `"
+                      << th2_name_
+                      << "` not found in file `"
+                      << input_file_
+                      << "`!\n"
+                      << std::endl;
+            throw std::exception();
+        }
+
         // get time vs. energy histogram
         // th2_ = (TH2D*) tfile_->Get(th2_name.data());
         tfile_->GetObject(th2_name_.data(), th2_);
