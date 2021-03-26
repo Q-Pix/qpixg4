@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | TrackingHit.cpp
+//  G4_QPIX | TrackingHit.cpp
 //
 //  TODO: Class description
 //   * Author: Justo Martin-Albo

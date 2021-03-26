@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | PrimaryGeneration.cpp
+//  G4_QPIX | PrimaryGeneration.cpp
 //
 //  Class for the definition of the primary generation action.
-//   * Author: Justo Martin-Albo
+//   * Author: Everybody is an author!
 //   * Creation date: 14 Aug 2019
 // -----------------------------------------------------------------------------
 
@@ -90,10 +90,10 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
   }
 
-  if (Particle_Type_ ==  "soup")
+  if (Particle_Type_ ==  "SUPERNOVA")
   {
     super->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
-    super->Gen_test(event);
+    super->Gen_Supernova_Background(event);
   }
 
   else if (Particle_Type_ ==  "MARLEY")

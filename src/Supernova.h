@@ -20,7 +20,7 @@ class Supernova {
 
         Supernova();
         ~Supernova();
-        void Gen_test(G4Event*);
+        void Gen_Supernova_Background(G4Event*);
         void Gen_test_APA(G4Event*);
         void Get_Detector_Dimensions(double detector_x_, double detector_y_, double detector_z_);
 
@@ -37,7 +37,6 @@ class Supernova {
         int N_Pb214_Decays_;
         int N_Po210_Decays_;
         int N_Rn222_Decays_;
-        int N_Am241_Decays_;
 
         double decay_time;
         
@@ -58,12 +57,8 @@ class Supernova {
         void Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
         void Gen_CPA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
         void Gen_Uniform_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
-        void Gen_Buttons_Position(double& Ran_X, double& Ran_Y, double& Ran_Z);
-
 
         void Generate_Radioisotope(G4Event* event, int Atomic_Number, int Atomic_Mass, double Decay_Time, std::string Region);
-
-        
 
 };
 

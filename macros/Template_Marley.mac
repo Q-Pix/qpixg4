@@ -1,0 +1,21 @@
+# set verbosity
+/control/verbose 1
+/run/verbose 1
+/tracking/verbose 0
+
+# configure marley
+/Inputs/Particle_Type MARLEY
+/Inputs/MARLEY_json ../cfg/marley_config.js
+
+# output path
+/Inputs/root_output ../output/MARLEY.root
+
+# initialize run
+/run/initialize
+/random/setSeeds 0 31
+
+# limit radioactive decays 
+/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+
+# run
+/run/beamOn 100

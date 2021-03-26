@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | PrimaryGeneration.h
+//  G4_QPIX | PrimaryGeneration.h
 //
 //  Class for the definition of the primary generation action.
-//   * Author: Justo Martin-Albo
+//   * Author: Everybody is an author!
 //   * Creation date: 14 Aug 2019
 // -----------------------------------------------------------------------------
 

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | DetectorConstruction.h
+//  G4_QPIX | DetectorConstruction.h
 //
 //  Class for the definition of the detector geometry and materials.
 //   * Author: Justo Martin-Albo

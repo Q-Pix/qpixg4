@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | TrackingSD.h
+//  G4_QPIX | TrackingSD.h
 //
 //  TODO: Class description
 //   * Author: Justo Martin-Albo

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | DetectorConstruction.cpp
+//  G4_QPIX | DetectorConstruction.cpp
 //
 //  Definition of detector geometry and materials.
 //   * Author: Justo Martin-Albo
@@ -70,7 +70,7 @@ void DetectorConstruction::ConstructSDandField()
 {
   // SENSITIVE DETECTOR ////////////////////////////////////
 
-  TrackingSD* tracking_sd = new TrackingSD("/G4BASIC/TRACKING", "TrackingHitsCollection");
+  TrackingSD* tracking_sd = new TrackingSD("/G4QPIX/TRACKING", "TrackingHitsCollection");
   G4SDManager::GetSDMpointer()->AddNewDetector(tracking_sd);
 
   G4LogicalVolume* detector_logic_vol =

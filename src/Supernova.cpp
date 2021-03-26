@@ -26,8 +26,7 @@ N_Ar39_Decays_(0),N_Ar42_Decays_(0),
 N_Kr85_Decays_(0),N_Co60_Decays_(0),
 N_K40_Decays_(0),N_K42_Decays_(0),
 N_Bi214_Decays_(0),N_Pb214_Decays_(0),
-N_Po210_Decays_(0),N_Rn222_Decays_(0),
-N_Am241_Decays_(0)
+N_Po210_Decays_(0),N_Rn222_Decays_(0)
 {
     msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
     msg_->DeclareProperty("Event_Window", Event_Window_,  "window to simulate the times").SetUnit("ns");
@@ -42,8 +41,6 @@ N_Am241_Decays_(0)
     msg_->DeclareProperty("N_Pb214_Decays", N_Pb214_Decays_,  "number of Pb214 decays");
     msg_->DeclareProperty("N_Po210_Decays", N_Po210_Decays_,  "number of Po210 decays");
     msg_->DeclareProperty("N_Rn222_Decays", N_Rn222_Decays_,  "number of Rn222 decays");
-    msg_->DeclareProperty("N_Am241_Decays", N_Am241_Decays_,  "number of Am241 decays");
-
 
 }
 
@@ -55,7 +52,7 @@ Supernova::~Supernova()
 
 
 //-----------------------------------------------------------------------------
-void Supernova::Gen_test(G4Event* event)
+void Supernova::Gen_Supernova_Background(G4Event* event)
 {
     // Generate Ar39
     for (int ct=0; ct<N_Ar39_Decays_; ct++)
@@ -139,15 +136,6 @@ void Supernova::Gen_test(G4Event* event)
         Generate_Radioisotope(event, 86, 222, decay_time, "Vol"); //Rn222 from Volume
     }
 
-    // Generate Am241
-    for (int ct=0; ct<N_Am241_Decays_; ct++)
-    {
-        decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
-        Generate_Radioisotope(event, 95, 241, decay_time, "Button"); //Am241 from buttons
-    }
-
-
 }
 
 
@@ -177,10 +165,6 @@ void Supernova::Generate_Radioisotope(G4Event* event, int Atomic_Number, int Ato
     else if (Region == "CPA")
     {
         Gen_CPA_Position( Ran_X_,  Ran_Y_,  Ran_Z_);
-    }
-    else if (Region == "Button")
-    {
-        Gen_Buttons_Position( Ran_X_,  Ran_Y_,  Ran_Z_);
     }
     else
     {
@@ -302,37 +286,6 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
     
 }
 
-
-void Supernova::Gen_Buttons_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
-{
-
-    Ran_X = -10 *CLHEP::m;
-    Ran_Y = -10 *CLHEP::m;
-    Ran_Z = detector_length_z_ - 1 *CLHEP::mm;
-
-    int case_number = ceil(G4UniformRand()*4);
-
-    if (case_number == 1)
-    {
-        Ran_X = (1.15+.5) *CLHEP::m + G4UniformRand() * 0.01 *CLHEP::m;
-        Ran_Y = (3.00+.5) *CLHEP::m + G4UniformRand() * 0.01 *CLHEP::m;
-    }
-    else if (case_number == 2 )
-    {
-        Ran_X = (1.15+.5) *CLHEP::m + G4UniformRand() * 0.01 *CLHEP::m;
-        Ran_Y = (3.00-.5) *CLHEP::m - G4UniformRand() * 0.01 *CLHEP::m;
-    }
-    else if (case_number == 3 )
-    {
-        Ran_X = (1.15-.5) *CLHEP::m - G4UniformRand() * 0.01 *CLHEP::m;
-        Ran_Y = (3.00+.5) *CLHEP::m + G4UniformRand() * 0.01 *CLHEP::m;
-    }
-    else if (case_number == 4 )
-    {
-        Ran_X = (1.15-.5) *CLHEP::m - G4UniformRand() * 0.01 *CLHEP::m;
-        Ran_Y = (3.00-.5) *CLHEP::m - G4UniformRand() * 0.01 *CLHEP::m;
-    }
-}
 
 //-----------------------------------------------------------------------------
 inline void Supernova::Random_Direction(double& dx, double& dy, double& dz, const double length = 1.) 

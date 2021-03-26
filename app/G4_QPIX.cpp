@@ -1,7 +1,7 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | G4Basic.cpp
+//  G4QPIX | G4_QPIX.cpp
 //
-//  Main program of the G4Basic detector simulation.
+//  Main program of the G4QPIX detector simulation.
 //   * Author: Justo Martin-Albo
 //   * Creation date: 14 Aug 2019
 // -----------------------------------------------------------------------------

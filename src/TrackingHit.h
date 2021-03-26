@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | TrackingHit.h
+//  G4_QPIX | TrackingHit.h
 //
 //  TODO: Class description
 //   * Author: Justo Martin-Albo

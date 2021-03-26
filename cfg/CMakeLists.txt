@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------
-##  G4Basic | cfg/CMakeLists.txt
+##  G4_QPIX | cfg/CMakeLists.txt
 ##
 ##  CMake build script.
 ##   * Author: Justo Martin-Albo

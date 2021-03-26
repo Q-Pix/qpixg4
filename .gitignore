@@ -1,3 +1,7 @@
 .DS_Store
+
+# ignore files in folders
 Build/*
-build/*
+
+# but keep the folder
+!Build/.keep

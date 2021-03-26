@@ -4,20 +4,19 @@
 /tracking/verbose 0
 
 # output path
-#/Inputs/root_output ../output/mitch_100cm.root
-/Inputs/root_output ../output/mitch_proton_10cm.root
+/Inputs/root_output ../output/proton.root
 
 # initialize run
 /run/initialize
 /random/setSeeds 0 31
 
-# limit radioactive decays
-/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+# limit radioactive decay chains
+# use if needed
+#/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 
 # particle type
 # e-, e+, mu-, mu+, neutron, proton, anti_proton, pi-, pi+, pi0, kaon-, kaon+,
 # gamma, opticalphoton, ...
-#/gps/particle e-
 /gps/particle proton
 
 # spherical volume source
@@ -26,9 +25,7 @@
 /gps/pos/centre 50. 50. 10. cm
 /gps/pos/radius 0.01 cm
 
-
 # energy distribution
-#/gps/ene/mono 3 MeV
 /gps/ene/mono 500 MeV
 
 # run

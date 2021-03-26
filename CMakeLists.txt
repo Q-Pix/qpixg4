@@ -1,5 +1,5 @@
 ## ---------------------------------------------------------
-##  G4Basic | CMakeLists.txt
+##  G4_QPIX | CMakeLists.txt
 ##
 ##  Main CMake build script.
 ##   * Author: Justo Martin-Albo
@@ -9,7 +9,7 @@
 #MESSAGE("PATH VAR $ENV{PATH}")
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(G4BASIC)
+project(G4QPIX)
 
 set(CMAKE_CXX_STANDARD 14)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)

@@ -1,5 +1,5 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | SteppingAction.cpp
+//  G4_QPIX | SteppingAction.cpp
 //
 //  Definition of detector geometry and materials.
 //   * Author: Justo Martin-Albo

@@ -3,11 +3,11 @@
 /run/verbose 1
 /tracking/verbose 0
 
-# configure marley
-/Inputs/Particle_Type soup
+# configure supernova
+/Inputs/Particle_Type SUPERNOVA
 
 # output path
-/Inputs/root_output ../output/RADIO_DEBUG.root
+/Inputs/root_output ../output/SUPERNOVA_BACKGROUND.root
 
 # initialize run
 /run/initialize
@@ -19,7 +19,6 @@
 /Supernova/Event_Cutoff 10 s
 
 /Supernova/N_Po210_Decays 1
-
 #/Supernova/N_Ar42_Decays 60
 #/Supernova/N_Co60_Decays 250
 #/Supernova/N_K40_Decays 11340
@@ -30,5 +29,5 @@
 #/Supernova/N_Rn222_Decays 27740
 
 # run
-/run/beamOn 10000
+/run/beamOn 100
 

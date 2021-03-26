@@ -2,7 +2,7 @@
 //  G4Basic | RunAction.h
 //
 //
-//   * Author: Justo Martin-Albo
+//   * Author: Everybody is an author!
 //   * Creation date: 15 Aug 2019
 // -----------------------------------------------------------------------------
 

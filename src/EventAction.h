@@ -1,8 +1,8 @@
 // -----------------------------------------------------------------------------
-//  G4Basic | EventAction.h
+//  G4_QPIX | EventAction.h
 //
 //
-//   * Author: Justo Martin-Albo
+//   * Author: Everybody is an author!
 //   * Creation date: 15 Aug 2019
 // -----------------------------------------------------------------------------
 

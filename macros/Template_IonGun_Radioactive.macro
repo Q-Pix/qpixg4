@@ -4,17 +4,18 @@
 /tracking/verbose 0
 
 # output path
-/Inputs/root_output ../output/argon39_rect.root
+/Inputs/root_output ./output/Radioactive.root
 
 # make unstable isotopes decay at t=0
 /Inputs/decay_at_time_zero true  # this is set to false by default
 
+# limit radioactive decay chains
+# use if needed
+#/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+
 # initialize run
 /run/initialize
 /random/setSeeds 0 31
-
-# limit radioactive decays
-# /grdm/nucleusLimits 1 39 1 19  # aMin aMax zMin zMax
 
 # particle type
 /gps/particle ion
@@ -28,7 +29,9 @@
 #                        # Number of metastable state excitation level (0-9)
 #                        # of the ion.
 
-/gps/ion 18 39 0 0
+#/gps/ion 90 228 0 0 # Th 228
+#/gps/ion 83 214 0 0 # Bi 214
+/gps/ion 18 39 0 0 # Ar 39
 
 # Rectangular volume source of the whole APA
 /gps/pos/type Volume
@@ -42,4 +45,4 @@
 /gps/ene/mono 1 eV
 
 # run
-/run/beamOn 7000
+/run/beamOn 100
