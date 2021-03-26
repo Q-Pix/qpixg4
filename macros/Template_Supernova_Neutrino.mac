@@ -9,8 +9,7 @@
 
 # configure supernova timing
 /supernova/timing/on         true
-#/supernova/timing/input_file /path/to/nusperbin2d.root
-/supernova/timing/input_file ../cfg/Supernova_TH1.root
+/supernova/timing/input_file ../cfg/nusperbin2d.root
 /supernova/timing/th2_name   nusperbin2d_nue
 
 # output path
