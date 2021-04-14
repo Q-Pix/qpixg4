@@ -13,7 +13,8 @@ SupernovaTiming::SupernovaTiming()
   : initialized_(false),
     on_(false),
     input_file_(""),
-    th2_name_("nusperbin2d_nue")
+    th2_name_("nusperbin2d_nue"),
+    tfile_(0)
 {
     msg_ = new G4GenericMessenger(
         this, "/supernova/timing/", "control commands for SupernovaTiming");
@@ -83,7 +84,7 @@ bool SupernovaTiming::Status()
     // if (!initialized_ || !on_) return false;
     if (!tfile_ || tfile_->IsZombie())
     {
-        // std::cout << "SupernovaTiming::Status(): tfile_ is empty" << std::endl;
+        // G4cout << "SupernovaTiming::Status(): tfile_ is empty" << G4endl;
         return false;
     }
     return true;
