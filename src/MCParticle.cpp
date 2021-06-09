@@ -53,3 +53,12 @@ void MCParticle::AddTrajectoryHit(const G4Step * step)
     // add hit
     this->AddTrajectoryHit(hit);
 }
+
+//-----------------------------------------------------------------------------
+void MCParticle::AddDaughter(int const trackID)
+{
+    // add daughter track ID and increment counter
+    daughter_track_ids_.push_back(trackID);
+    number_daughters_++;
+}
+

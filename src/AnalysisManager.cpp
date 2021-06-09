@@ -97,6 +97,9 @@ void AnalysisManager::Book(std::string const file_path)
     event_tree_->Branch("particle_initial_pz",      &particle_initial_pz_);
     event_tree_->Branch("particle_initial_energy",  &particle_initial_energy_);
 
+    event_tree_->Branch("particle_number_daughters",    &particle_number_daughters_);
+    event_tree_->Branch("particle_daughter_track_ids_", &particle_daughter_track_ids_);
+
     event_tree_->Branch("hit_track_id",       &hit_track_id_);
     event_tree_->Branch("hit_start_x",        &hit_start_x_);
     event_tree_->Branch("hit_start_y",        &hit_start_y_);
@@ -164,6 +167,9 @@ void AnalysisManager::EventReset()
     particle_charge_.clear();
     particle_process_key_.clear();
     particle_total_occupancy_.clear();
+
+    particle_number_daughters_.clear();
+    particle_daughter_track_ids_.clear();
 
     particle_initial_x_.clear();
     particle_initial_y_.clear();
@@ -273,6 +279,9 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
     particle_initial_py_.push_back(particle->InitialMomentum().Y());
     particle_initial_pz_.push_back(particle->InitialMomentum().Z());
     particle_initial_energy_.push_back(particle->InitialMomentum().E());
+
+    particle_number_daughters_.push_back(particle->NumberDaughters());
+    particle_daughter_track_ids_.push_back(particle->Daughters());
 
     number_particles_ += 1;
 

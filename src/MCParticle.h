@@ -62,18 +62,18 @@ struct TrajectoryHit
     double      length_ = 0;
     std::string process_ = "unknown";
 
-    Point_t StartPoint() const { return start_; }
-    Point_t EndPoint()   const { return end_;   }
-    Point_t MidPoint()   const { return { (start_.X() + end_.X())/2.0,
-                                          (start_.Y() + end_.Y())/2.0,
-                                          (start_.Z() + end_.Z())/2.0 }; }
-    double  StartTime()  const { return start_time_;     }
-    double  EndTime()    const { return end_time_;       }
-    double  Time()       const { return (start_time_ + end_time_)/2.0; }
-    double  Energy()     const { return energy_deposit_; }
-    double  TrackID()    const { return track_id_;       }
-    double  PDGCode()    const { return pdg_code_;       }
-    double  Length()     const { return length_;         }
+    Point_t StartPoint()  const { return start_; }
+    Point_t EndPoint()    const { return end_;   }
+    Point_t MidPoint()    const { return { (start_.X() + end_.X())/2.0,
+                                           (start_.Y() + end_.Y())/2.0,
+                                           (start_.Z() + end_.Z())/2.0 }; }
+    double  StartTime()   const { return start_time_;     }
+    double  EndTime()     const { return end_time_;       }
+    double  Time()        const { return (start_time_ + end_time_)/2.0; }
+    double  Energy()      const { return energy_deposit_; }
+    double  TrackID()     const { return track_id_;       }
+    double  PDGCode()     const { return pdg_code_;       }
+    double  Length()      const { return length_;         }
     std::string Process() const { return process_; }
 };
 
@@ -89,7 +89,12 @@ class MCParticle
         void AddTrajectoryHit(TrajectoryHit const &);
         void AddTrajectoryHit(G4Step const *);
 
+        void AddDaughter(int const);
+
         inline std::vector< TrajectoryHit > Hits() const { return hits_; }
+
+        inline int          NumberDaughters() const { return number_daughters_; }
+        inline std::vector< int > Daughters() const { return daughter_track_ids_; }
 
         inline int         TrackID()        const { return track_id_;        }
         inline int         ParentTrackID()  const { return parent_track_id_; }
@@ -131,6 +136,9 @@ class MCParticle
 
         // std::vector< TrajectoryPoint > trajectory_;
         std::vector< TrajectoryHit > hits_;
+
+        int                number_daughters_ = 0;
+        std::vector< int > daughter_track_ids_;
 
 };
 

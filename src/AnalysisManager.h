@@ -88,6 +88,9 @@ class AnalysisManager {
         std::vector< int >    particle_process_key_;
         std::vector< int >    particle_total_occupancy_;
 
+        std::vector< int >                particle_number_daughters_;
+        std::vector< std::vector< int > > particle_daughter_track_ids_;
+
         std::vector< double > particle_initial_x_;
         std::vector< double > particle_initial_y_;
         std::vector< double > particle_initial_z_;

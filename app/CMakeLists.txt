@@ -7,9 +7,9 @@
 ## ---------------------------------------------------------
 
 
-add_executable(G4_QPIX G4_QPIX.cpp $<TARGET_OBJECTS:${CMAKE_PROJECT_NAME}>)
+add_executable(G4_QPIX G4_QPIX.cpp)
 target_include_directories(G4_QPIX PRIVATE ${CMAKE_SOURCE_DIR}/src)
-target_link_libraries(G4_QPIX ${Geant4_LIBRARIES} )
+target_link_libraries(G4_QPIX ${CMAKE_PROJECT_NAME} ${Geant4_LIBRARIES})
 
 ## Added for marley
 target_link_libraries(G4_QPIX MARLEY)
