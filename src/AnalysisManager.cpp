@@ -97,8 +97,8 @@ void AnalysisManager::Book(std::string const file_path)
     event_tree_->Branch("particle_initial_pz",      &particle_initial_pz_);
     event_tree_->Branch("particle_initial_energy",  &particle_initial_energy_);
 
-    event_tree_->Branch("particle_number_daughters",    &particle_number_daughters_);
-    event_tree_->Branch("particle_daughter_track_ids_", &particle_daughter_track_ids_);
+    event_tree_->Branch("particle_number_daughters",  &particle_number_daughters_);
+    event_tree_->Branch("particle_daughter_track_id", &particle_daughter_track_ids_);
 
     event_tree_->Branch("hit_track_id",       &hit_track_id_);
     event_tree_->Branch("hit_start_x",        &hit_start_x_);
