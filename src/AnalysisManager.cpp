@@ -314,9 +314,10 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
 //-----------------------------------------------------------------------------
 int AnalysisManager::ProcessToKey(std::string const & process)
 {
-    int key = 0;
+    int key = -1;
 
-    if      (process.compare("eIoni")                == 0) key =  1;
+    if      (process.compare("primary")              == 0) key =  0;
+    else if (process.compare("eIoni")                == 0) key =  1;
     else if (process.compare("msc")                  == 0) key =  2;
     else if (process.compare("compt")                == 0) key =  3;
     else if (process.compare("phot")                 == 0) key =  4;
