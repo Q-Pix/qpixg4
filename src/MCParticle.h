@@ -105,6 +105,8 @@ class MCParticle
         inline std::string Process()        const { return process_;         }
         inline int         TotalOccupancy() const { return total_occupancy_; }
 
+        inline double EnergyDeposited() const { return energy_deposited_; }
+
         inline TLorentzVector InitialPosition() const { return initial_position_; }
         inline TLorentzVector InitialMomentum() const { return initial_momentum_; }
 
@@ -130,6 +132,8 @@ class MCParticle
         double      global_time_;
         std::string process_;
         int         total_occupancy_;
+
+        double      energy_deposited_ = 0.;
 
         TLorentzVector initial_position_;
         TLorentzVector initial_momentum_;

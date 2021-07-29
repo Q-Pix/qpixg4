@@ -50,6 +50,8 @@ void MCParticle::AddTrajectoryHit(const G4Step * step)
     hit.length_     = step->GetStepLength() / CLHEP::cm;
     hit.process_    = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
 
+    energy_deposited_ += step->GetTotalEnergyDeposit() / CLHEP::MeV;
+
     // add hit
     this->AddTrajectoryHit(hit);
 }
