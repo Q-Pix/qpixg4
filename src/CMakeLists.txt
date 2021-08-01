@@ -28,4 +28,5 @@ SET(SRC   AnalysisManager.cpp
 ROOT_GENERATE_DICTIONARY(QPixG4Dict AnalysisManager.h LINKDEF LinkDef.h)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${SRC} QPixG4Dict.cxx)
+target_link_libraries(${PROJECT_NAME} stdc++fs)
 
