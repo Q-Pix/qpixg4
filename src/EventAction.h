@@ -27,6 +27,7 @@ class EventAction: public G4UserEventAction
 
         G4GenericMessenger* msg_; // Messenger for configuration parameters
         int event_id_offset_;
+        double energy_threshold_;
 };
 
 #endif

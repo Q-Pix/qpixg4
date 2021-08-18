@@ -18,10 +18,11 @@
 
 
 EventAction::EventAction():
-  G4UserEventAction(), event_id_offset_(0)
+  G4UserEventAction(), event_id_offset_(0), energy_threshold_(0.)
 {
     msg_ = new G4GenericMessenger(this, "/event/", "user-defined event configuration");
     msg_->DeclareProperty("offset", event_id_offset_, "Event ID offset.");
+    msg_->DeclareProperty("energy_threshold", energy_threshold_, "Events that deposit less energy than this energy threshold will not be saved.").SetUnit("MeV");
 }
 
 
@@ -31,7 +32,13 @@ EventAction::~EventAction()
 
 
 void EventAction::BeginOfEventAction(const G4Event*)
-{}
+{
+    // int mod = event->GetEventID() % 1000;
+    // if (mod == 0)
+    // {
+    //     G4cout << "Starting event" << event->GetEventID() << "..." << G4endl;
+    // }
+}
 
 
 void EventAction::EndOfEventAction(const G4Event* event)
@@ -52,7 +59,28 @@ void EventAction::EndOfEventAction(const G4Event* event)
         // std::cout << "Energy deposited by particle PDG (" << particle->PDGCode() << "): " << particle->EnergyDeposited() << std::endl;
     }
 
-    // std::cout << "Total energy deposited: " << energy_deposited << std::endl;
+    int mod = event->GetEventID() % 1000;
+    if (mod == 0)
+    {
+        G4cout << "Starting event " << event->GetEventID() << "..." << G4endl;
+        // G4cout << "Energy threshold: " << energy_threshold_ << G4endl;
+        // G4cout << "Total energy deposited: " << energy_deposited << G4endl;
+    }
+
+    // don't save event if total energy deposited is below the energy threshold
+    if (energy_deposited < energy_threshold_)
+    {
+        // get analysis manager
+        AnalysisManager * analysis_manager = AnalysisManager::Instance();
+
+        // reset event variables
+        analysis_manager->EventReset();
+
+        // reset event in MC truth manager
+        mc_truth_manager->EventReset();
+
+        return;
+    }
 
     // get analysis manager
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
