@@ -1,0 +1,38 @@
+# set verbosity
+/control/verbose 1
+/run/verbose 1
+/tracking/verbose 0
+
+# output path
+/Inputs/root_output ./output/single_pion.root
+
+# initialize run
+/run/initialize
+/random/setSeeds 0 31
+
+# limit radioactive decays
+/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+
+# particle type
+# e-, e+, mu-, mu+, neutron, proton, anti_proton, pi-, pi+, pi0, kaon-, kaon+,
+# gamma, opticalphoton, ...
+/gps/particle pi-
+
+# point source
+/gps/pos/type Point
+/gps/pos/centre 115 475 150 cm
+
+# angular distribution
+# initial momentum in the -y direction
+/gps/ang/type iso
+/gps/ang/rot1 -1 0 0
+/gps/ang/rot2 0 0 1
+/gps/ang/mintheta 0 deg
+/gps/ang/maxtheta 0 deg  # opening angle of cone
+
+# energy distribution
+/gps/ene/type Mono
+/gps/ene/mono 5 MeV
+
+# run
+/run/beamOn 100

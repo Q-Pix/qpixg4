@@ -30,6 +30,7 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
     // get MC truth manager
     MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
+    // create new MCParticle object
     MCParticle * particle = new MCParticle();
     particle->SetTrackID(track->GetTrackID());
     particle->SetParentTrackID(track->GetParentID());
@@ -58,6 +59,17 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
         )
     );
 
+    // add track ID to parent MC particle
+    // we might need to deal with cases where some particles aren't tracked (?)
+    // we can use a try block for that if need be
+    if (track->GetParentID() > 0)
+    {
+        // get parent MC particle
+        MCParticle * parent_particle = mc_truth_manager->GetMCParticle(track->GetParentID());
+        parent_particle->AddDaughter(track->GetTrackID());
+    }
+
+    // add MC particle to MC truth manager
     mc_truth_manager->AddMCParticle(particle);
 }
 

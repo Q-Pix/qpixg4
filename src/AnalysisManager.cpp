@@ -97,6 +97,9 @@ void AnalysisManager::Book(std::string const file_path)
     event_tree_->Branch("particle_initial_pz",      &particle_initial_pz_);
     event_tree_->Branch("particle_initial_energy",  &particle_initial_energy_);
 
+    event_tree_->Branch("particle_number_daughters",  &particle_number_daughters_);
+    event_tree_->Branch("particle_daughter_track_id", &particle_daughter_track_ids_);
+
     event_tree_->Branch("hit_track_id",       &hit_track_id_);
     event_tree_->Branch("hit_start_x",        &hit_start_x_);
     event_tree_->Branch("hit_start_y",        &hit_start_y_);
@@ -164,6 +167,9 @@ void AnalysisManager::EventReset()
     particle_charge_.clear();
     particle_process_key_.clear();
     particle_total_occupancy_.clear();
+
+    particle_number_daughters_.clear();
+    particle_daughter_track_ids_.clear();
 
     particle_initial_x_.clear();
     particle_initial_y_.clear();
@@ -274,6 +280,9 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
     particle_initial_pz_.push_back(particle->InitialMomentum().Z());
     particle_initial_energy_.push_back(particle->InitialMomentum().E());
 
+    particle_number_daughters_.push_back(particle->NumberDaughters());
+    particle_daughter_track_ids_.push_back(particle->Daughters());
+
     number_particles_ += 1;
 
     std::vector< TrajectoryHit > const hits = particle->Hits();
@@ -305,9 +314,10 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
 //-----------------------------------------------------------------------------
 int AnalysisManager::ProcessToKey(std::string const & process)
 {
-    int key = 0;
+    int key = -1;
 
-    if      (process.compare("eIoni")                == 0) key =  1;
+    if      (process.compare("primary")              == 0) key =  0;
+    else if (process.compare("eIoni")                == 0) key =  1;
     else if (process.compare("msc")                  == 0) key =  2;
     else if (process.compare("compt")                == 0) key =  3;
     else if (process.compare("phot")                 == 0) key =  4;

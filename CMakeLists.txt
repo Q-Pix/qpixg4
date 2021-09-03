@@ -9,11 +9,11 @@
 #MESSAGE("PATH VAR $ENV{PATH}")
 
 cmake_minimum_required(VERSION 3.0 FATAL_ERROR)
-project(G4QPIX)
+project(QPixG4)
 
-set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_CXX_EXTENSIONS OFF)
+set(CMAKE_CXX_EXTENSIONS ON)
 
 ## Find Geant4 package, activating all available UI and Vis
 ## drivers by default. You can set WITH_GEANT4_UIVIS to OFF

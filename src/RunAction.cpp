@@ -18,14 +18,19 @@
 #include "G4LogicalVolumeStore.hh"
 #include "G4Run.hh"
 
+// C++ includes
+#include <filesystem>
 
-RunAction::RunAction(): G4UserRunAction()
+
+RunAction::RunAction(): G4UserRunAction(), multirun_(false)
 {
     messenger_ = new G4GenericMessenger(this, "/Inputs/");
     messenger_->DeclareProperty("root_output", root_output_path_,
                                 "path to output ROOT file");
     messenger_->DeclareProperty("MARLEY_json", marley_json_,
                                 "MARLEY configuration file");
+    messenger_->DeclareProperty("multirun", multirun_,
+                                "Multiple runs");
 }
 
 
@@ -44,9 +49,46 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     // configure and create MARLEY generator
     marley_manager->Initialize(marley_json_);
 
+    std::string root_output_path = root_output_path_;
+
+    if (multirun_)
+    {
+
+        std::ostringstream ss;
+        ss << std::setw(4) << std::setfill('0') << run->GetRunID();
+        std::string run_str(ss.str());
+
+        // G4cout << "run_str: " << run_str << G4endl;
+
+        std::filesystem::path path = static_cast<std::string> (root_output_path_);
+
+        // G4cout << "root_name:      " << path.root_name()      << G4endl;
+        // G4cout << "root_directory: " << path.root_directory() << G4endl;
+        // G4cout << "root_path:      " << path.root_path()      << G4endl;
+        // G4cout << "relative_path:  " << path.relative_path()  << G4endl;
+        // G4cout << "parent_path:    " << path.parent_path()    << G4endl;
+        // G4cout << "filename:       " << path.filename()       << G4endl;
+        // G4cout << "stem:           " << path.stem()           << G4endl;
+        // G4cout << "extension:      " << path.extension()      << G4endl;
+
+        std::string parent_path = path.parent_path();
+        std::string stem = path.stem();
+        std::string extension = path.extension();
+
+        // G4cout << "parent_path: " << parent_path << G4endl;
+        // G4cout << "stem:        " << stem        << G4endl;
+        // G4cout << "extension:   " << extension   << G4endl;
+
+        root_output_path = parent_path + "/" + stem + "_" + run_str + extension;
+
+        // G4cout << "root_output_path: " << root_output_path << G4endl;
+
+    }
+
     // get run number
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
-    analysis_manager->Book(root_output_path_);
+    // analysis_manager->Book(root_output_path_);
+    analysis_manager->Book(root_output_path);
     analysis_manager->SetRun(run->GetRunID());
 
     // reset event variables
@@ -91,3 +133,4 @@ void RunAction::EndOfRunAction(const G4Run*)
     // save run to ROOT file
     analysis_manager->Save();
 }
+

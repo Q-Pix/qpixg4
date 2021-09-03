@@ -50,6 +50,17 @@ void MCParticle::AddTrajectoryHit(const G4Step * step)
     hit.length_     = step->GetStepLength() / CLHEP::cm;
     hit.process_    = step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
 
+    energy_deposited_ += step->GetTotalEnergyDeposit() / CLHEP::MeV;
+
     // add hit
     this->AddTrajectoryHit(hit);
 }
+
+//-----------------------------------------------------------------------------
+void MCParticle::AddDaughter(int const trackID)
+{
+    // add daughter track ID and increment counter
+    daughter_track_ids_.push_back(trackID);
+    number_daughters_++;
+}
+
