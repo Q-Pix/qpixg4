@@ -190,7 +190,7 @@
     ],
 
     // Upper edge of the final bin (MeV)
-    Emax: 100.,
+    Emax: 100.1,
   },
 
   //  TH1
