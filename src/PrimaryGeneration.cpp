@@ -258,93 +258,13 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
     }
   }
 
-  /*
-  if (isotropic_)
-  {
-    //-------------------------------------------------------------------------
-    // rotation matrix
-    // https://math.stackexchange.com/a/476311
-    //-------------------------------------------------------------------------
-
-    double identity_array[9] = { 1, 0, 0,
-                                 0, 1, 0,
-                                 0, 0, 1  };
-
-    double x_array[3] = { 1, 0, 0 };
-
-    ROOT::Math::SVector< double, 3 > b(x_array, 3);
-    b = b.Unit();
-    ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
-    ROOT::Math::SMatrix< double, 3 > R;
-    ROOT::Math::SVector< double, 3 > p_vector(p_array, 3);
-
-    ROOT::Math::SVector< double, 3 > a = p_vector.Unit();
-    double cosine = ROOT::Math::Dot(a, b);
-
-    ROOT::Math::SVector< double, 3 > v = ROOT::Math::Cross(a, b);
-    double sine = ROOT::Math::Mag(v);
-
-    double V_array[9] = {     0, -v(2),  v(1),
-                           v(2),     0, -v(0),
-                          -v(1),  v(0),     0  };
-
-    ROOT::Math::SMatrix< double, 3 > V(V_array, 9);
-
-    R = I + V + V*V*(1-cosine)/sine/sine;
-
-    //
-    p_vector = ROOT::Math::SVector< double, 3 >(p_array, 3);
-    //
-
-    ROOT::Math::SVector< double, 3 > p_rotated = R*p_vector;
-
-    std::cout << "p_vector: " << p_vector(0) << ", "
-                              << p_vector(1) << ", "
-                              << p_vector(2) << " MeV"
-                              << std::endl;
-
-    std::cout << "p_rotated: " << p_rotated(0) << ", "
-                               << p_rotated(1) << ", "
-                               << p_rotated(2) << " MeV"
-                               << std::endl;
-
-    std::cout << "neutrino_energy: " << neutrino_energy << std::endl;
-
-    //-------------------------------------------------------------------------
-    // isotropic
-    // https://mathworld.wolfram.com/SpherePointPicking.html
-    // http://corysimon.github.io/articles/uniformdistn-on-sphere/
-    //-------------------------------------------------------------------------
-
-    double vec_array[3] = { distribution_(generator_),
-                            distribution_(generator_),
-                            distribution_(generator_)  };
-    ROOT::Math::SVector< double, 3 > vec(vec_array, 3);
-
-    std::cout << "vec: " << vec(0) << ", " << vec(1) << ", " << vec(2)
-              << std::endl;
-
-    std::cout << "ROOT::Math::Mag(vec): " << ROOT::Math::Mag(vec) << std::endl;
-
-    ROOT::Math::SVector< double, 3 > vec_rotated = R*vec;
-
-    vec = vec.Unit();
-
-    std::cout << "vec: " << vec(0) << ", " << vec(1) << ", " << vec(2)
-              << std::endl;
-
-    std::cout << "ROOT::Math::Mag(vec): " << ROOT::Math::Mag(vec) << std::endl;
-
-    std::cout << "vec_rotated: " << vec_rotated(0) << ", "
-                                 << vec_rotated(1) << ", "
-                                 << vec_rotated(2) << std::endl;
-
-    std::cout << "ROOT::Math::Mag(vec_rotated): " << ROOT::Math::Mag(vec_rotated) << std::endl;
-
-    //-------------------------------------------------------------------------
-  }
-  */
-
+  //---------------------------------------------------------------------------
+  // Isotropic sample
+  // ================
+  // To generate an isotropic sample of MARLEY events, we must generate some
+  // random vector b and compute the rotation matrix R that would rotate the
+  // incident neutrino three-momentum a to align with b.  We then use R to
+  // rotate the 3-momenta of all the particles in the event.
   //---------------------------------------------------------------------------
 
   double identity_array[9] = { 1, 0, 0,
@@ -357,26 +277,23 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
   if (isotropic_)
   {
     //-------------------------------------------------------------------------
-    // isotropic
+    // sphere point picking
     // https://mathworld.wolfram.com/SpherePointPicking.html
-    // http://corysimon.github.io/articles/uniformdistn-on-sphere/
     //-------------------------------------------------------------------------
 
+    // get random point on the surface of the unit sphere
     double b_array[3] = { distribution_(generator_),
                           distribution_(generator_),
                           distribution_(generator_)  };
+    ROOT::Math::SVector< double, 3 > b(b_array, 3);
+    b = b.Unit(); // normalize
 
     // ROOT::Math::SVector< double, 3 > b(b_array, 3);
-
     // std::cout << "b: " << b(0) << ", " << b(1) << ", " << b(2) << std::endl;
-
     // std::cout << "ROOT::Math::Mag(b): " << ROOT::Math::Mag(b) << std::endl;
-
     // b = b.Unit();
-
     // std::cout << "b: " << b(0) << ", " << b(1) << ", " << b(2)
     //           << std::endl;
-
     // std::cout << "ROOT::Math::Mag(b): " << ROOT::Math::Mag(b) << std::endl;
 
     //-------------------------------------------------------------------------
@@ -384,22 +301,26 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
     // https://math.stackexchange.com/a/476311
     //-------------------------------------------------------------------------
 
-    ROOT::Math::SVector< double, 3 > b(b_array, 3);
-    b = b.Unit();
-    ROOT::Math::SVector< double, 3 > p_vector(p_array, 3);
+    // incident neutrino momentum direction
+    ROOT::Math::SVector< double, 3 > a(p_array, 3);
+    a = a.Unit();  // normalize
 
-    ROOT::Math::SVector< double, 3 > a = p_vector.Unit();
+    // cosine between a and b
     double cosine = ROOT::Math::Dot(a, b);
 
+    // cross product between a and b
     ROOT::Math::SVector< double, 3 > v = ROOT::Math::Cross(a, b);
+
+    // sine between a and b
     double sine = ROOT::Math::Mag(v);
 
+    // skew-symmetric cross-product matrix of v
     double V_array[9] = {     0, -v(2),  v(1),
                            v(2),     0, -v(0),
                           -v(1),  v(0),     0  };
-
     ROOT::Math::SMatrix< double, 3 > V(V_array, 9);
 
+    // rotation matrix
     R = I + V + V*V*(1-cosine)/sine/sine;
 
     //-------------------------------------------------------------------------
