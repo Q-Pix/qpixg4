@@ -6,10 +6,15 @@
 # configure marley for supernova
 /Inputs/Particle_Type MARLEY
 /Inputs/MARLEY_json ../cfg/marley_config_supernova.js
+/Inputs/isotropic false
+/Inputs/override_vertex_position false
+/Inputs/vertex_x 1.15 m
+/Inputs/vertex_y 3.0 m
+/Inputs/vertex_z 1.8 m
 
 # configure supernova timing
 /supernova/timing/on         true
-/supernova/timing/input_file ../cfg/nusperbin2d.root
+/supernova/timing/input_file /n/holystore01/LABS/guenette_lab/Everyone/supernova/nusperbin2d.root
 /supernova/timing/th2_name   nusperbin2d_nue
 
 # output path

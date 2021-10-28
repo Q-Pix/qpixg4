@@ -32,23 +32,39 @@
 #include "G4MuonPlus.hh"
 #include "G4Proton.hh"
 
-
 #include "G4GenericMessenger.hh"
 #include "Randomize.hh"
 
+// ROOT includes
+#include "Math/SVector.h"
+#include "Math/SMatrix.h"
+
 // C++ includes
-#include <stdlib.h>
+#include <chrono>
 #include <math.h>
+#include <stdlib.h>
 
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
     decay_at_time_zero_(false),
+    isotropic_(false),
+    override_vertex_position_(false),
+    vertex_x_(2.3/2),
+    vertex_y_(6.0/2),
+    vertex_z_(3.6/2),
     particle_gun_(0)
 {
   msg_ = new G4GenericMessenger(this, "/Inputs/", "Control commands of the ion primary generator.");
   msg_->DeclareProperty("Particle_Type", Particle_Type_,  "which particle?");
   msg_->DeclareProperty("decay_at_time_zero", decay_at_time_zero_,
                         "Set to true to make unstable isotopes decay at t=0.");
+  msg_->DeclareProperty("isotropic", isotropic_, "isotropic");
+  msg_->DeclareProperty("override_vertex_position",
+                        override_vertex_position_,
+                        "override vertex position");
+  msg_->DeclareProperty("vertex_x", vertex_x_, "vertex x").SetUnit("mm");;
+  msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("mm");;
+  msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("mm");;
 
   particle_gun_ = new G4GeneralParticleSource();
 
@@ -59,6 +75,11 @@ PrimaryGeneration::PrimaryGeneration()
   supernova_timing_ = new SupernovaTiming();
 
   super = new Supernova();
+
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  // std::default_random_engine generator(seed);
+  generator_ = std::default_random_engine(seed);
+  distribution_ = std::normal_distribution< double >(0, 1);
 }
 
 
@@ -206,6 +227,11 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
                        G4UniformRand() * (detector_length_y_-2*padding) + padding,
                        G4UniformRand() * (detector_length_z_-2*padding) + padding);
 
+  if (override_vertex_position_)
+  {
+    offset = G4ThreeVector(vertex_x_, vertex_y_, vertex_z_);
+  }
+
   // G4PrimaryVertex* vertex = new G4PrimaryVertex(offset, 0.);
 
   // Generate a new MARLEY event using the owned marley::Generator object
@@ -214,8 +240,10 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
   // // print MARLEY event information
   // ev.print_human_readable(G4cout);
 
-  // get neutrino energy
-  double neutrinoEnergy = 0.;  // MeV
+  double p_array[3] = { 0, 0, 0 };
+
+  // get neutrino energy and momentum
+  double neutrino_energy = 0.;  // MeV
   for (const auto& p : ev.get_initial_particles())
   {
     if (std::abs(p->pdg_code()) == 12 or
@@ -223,9 +251,161 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
         std::abs(p->pdg_code()) == 16 or
         std::abs(p->pdg_code()) == 18)
     {
-      neutrinoEnergy = p->total_energy();  // MeV
+      neutrino_energy = p->total_energy();  // MeV
+      p_array[0] = p->px();                 // MeV
+      p_array[1] = p->py();                 // MeV
+      p_array[2] = p->pz();                 // MeV
     }
   }
+
+  /*
+  if (isotropic_)
+  {
+    //-------------------------------------------------------------------------
+    // rotation matrix
+    // https://math.stackexchange.com/a/476311
+    //-------------------------------------------------------------------------
+
+    double identity_array[9] = { 1, 0, 0,
+                                 0, 1, 0,
+                                 0, 0, 1  };
+
+    double x_array[3] = { 1, 0, 0 };
+
+    ROOT::Math::SVector< double, 3 > b(x_array, 3);
+    b = b.Unit();
+    ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
+    ROOT::Math::SMatrix< double, 3 > R;
+    ROOT::Math::SVector< double, 3 > p_vector(p_array, 3);
+
+    ROOT::Math::SVector< double, 3 > a = p_vector.Unit();
+    double cosine = ROOT::Math::Dot(a, b);
+
+    ROOT::Math::SVector< double, 3 > v = ROOT::Math::Cross(a, b);
+    double sine = ROOT::Math::Mag(v);
+
+    double V_array[9] = {     0, -v(2),  v(1),
+                           v(2),     0, -v(0),
+                          -v(1),  v(0),     0  };
+
+    ROOT::Math::SMatrix< double, 3 > V(V_array, 9);
+
+    R = I + V + V*V*(1-cosine)/sine/sine;
+
+    //
+    p_vector = ROOT::Math::SVector< double, 3 >(p_array, 3);
+    //
+
+    ROOT::Math::SVector< double, 3 > p_rotated = R*p_vector;
+
+    std::cout << "p_vector: " << p_vector(0) << ", "
+                              << p_vector(1) << ", "
+                              << p_vector(2) << " MeV"
+                              << std::endl;
+
+    std::cout << "p_rotated: " << p_rotated(0) << ", "
+                               << p_rotated(1) << ", "
+                               << p_rotated(2) << " MeV"
+                               << std::endl;
+
+    std::cout << "neutrino_energy: " << neutrino_energy << std::endl;
+
+    //-------------------------------------------------------------------------
+    // isotropic
+    // https://mathworld.wolfram.com/SpherePointPicking.html
+    // http://corysimon.github.io/articles/uniformdistn-on-sphere/
+    //-------------------------------------------------------------------------
+
+    double vec_array[3] = { distribution_(generator_),
+                            distribution_(generator_),
+                            distribution_(generator_)  };
+    ROOT::Math::SVector< double, 3 > vec(vec_array, 3);
+
+    std::cout << "vec: " << vec(0) << ", " << vec(1) << ", " << vec(2)
+              << std::endl;
+
+    std::cout << "ROOT::Math::Mag(vec): " << ROOT::Math::Mag(vec) << std::endl;
+
+    ROOT::Math::SVector< double, 3 > vec_rotated = R*vec;
+
+    vec = vec.Unit();
+
+    std::cout << "vec: " << vec(0) << ", " << vec(1) << ", " << vec(2)
+              << std::endl;
+
+    std::cout << "ROOT::Math::Mag(vec): " << ROOT::Math::Mag(vec) << std::endl;
+
+    std::cout << "vec_rotated: " << vec_rotated(0) << ", "
+                                 << vec_rotated(1) << ", "
+                                 << vec_rotated(2) << std::endl;
+
+    std::cout << "ROOT::Math::Mag(vec_rotated): " << ROOT::Math::Mag(vec_rotated) << std::endl;
+
+    //-------------------------------------------------------------------------
+  }
+  */
+
+  //---------------------------------------------------------------------------
+
+  double identity_array[9] = { 1, 0, 0,
+                               0, 1, 0,
+                               0, 0, 1  };
+
+  ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
+  ROOT::Math::SMatrix< double, 3 > R = I;
+
+  if (isotropic_)
+  {
+    //-------------------------------------------------------------------------
+    // isotropic
+    // https://mathworld.wolfram.com/SpherePointPicking.html
+    // http://corysimon.github.io/articles/uniformdistn-on-sphere/
+    //-------------------------------------------------------------------------
+
+    double b_array[3] = { distribution_(generator_),
+                          distribution_(generator_),
+                          distribution_(generator_)  };
+
+    // ROOT::Math::SVector< double, 3 > b(b_array, 3);
+
+    // std::cout << "b: " << b(0) << ", " << b(1) << ", " << b(2) << std::endl;
+
+    // std::cout << "ROOT::Math::Mag(b): " << ROOT::Math::Mag(b) << std::endl;
+
+    // b = b.Unit();
+
+    // std::cout << "b: " << b(0) << ", " << b(1) << ", " << b(2)
+    //           << std::endl;
+
+    // std::cout << "ROOT::Math::Mag(b): " << ROOT::Math::Mag(b) << std::endl;
+
+    //-------------------------------------------------------------------------
+    // rotation matrix
+    // https://math.stackexchange.com/a/476311
+    //-------------------------------------------------------------------------
+
+    ROOT::Math::SVector< double, 3 > b(b_array, 3);
+    b = b.Unit();
+    ROOT::Math::SVector< double, 3 > p_vector(p_array, 3);
+
+    ROOT::Math::SVector< double, 3 > a = p_vector.Unit();
+    double cosine = ROOT::Math::Dot(a, b);
+
+    ROOT::Math::SVector< double, 3 > v = ROOT::Math::Cross(a, b);
+    double sine = ROOT::Math::Mag(v);
+
+    double V_array[9] = {     0, -v(2),  v(1),
+                           v(2),     0, -v(0),
+                          -v(1),  v(0),     0  };
+
+    ROOT::Math::SMatrix< double, 3 > V(V_array, 9);
+
+    R = I + V + V*V*(1-cosine)/sine/sine;
+
+    //-------------------------------------------------------------------------
+  }
+
+  //---------------------------------------------------------------------------
 
   // timing
   double time = 0.;  // ns
@@ -235,7 +415,7 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
   }
   if (supernova_timing_->Status())
   {
-    time = supernova_timing_->Sample(neutrinoEnergy);  // s
+    time = supernova_timing_->Sample(neutrino_energy);  // s
     time *= 1e9; // ns
     // std::cout << "time [ns]: " << time << std::endl;
   }
@@ -257,10 +437,17 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
     generatorParticle->SetY       (vertex->GetY0() / CLHEP::cm);
     generatorParticle->SetZ       (vertex->GetZ0() / CLHEP::cm);
     generatorParticle->SetT       (vertex->GetT0());
-    generatorParticle->SetPx      (ip->px());
-    generatorParticle->SetPy      (ip->py());
-    generatorParticle->SetPz      (ip->pz());
+    // generatorParticle->SetPx      (ip->px());
+    // generatorParticle->SetPy      (ip->py());
+    // generatorParticle->SetPz      (ip->pz());
     generatorParticle->SetEnergy  (ip->total_energy());
+
+    ROOT::Math::SVector< double, 3 > a(ip->px(), ip->py(), ip->pz());
+    a = R*a;
+
+    generatorParticle->SetPx      (a(0));
+    generatorParticle->SetPy      (a(1));
+    generatorParticle->SetPz      (a(2));
 
     // add initial MARLEY particle to the MC truth manager
     mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
@@ -278,10 +465,17 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
     generatorParticle->SetY       (vertex->GetY0() / CLHEP::cm);
     generatorParticle->SetZ       (vertex->GetZ0() / CLHEP::cm);
     generatorParticle->SetT       (vertex->GetT0());
-    generatorParticle->SetPx      (fp->px());
-    generatorParticle->SetPy      (fp->py());
-    generatorParticle->SetPz      (fp->pz());
+    // generatorParticle->SetPx      (fp->px());
+    // generatorParticle->SetPy      (fp->py());
+    // generatorParticle->SetPz      (fp->pz());
     generatorParticle->SetEnergy  (fp->total_energy());
+
+    ROOT::Math::SVector< double, 3 > a(fp->px(), fp->py(), fp->pz());
+    a = R*a;
+
+    generatorParticle->SetPx      (a(0));
+    generatorParticle->SetPy      (a(1));
+    generatorParticle->SetPz      (a(2));
 
     // add final MARLEY particle to the MC truth manager
     mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
@@ -334,10 +528,12 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
                   FatalException, message.c_str());
     }
 
-    G4PrimaryParticle* particle = new G4PrimaryParticle(pdef,
-                                                        fp->px(),
-                                                        fp->py(),
-                                                        fp->pz());
+    // G4PrimaryParticle* particle = new G4PrimaryParticle(pdef,
+    //                                                     fp->px(),
+    //                                                     fp->py(),
+    //                                                     fp->pz());
+
+    G4PrimaryParticle* particle = new G4PrimaryParticle(pdef, a(0), a(1), a(2));
 
     // Also set the charge of the G4PrimaryParticle appropriately
     particle->SetCharge( fp->charge() );

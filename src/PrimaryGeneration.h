@@ -22,6 +22,9 @@
 #include "Supernova.h"
 #include "SupernovaTiming.h"
 
+// C++ includes
+#include <random>
+
 class G4ParticleDefinition;
 class G4GenericMessenger;
 
@@ -46,6 +49,11 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     //double Particle_Energy_;
 
     bool decay_at_time_zero_;
+    bool isotropic_;
+    bool override_vertex_position_;
+    double vertex_x_;
+    double vertex_y_;
+    double vertex_z_;
 
     G4GeneralParticleSource * particle_gun_;
 
@@ -60,6 +68,10 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     G4Box* detector_solid_vol_;
 
     void MARLEYGeneratePrimaries(G4Event*);
+
+    std::default_random_engine generator_;
+    std::normal_distribution< double > distribution_;
+
 
 };
 

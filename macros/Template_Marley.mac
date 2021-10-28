@@ -6,6 +6,11 @@
 # configure marley
 /Inputs/Particle_Type MARLEY
 /Inputs/MARLEY_json ../cfg/marley_config.js
+/Inputs/isotropic false
+/Inputs/override_vertex_position false
+/Inputs/vertex_x 1.15 m
+/Inputs/vertex_y 3.0 m
+/Inputs/vertex_z 1.8 m
 
 # output path
 /Inputs/root_output ../output/MARLEY.root
