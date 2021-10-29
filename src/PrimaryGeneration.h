@@ -72,7 +72,6 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     std::default_random_engine generator_;
     std::normal_distribution< double > distribution_;
 
-
 };
 
 #endif

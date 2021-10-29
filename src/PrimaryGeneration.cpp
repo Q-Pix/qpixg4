@@ -62,9 +62,9 @@ PrimaryGeneration::PrimaryGeneration()
   msg_->DeclareProperty("override_vertex_position",
                         override_vertex_position_,
                         "override vertex position");
-  msg_->DeclareProperty("vertex_x", vertex_x_, "vertex x").SetUnit("mm");;
-  msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("mm");;
-  msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("mm");;
+  msg_->DeclareProperty("vertex_x", vertex_x_, "vertex x").SetUnit("mm");
+  msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("mm");
+  msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("mm");
 
   particle_gun_ = new G4GeneralParticleSource();
 
