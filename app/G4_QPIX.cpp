@@ -12,7 +12,7 @@
 #include "EventAction.h"
 #include "TrackingAction.h"
 #include "SteppingAction.h"
-
+#include "../src/ROOTManager.h"
 #include <G4RunManager.hh>
 #include <G4UImanager.hh>
 #include <G4VisExecutive.hh>
@@ -23,8 +23,18 @@
 
 #include "Randomize.hh"
 #include "time.h"
+#include <getopt.h>
 
 
+void PrintHelp(){
+    G4cerr << "\nUsage: ./build/app/G4_QPIX [-i/b] [-n number] <init_macro>\n"  << G4endl;
+    G4cerr << "Available options: " <<G4endl;
+    G4cerr << "-n --nevents --> number of events to simulate " <<G4endl;
+    G4cerr << "-i --interactive --> Interactive Mode   " <<G4endl;
+    G4cerr << "-b --batch  --> No Visual Mode " <<G4endl;
+    G4cerr << "-h --help --> Help" <<G4endl;
+    exit(EXIT_FAILURE);
+}
 
 int main(int argc, char** argv)
 {
@@ -39,9 +49,53 @@ int main(int argc, char** argv)
   // Detect interactive mode (if no arguments) and define UI session
   //
   G4UIExecutive* ui = 0;
-  if ( argc == 1 ) {
-    ui = new G4UIExecutive(argc, argv);
+  if(argc<2) PrintHelp();
+
+  G4bool interactive=false;
+  G4int nevents=0;
+  static struct option long_options[]={
+          {"interactive",no_argument,0,'i'},
+          {"batch",no_argument,0,'b'},
+          {"interactive",no_argument,0,'i'},
+          {"nevents",no_argument,0,'n'},
+          {0,0,0,0}
+  };
+
+    int opt;
+  while(true){
+      opterr=0;
+      opt=getopt_long(argc, argv, "bin:", long_options, 0);
+      if (opt==-1) break; // Exit if we are done reading options
+
+      switch (opt) {
+
+          case 'i':
+              interactive= true;
+              break;
+
+          case 'b':
+              interactive= false;
+              break;
+
+          case 'n':
+              nevents = atoi(optarg);
+              break;
+
+          case '?':
+              break;
+
+          case 'h':
+              PrintHelp();
+              break;
+          default:
+              abort();
+      }
   }
+
+  if(optind==argc) PrintHelp();
+  G4String macfile=argv[optind];
+  if(macfile=="") PrintHelp();
+
 
   // Construct the run manager and set the initialization classes
   G4RunManager* run_manager = new G4RunManager();
@@ -58,26 +112,36 @@ int main(int argc, char** argv)
   run_manager->SetUserAction(new TrackingAction());
   run_manager->SetUserAction(new SteppingAction());
 
-  // Initialize visualization
-  G4VisManager* vismgr = new G4VisExecutive();
-  vismgr->Initialize();
 
   // Get the pointer to the User Interface manager
   G4UImanager* uimgr = G4UImanager::GetUIpointer();
 
   // Process macro or start UI session
   //
-  if (!ui) {
-    // batch mode
-    G4String command = "/control/execute ";
-    G4String fileName = argv[1];
-    uimgr->ApplyCommand(command+fileName);
+  if (interactive) {       // interactive mode
+
+      // Initialize visualization
+
+      G4VisManager* vismgr = new G4VisExecutive();
+      ui = new G4UIExecutive(argc, argv);
+      vismgr->Initialize();
+      uimgr->ApplyCommand("/control/execute cfg/init_vis.mac");
+      G4String command = "/control/execute ";
+      G4String fileName = macfile;
+      uimgr->ApplyCommand(command+fileName);
+      ui->SessionStart();
+      delete ui;
+      delete vismgr;
   }
   else {
-    // interactive mode
-    uimgr->ApplyCommand("/control/execute init_vis.mac");
-    ui->SessionStart();
-    delete ui;
+      // batch mode
+      run_manager->Initialize();
+      G4String command = "/control/execute ";
+      G4String fileName = macfile;
+      uimgr->ApplyCommand(command+fileName);
+      if(nevents!=0)
+        run_manager->BeamOn(nevents);
+
   }
 
   // Job termination
@@ -85,6 +149,7 @@ int main(int argc, char** argv)
   // owned and deleted by the run manager, so they should not be deleted
   // in the main() program.
 
-  delete vismgr;
   delete run_manager;
+  return EXIT_SUCCESS;
+
 }
