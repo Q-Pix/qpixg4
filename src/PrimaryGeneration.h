@@ -47,6 +47,7 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
 
     G4GenericMessenger* msg_; // Messenger for configuration parameters
     G4String Particle_Type_;
+    bool PrintParticleInfo_;
     //double Particle_Energy_;
 
     bool decay_at_time_zero_;

@@ -4,14 +4,17 @@
 /tracking/verbose 0
 
 # output path
-/Inputs/root_output ./output/Output.root
+/Inputs/root_output /media/ilker/writable/QPIX_DATA/Test.root
+#/Inputs/root_output output/Test.root
 
 # configure ROOT
 /Inputs/Particle_Type ROOT
-/Inputs/ReadFrom_Root_Path cfg/Beam_Neutrino_FHC_0.root
-/Inputs/vertex_x 1.15 m
-/Inputs/vertex_y 3.0 m
-/Inputs/vertex_z 1.8 m
+/Inputs/ReadFrom_Root_Path /media/ilker/writable/QPIX_DATA/Beam_Neutrino_FHC_0.root
+#/Inputs/ReadFrom_Root_Path /media/ilker/writable/QPIX_DATA/HIGH_Beam_Neutrino_FHC_0.root
+/Inputs/vertex_x 10 cm
+/Inputs/vertex_y 10 cm
+/Inputs/vertex_z 10 cm
+/Inputs/PrintParticleInfo true
 
 
 # initialize run
@@ -22,4 +25,4 @@
 /grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 
 # run
-/run/beamOn 5
+/run/beamOn 10

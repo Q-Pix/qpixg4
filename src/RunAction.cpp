@@ -35,6 +35,8 @@ RunAction::RunAction(): G4UserRunAction(), multirun_(false)
                                 "Root File to Read");
     messenger_->DeclareProperty("multirun", multirun_,
                                 "Multiple runs");
+    runManager=G4RunManager::GetRunManager();
+
 }
 
 
@@ -47,7 +49,30 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run* run)
 {
+
     G4cout << "RunAction::BeginOfRunAction: Run #" << run->GetRunID() << " start." << G4endl;
+
+    //Get Root Manager
+    if(!ReadFrom_Root_.empty()){
+        ROOTManager *rootManager=ROOTManager::Instance();
+
+        if(rootManager->Initialize(ReadFrom_Root_,"event_tree")){
+            rootManager->SetBranches();
+            G4int NumberEventsInTheFile=(G4int)rootManager->GetNEntries();
+
+            //Get Current RunManager to change number events if they exceed the numberof events in the file.
+
+
+            // Replacing the Number of Current Events if it is 0 or set higher than the events in the root file
+            if(runManager->GetNumberOfEventsToBeProcessed()>NumberEventsInTheFile or runManager->GetNumberOfEventsToBeProcessed()==228){
+                std::cout<<"Overwrting number of events to proccess to " << NumberEventsInTheFile <<" ..."<<std::endl;
+                runManager->SetNumberOfEventsToBeProcessed(NumberEventsInTheFile);
+                std::cout<<"Number of Events to Process -->"<<run->GetNumberOfEventToBeProcessed()<<std::endl;
+
+            }
+
+        }
+    }
 
     if(!marley_json_.empty()){
     // get MARLEY manager
@@ -55,23 +80,7 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     // configure and create MARLEY generator
     marley_manager->Initialize(marley_json_);
     }
-    //Get Root Manager
-    if(!ReadFrom_Root_.empty()){
-        ROOTManager *rootManager=ROOTManager::Instance();
 
-        if(rootManager->Initialize(ReadFrom_Root_,"event_tree")){
-            rootManager->SetBranches();
-            Int_t NumberEventsInTheFile=rootManager->GetNEntries();
-
-            //Get Current RunManager to change number events if they exceed the numberof events in the file.
-            G4RunManager * runManager=G4RunManager::GetRunManager();
-
-            // Replacing the Number of Current Events if it is 0 or set higher than the events in the root file
-            if(runManager->GetNumberOfEventsToBeProcessed()>NumberEventsInTheFile or runManager->GetNumberOfEventsToBeProcessed()==0)
-                runManager->SetNumberOfEventsToBeProcessed(NumberEventsInTheFile);
-
-        }
-    }
 
 
     std::string root_output_path = root_output_path_;
@@ -132,7 +141,6 @@ void RunAction::EndOfRunAction(const G4Run*)
     // get analysis manager
     ROOTManager *rootManager=ROOTManager::Instance();
     rootManager->Close();
-
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
 
     // get detector dimensions

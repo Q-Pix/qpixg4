@@ -12,7 +12,7 @@
 #include <G4UserRunAction.hh>
 #include "G4GenericMessenger.hh"
 
-
+class G4RunManager;
 class RunAction: public G4UserRunAction
 {
     public:
@@ -29,6 +29,7 @@ class RunAction: public G4UserRunAction
         G4String marley_json_;
         G4String ReadFrom_Root_;
         bool multirun_;
+        G4RunManager * runManager;
 };
 
 #endif
