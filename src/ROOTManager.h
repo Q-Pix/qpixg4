@@ -54,6 +54,12 @@ class ROOTManager {
         Double_t        px_[Size_];
         Double_t        py_[Size_];
         Double_t        pz_[Size_];
+        Int_t           idx[Size_];
+        Int_t           Status[Size_];
+        Int_t           FirstMother[Size_];
+        Int_t           LastMother[Size_];
+        Int_t           FirstDaughter[Size_];
+        Int_t           LastDaughter[Size_];
         TBranch        *b_event;   //!
         TBranch        *b_NParticles;   //!
         TBranch        *b_pdg;   //!
@@ -61,6 +67,14 @@ class ROOTManager {
         TBranch        *b_px;   //!
         TBranch        *b_py;   //!
         TBranch        *b_pz;   //!
+        TBranch        *b_Mother;   //!
+        TBranch        *b_Daughter;   //!
+        TBranch        *bridx;
+        TBranch        *brStatus;
+        TBranch        *brFirstMother;
+        TBranch        *brLastMother;
+        TBranch        *brFirstDaughter;
+        TBranch        *brLastDaughter;
         std::string     FilePath_;
         std::string     TreeName_;
 

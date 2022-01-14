@@ -45,14 +45,21 @@ int ROOTManager::Initialize(std::string FilePath,std::string TreeName) {
 
 void ROOTManager::SetBranches() {
     // Creating Root Branches
-
-    tree_->SetBranchAddress("event", &event_, &b_event);
-    tree_->SetBranchAddress("NParticles", &NParticles_, &b_NParticles);
-    tree_->SetBranchAddress("pdg", pdg_, &b_pdg);
-    tree_->SetBranchAddress("E", E_, &b_E);
-    tree_->SetBranchAddress("px", px_, &b_px);
-    tree_->SetBranchAddress("py", py_, &b_py);
-    tree_->SetBranchAddress("pz", pz_, &b_pz);
+        tree_->SetBranchAddress("event", &event_, &b_event);
+        tree_->SetBranchAddress("NParticles", &NParticles_, &b_NParticles);
+        tree_->SetBranchAddress("pdg", pdg_, &b_pdg);
+        tree_->SetBranchAddress("E", E_, &b_E);
+        tree_->SetBranchAddress("px", px_, &b_px);
+        tree_->SetBranchAddress("py", py_, &b_py);
+        tree_->SetBranchAddress("pz", pz_, &b_pz);
+    if (TreeName_=="geniqpix"){
+        tree_->SetBranchAddress("idx",                  idx,	    &bridx   );
+        tree_->SetBranchAddress("status",               Status,	        &brStatus   );
+        tree_->SetBranchAddress("FirstMother",          FirstMother,	    &brFirstMother   );
+        tree_->SetBranchAddress("LastMother",           LastMother,	    &brLastMother   );
+        tree_->SetBranchAddress("FirstDaughter",        FirstDaughter,	    &brFirstDaughter   );
+        tree_->SetBranchAddress("LastDaughter",         LastDaughter,	    &brLastDaughter   );
+    }
 
 }
 Int_t ROOTManager::GetNEntries() {
