@@ -24,7 +24,7 @@
 #include <filesystem>
 
 
-RunAction::RunAction(): G4UserRunAction(), multirun_(false)
+RunAction::RunAction(): G4UserRunAction(), multirun_(false),TreeName_("event_tree")
 {
     messenger_ = new G4GenericMessenger(this, "/Inputs/");
     messenger_->DeclareProperty("root_output", root_output_path_,
@@ -35,6 +35,8 @@ RunAction::RunAction(): G4UserRunAction(), multirun_(false)
                                 "Root File to Read");
     messenger_->DeclareProperty("multirun", multirun_,
                                 "Multiple runs");
+    messenger_->DeclareProperty("TreeName", TreeName_,
+                                "RootTree Name if it is defined different");
     runManager=G4RunManager::GetRunManager();
 
 }
@@ -56,7 +58,7 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     if(!ReadFrom_Root_.empty()){
         ROOTManager *rootManager=ROOTManager::Instance();
 
-        if(rootManager->Initialize(ReadFrom_Root_,"event_tree")){
+        if(rootManager->Initialize(ReadFrom_Root_,TreeName_)){
             rootManager->SetBranches();
             G4int NumberEventsInTheFile=(G4int)rootManager->GetNEntries();
 
