@@ -72,7 +72,7 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
 
     void MARLEYGeneratePrimaries(G4Event*);
     void GENIEGeneratePrimaries(G4Event*);
-
+    void ROOTGeneratePrimaries(G4Event * event);
 
     std::default_random_engine generator_;
     std::normal_distribution< double > distribution_;

@@ -30,7 +30,6 @@ int ROOTManager::Initialize(std::string FilePath,std::string TreeName) {
                 f_ = new TFile(FilePath.c_str());
             }
             f_->GetObject(TreeName_.c_str(),tree_);
-
         }
         return 1;
     }
@@ -39,8 +38,8 @@ int ROOTManager::Initialize(std::string FilePath,std::string TreeName) {
         return 0;
     }
 
-
 }
+
 
 
 void ROOTManager::SetBranches() {
@@ -52,7 +51,7 @@ void ROOTManager::SetBranches() {
         tree_->SetBranchAddress("px", px_, &b_px);
         tree_->SetBranchAddress("py", py_, &b_py);
         tree_->SetBranchAddress("pz", pz_, &b_pz);
-    if (TreeName_=="geniqpix"){
+    if (TreeName_=="anatree" ){
         tree_->SetBranchAddress("idx",                  idx,	    &bridx   );
         tree_->SetBranchAddress("status",               Status,	        &brStatus   );
         tree_->SetBranchAddress("FirstMother",          FirstMother,	    &brFirstMother   );

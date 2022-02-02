@@ -29,6 +29,10 @@ class ROOTManager {
         TFile* GetFile_ () const{return f_; };
         TTree* GetTTree_ () const{return tree_; };
         Int_t  GetPDG_(Int_t ev) const {return pdg_[ev];};
+        Int_t  GetIdx_(Int_t ev) const {return idx[ev];};
+        Int_t  GetFirstMother_(Int_t ev) const {return FirstMother[ev];};
+
+
         Double_t  GetE_(Int_t ev) const {return E_[ev];};
         Double_t  GetPx_(Int_t ev) const {return px_[ev];};
         Double_t  GetPy_(Int_t ev) const {return py_[ev];};

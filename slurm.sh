@@ -33,9 +33,6 @@ HIST_file='/n/holystore01/LABS/guenette_lab/Users/amcdonald/Supernova_Qpix/nuspe
 INPUT_MACRO="/n/holyscratch01/guenette_lab/${MACRO}"
 echo $INPUT_MACRO
 
-echo "/control/verbose 1"                             >>${INPUT_MACRO}
-echo "/run/verbose 1"                                 >>${INPUT_MACRO}
-echo "/tracking/verbose 0"                            >>${INPUT_MACRO}
 
 echo "/Inputs/Particle_Type MARLEY"                   >>${INPUT_MACRO}
 echo "/Inputs/MARLEY_json ${MARLEY_json}"             >>${INPUT_MACRO}
