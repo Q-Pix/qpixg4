@@ -144,7 +144,6 @@ int main(int argc, char** argv)
       uimgr->ApplyCommand(command+fileName);
       if(nevents!=0)
         run_manager->BeamOn(nevents);
-        run_manager->Set
 
   }
 
