@@ -4,7 +4,7 @@
 /tracking/verbose 0
 
 # output path
-/Inputs/root_output /home/argon/Projects/Ilker/QPIX_Develop/output/Proton_Decay.root
+/Inputs/root_output /home/ilker/Projects/QPIX/QPIX_Proton_Decay/output/Proton_Decay.root
 #/Inputs/root_output output/Test.root
 
 # configure from Root file  For General use `ROOT`

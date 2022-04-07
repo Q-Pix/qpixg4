@@ -17,11 +17,15 @@ ROOTManager * ROOTManager::Instance()
     if (instance_ == 0) instance_ = new ROOTManager();
     return instance_;
 }
+
+
+
 int ROOTManager::Initialize(std::string FilePath,std::string TreeName) {
     if (!FilePath.empty())
     {
         FilePath_=FilePath;
         TreeName_=TreeName;
+        isInitialized=0;
         std::cout << "Configuring to Read From Root File..." << std::endl;
         // Reading the root file to extract the info
         if (tree_ == 0) {
@@ -29,17 +33,21 @@ int ROOTManager::Initialize(std::string FilePath,std::string TreeName) {
             if (!f_ || !f_->IsOpen()) {
                 f_ = new TFile(FilePath.c_str());
             }
+            if(f_->IsZombie()){
+                return isInitialized ;
+            }
             f_->GetObject(TreeName_.c_str(),tree_);
         }
-        return 1;
+        isInitialized=1;
+        return isInitialized;
     }
     else {
         std::cout << "Generating from Root is not selected!  Continuing..."<< std::endl;
-        return 0;
+        isInitialized=0;
+        return isInitialized;
     }
 
 }
-
 
 
 void ROOTManager::SetBranches() {

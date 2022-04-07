@@ -105,6 +105,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
     ROOTManager *rootManager=ROOTManager::Instance();
     rootManager->Cd();
+
     TTree *tree=rootManager->GetTTree_();
 
 

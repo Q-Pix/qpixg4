@@ -57,7 +57,6 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     //Get Root Manager
     if(!ReadFrom_Root_.empty()){
         ROOTManager *rootManager=ROOTManager::Instance();
-
         if(rootManager->Initialize(ReadFrom_Root_,TreeName_)){
             rootManager->SetBranches();
             G4int NumberEventsInTheFile=(G4int)rootManager->GetNEntries();
@@ -73,7 +72,9 @@ void RunAction::BeginOfRunAction(const G4Run* run)
 
             }
 
-        }
+        }else
+             G4Exception("[RunAction]","[BeginOfRunAction]",G4ExceptionSeverity::FatalException ,"RootManager is not properly initialized. Check to see if the following file exist /Inputs/ReadFrom_Root_Path in macros/ROOTRead.macro   ") ;
+
     }
 
     if(!marley_json_.empty()){

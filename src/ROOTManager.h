@@ -18,8 +18,10 @@
 class ROOTManager {
 
     public:
+
         ROOTManager();
         ~ROOTManager();
+
         static ROOTManager * Instance();
         int Initialize(std::string FilePath,std::string TreeName);
         static const Int_t   Size_=51;
@@ -31,6 +33,7 @@ class ROOTManager {
         Int_t  GetPDG_(Int_t ev) const {return pdg_[ev];};
         Int_t  GetIdx_(Int_t ev) const {return idx[ev];};
         Int_t  GetFirstMother_(Int_t ev) const {return FirstMother[ev];};
+        Int_t  IsROOTManagerInitialized_() const {return isInitialized;};
 
 
         Double_t  GetE_(Int_t ev) const {return E_[ev];};
@@ -81,6 +84,10 @@ class ROOTManager {
         TBranch        *brLastDaughter;
         std::string     FilePath_;
         std::string     TreeName_;
+        Int_t isInitialized;
+
+
+
 
 
 
