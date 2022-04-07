@@ -27,7 +27,5 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 {
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
 
-    G4String ProccessNAme=step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName();
-    analysis_manager->AddProcess(ProccessNAme);
-
+    analysis_manager->AddProcess(step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
 }

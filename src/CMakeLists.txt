@@ -22,8 +22,7 @@ SET(SRC   AnalysisManager.cpp
           TrackingSD.cpp
           TrackingHit.cpp
           Supernova.cpp
-          SupernovaTiming.cpp
-          ROOTManager.cpp)
+          SupernovaTiming.cpp)
 
 # generate ROOT dictionary
 ROOT_GENERATE_DICTIONARY(QPixG4Dict AnalysisManager.h LINKDEF LinkDef.h)

@@ -39,9 +39,6 @@
 #include "Math/SVector.h"
 #include "Math/SMatrix.h"
 
-// ROOTManager Includes
-#include "ROOTManager.h"
-
 // C++ includes
 #include <chrono>
 #include <math.h>
@@ -50,7 +47,6 @@
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
     decay_at_time_zero_(false),
-    PrintParticleInfo_(false),
     isotropic_(false),
     override_vertex_position_(false),
     vertex_x_(2.3/2),
@@ -62,18 +58,15 @@ PrimaryGeneration::PrimaryGeneration()
   msg_->DeclareProperty("Particle_Type", Particle_Type_,  "which particle?");
   msg_->DeclareProperty("decay_at_time_zero", decay_at_time_zero_,
                         "Set to true to make unstable isotopes decay at t=0.");
-    msg_->DeclareProperty("PrintParticleInfo", PrintParticleInfo_,
-                          "Extra Printing for Debugging");
   msg_->DeclareProperty("isotropic", isotropic_, "isotropic");
   msg_->DeclareProperty("override_vertex_position",
                         override_vertex_position_,
                         "override vertex position");
-  msg_->DeclareProperty("vertex_x", vertex_x_, "vertex x").SetUnit("cm");
-  msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("cm");
-  msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("cm");
+  msg_->DeclareProperty("vertex_x", vertex_x_, "vertex x").SetUnit("mm");
+  msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("mm");
+  msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("mm");
 
-
-    particle_gun_ = new G4GeneralParticleSource();
+  particle_gun_ = new G4GeneralParticleSource();
 
   // get dictionary of particles
   particle_table_ = G4ParticleTable::GetParticleTable();
@@ -99,183 +92,96 @@ PrimaryGeneration::~PrimaryGeneration()
 }
 
 
+void PrimaryGeneration::GeneratePrimaries(G4Event* event)
+{
+  // get MC truth manager
+  MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
-void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
-    //MC Truth Manager
-    MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
-    ROOTManager *rootManager=ROOTManager::Instance();
-    rootManager->Cd();
-    TTree *tree=rootManager->GetTTree_();
+  // get detector dimensions
+  if (!detector_solid_vol_)
+  {
+    G4LogicalVolume* detector_logic_vol
+      = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
+    if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
+  }
+  if (detector_solid_vol_)
+  {
+    detector_length_x_ = detector_solid_vol_->GetXHalfLength() * 2.;
+    detector_length_y_ = detector_solid_vol_->GetYHalfLength() * 2.;
+    detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
+  }
 
+  if (Particle_Type_ ==  "SUPERNOVA")
+  {
+    super->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
+    super->Gen_Supernova_Background(event);
+  }
 
+  else if (Particle_Type_ ==  "MARLEY")
+  {
+    this->MARLEYGeneratePrimaries(event);
+  }
 
-    //Getting the event from the root file
-    Long64_t  ientry=tree->LoadTree(event->GetEventID());
+  else
+  {
+    particle_gun_->GeneratePrimaryVertex(event);
 
-    if (ientry<0) {
-        std::cout<<"Event does not exist in the Root file!!"<<std::endl;
-        return;
-    }
+    // get generated particle
+    G4ParticleDefinition * const particle_definition = particle_gun_->GetParticleDefinition();
 
-    if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
-    tree->GetEntry(event->GetEventID());
-   // G4ThreeVector vertex3d= G4ThreeVector (G4UniformRand()*vertex_x_,G4UniformRand()*vertex_y_,G4UniformRand()*vertex_z_);
-   G4ThreeVector vertex3d= G4ThreeVector (vertex_x_,vertex_y_,vertex_z_);
+    int const pdg_code = particle_definition->GetPDGEncoding();
+    double const charge = particle_definition->GetPDGCharge();
+    double const mass = particle_definition->GetPDGMass() * CLHEP::MeV;
 
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(vertex3d,0);
-    for(int np=0;np<rootManager->GetNParticles_();np++){
-        // Get Particle definitition
-        //Filtering Particles not to simulate
-        if (!((rootManager->GetIdx_(np)>=0) && (rootManager->GetFirstMother_(np)<2))) {std::cout<<"Skipping this particle PDGCode-> "<< rootManager->GetPDG_(np)<< " Idx-> "<<rootManager->GetIdx_(np)<<" Mother= "<<rootManager->GetFirstMother_(np)<<std::endl; continue;}
+    // if the particle is a nucleus
+    if (pdg_code > 1000000000)
+    {
+      if (decay_at_time_zero_ && !(particle_definition->GetPDGStable()))
+      {
+          // make unstable isotopes decay at t=0
+          particle_definition->SetPDGLifeTime(1.*CLHEP::ps);
+      }
+    } // if the particle is a nucleus
 
-        // if the particle is a nucleus
-        G4ParticleDefinition *pdef=0;
+    G4ThreeVector const & position = particle_gun_->GetParticlePosition();
+    G4ThreeVector const & direction = particle_gun_->GetParticleMomentumDirection();
 
-        if (rootManager->GetPDG_(np) > 1000000000 && rootManager->GetPDG_(np)<2000000000)
-        {
-            if (!pdef)
-            {
-                int const Z = (rootManager->GetPDG_(np) % 10000000) / 10000; // atomic number
-                int const A = (rootManager->GetPDG_(np) % 10000) / 10; // mass number
-                pdef = particle_table_->GetIonTable()->GetIon(Z, A, 0.);
-            }
-        }
+    double const x = position.x() / CLHEP::cm;
+    double const y = position.y() / CLHEP::cm;
+    double const z = position.z() / CLHEP::cm;
+    double const t = particle_gun_->GetParticleTime();  // ns
 
-        else pdef = particle_table_->FindParticle(rootManager->GetPDG_(np));
+    double const dx = direction.x();
+    double const dy = direction.y();
+    double const dz = direction.z();
 
+    double const kinetic_energy = particle_gun_->GetParticleEnergy() * CLHEP::MeV;
+    double const energy = kinetic_energy + mass;
 
+    double const momentum = std::sqrt(energy*energy - mass*mass);
 
-        if (pdef==0){
-            G4String str1="Couldnt find the particle table for " + std::to_string(rootManager->GetPDG_(np));
-            G4Exception("[PrimaryGeneration]","GENIEGeneratePrimaries",G4ExceptionSeverity::JustWarning,str1.c_str());
-            continue;
-        }
+    double const px = momentum * dx;
+    double const py = momentum * dy;
+    double const pz = momentum * dz;
 
+    // create generator particle
+    GeneratorParticle * particle = new GeneratorParticle();
+    particle->SetPDGCode (pdg_code);
+    particle->SetMass    (mass    );
+    particle->SetCharge  (charge  );
+    particle->SetX       (x       );
+    particle->SetY       (y       );
+    particle->SetZ       (z       );
+    particle->SetT       (t       );
+    particle->SetPx      (px      );
+    particle->SetPy      (py      );
+    particle->SetPz      (pz      );
+    particle->SetEnergy  (energy  );
 
-
-        // filter the particles less than 1 eV
-        //if(rootManager->GetE_(np)<(1 *CLHEP::eV)) continue;
-        G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::GeV,rootManager->GetPy_(np)*CLHEP::GeV,rootManager->GetPz_(np)*CLHEP::GeV,rootManager->GetE_(np)*CLHEP::GeV);
-
-        // create generator particle
-        GeneratorParticle * generatorParticle = new GeneratorParticle();
-        generatorParticle->SetPDGCode (RootParticle->GetPDGcode());
-        generatorParticle->SetMass    (RootParticle->GetMass()/CLHEP::GeV);
-        generatorParticle->SetCharge  (RootParticle->GetCharge());
-        generatorParticle->SetX       (vertex3d[0] / CLHEP::cm);
-        generatorParticle->SetY       (vertex3d[1] / CLHEP::cm);
-        generatorParticle->SetZ       (vertex3d[2] / CLHEP::cm);
-        generatorParticle->SetT       (0);
-        generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy()/CLHEP::GeV);
-        generatorParticle->SetPx      (RootParticle->GetPx()/CLHEP::GeV);
-        generatorParticle->SetPy      (RootParticle->GetPy()/CLHEP::GeV);
-        generatorParticle->SetPz      (RootParticle->GetPz()/CLHEP::GeV);
-
-        // add ROOT particle to the MC truth manager
-        (rootManager->GetFirstMother_(np)<1 )? mc_truth_manager->AddInitialGeneratorParticle(generatorParticle):mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
-
-        if(PrintParticleInfo_){
-            std::cout<<"Event -> "<<event->GetEventID()<<" "<<rootManager->Getevent_()<<std::endl;
-            std::cout<<"PDG -> "<<RootParticle->GetPDGcode()<<" "<<rootManager->GetPDG_(np)<<std::endl;
-            std::cout<<"E -> "<<RootParticle->GetTotalEnergy()<<" "<<rootManager->GetE_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"px -> "<<RootParticle->GetPx()<<" "<<rootManager->GetPx_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"py -> "<<RootParticle->GetPy()<<" "<<rootManager->GetPy_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"pz -> "<<RootParticle->GetPz()<<" "<<rootManager->GetPz_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"Idx -> "<<rootManager->GetIdx_(np)<<std::endl;
-            std::cout<<"Mother -> "<<rootManager->GetFirstMother_(np)<<std::endl;
-        }
-        vertex->SetPrimary(RootParticle);
-
-
-    }
-
-    event->AddPrimaryVertex( vertex );
-
-}
-
-void PrimaryGeneration::ROOTGeneratePrimaries(G4Event * event) {
-    //MC Truth Manager
-    MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
-    ROOTManager *rootManager=ROOTManager::Instance();
-    rootManager->Cd();
-    TTree *tree=rootManager->GetTTree_();
-
-
-
-    //Getting the event from the root file
-    Long64_t  ientry=tree->LoadTree(event->GetEventID());
-
-    if (ientry<0) {
-        std::cout<<"Event does not exist in the Root file!!"<<std::endl;
-        return;
-    }
-
-    if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
-    tree->GetEntry(event->GetEventID());
-    // G4ThreeVector vertex3d= G4ThreeVector (G4UniformRand()*vertex_x_,G4UniformRand()*vertex_y_,G4UniformRand()*vertex_z_);
-    G4ThreeVector vertex3d= G4ThreeVector (vertex_x_,vertex_y_,vertex_z_);
-
-    G4PrimaryVertex* vertex = new G4PrimaryVertex(vertex3d,0);
-    for(int np=0;np<rootManager->GetNParticles_();np++){
-        // Get Particle definitition
-
-        // if the particle is a nucleus
-        G4ParticleDefinition *pdef=0;
-
-        if (rootManager->GetPDG_(np) > 1000000000 && rootManager->GetPDG_(np)<2000000000)
-        {
-            if (!pdef)
-            {
-                int const Z = (rootManager->GetPDG_(np) % 10000000) / 10000; // atomic number
-                int const A = (rootManager->GetPDG_(np) % 10000) / 10; // mass number
-                pdef = particle_table_->GetIonTable()->GetIon(Z, A, 0.);
-            }
-        }
-
-        else pdef = particle_table_->FindParticle(rootManager->GetPDG_(np));
-
-
-        if (pdef==0){
-            G4String str1="Couldnt find the particle table for " + std::to_string(rootManager->GetPDG_(np));
-            G4Exception("[PrimaryGeneration]","GENIEGeneratePrimaries",G4ExceptionSeverity::JustWarning,str1.c_str());
-            continue;
-        }
-
-        // filter the particles less than 1 eV
-        //if(rootManager->GetE_(np)<(1 *CLHEP::eV)) continue;
-        G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::GeV,rootManager->GetPy_(np)*CLHEP::GeV,rootManager->GetPz_(np)*CLHEP::GeV,rootManager->GetE_(np)*CLHEP::GeV);
-
-        // create generator particle
-        GeneratorParticle * generatorParticle = new GeneratorParticle();
-        generatorParticle->SetPDGCode (RootParticle->GetPDGcode());
-        generatorParticle->SetMass    (RootParticle->GetMass()*CLHEP::GeV);
-        generatorParticle->SetCharge  (RootParticle->GetCharge());
-        generatorParticle->SetX       (vertex3d[0] / CLHEP::cm);
-        generatorParticle->SetY       (vertex3d[1] / CLHEP::cm);
-        generatorParticle->SetZ       (vertex3d[2] / CLHEP::cm);
-        generatorParticle->SetT       (0);
-        generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy()*CLHEP::GeV);
-        generatorParticle->SetPx      (RootParticle->GetPx()*CLHEP::GeV);
-        generatorParticle->SetPy      (RootParticle->GetPy()*CLHEP::GeV);
-        generatorParticle->SetPz      (RootParticle->GetPz()*CLHEP::GeV);
-
-        // add ROOT particle to the MC truth manager
-        mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
-        mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
-        if(PrintParticleInfo_){
-            std::cout<<"Event -> "<<event->GetEventID()<<" "<<rootManager->Getevent_()<<std::endl;
-            std::cout<<"PDG -> "<<RootParticle->GetPDGcode()<<" "<<rootManager->GetPDG_(np)<<std::endl;
-            std::cout<<"E -> "<<RootParticle->GetTotalEnergy()*CLHEP::GeV<<" "<<rootManager->GetE_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"px -> "<<RootParticle->GetPx()*CLHEP::GeV<<" "<<rootManager->GetPx_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"py -> "<<RootParticle->GetPy()*CLHEP::GeV<<" "<<rootManager->GetPy_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"pz -> "<<RootParticle->GetPz()*CLHEP::GeV<<" "<<rootManager->GetPz_(np)*CLHEP::GeV<<std::endl;
-        }
-        vertex->SetPrimary(RootParticle);
-
-
-    }
-
-    event->AddPrimaryVertex( vertex );
+    // add to MC truth manager
+    mc_truth_manager->AddInitialGeneratorParticle(particle);
+    mc_truth_manager->AddFinalGeneratorParticle(particle);
+  }
 
 }
 
@@ -563,105 +469,4 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
   // from the MARLEY event. Add it to the G4Event object so that Geant4 can
   // begin tracking the particles through the simulated geometry.
   event->AddPrimaryVertex( vertex );
-}
-
-void PrimaryGeneration::GeneratePrimaries(G4Event* event)
-{
-    // get MC truth manager
-    MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
-
-    // get detector dimensions
-    if (!detector_solid_vol_)
-    {
-        G4LogicalVolume* detector_logic_vol
-                = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
-        if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
-    }
-    if (detector_solid_vol_)
-    {
-        detector_length_x_ = detector_solid_vol_->GetXHalfLength() * 2.;
-        detector_length_y_ = detector_solid_vol_->GetYHalfLength() * 2.;
-        detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
-    }
-
-    if (Particle_Type_ ==  "SUPERNOVA")
-    {
-        super->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
-        super->Gen_Supernova_Background(event);
-    }
-
-    else if (Particle_Type_ ==  "MARLEY")
-    {
-        this->MARLEYGeneratePrimaries(event);
-    }
-    else if(Particle_Type_=="ROOT")
-    {
-        this->ROOTGeneratePrimaries(event);
-    }
-    else if(Particle_Type_=="ProtonDecay")
-    {
-        this->GENIEGeneratePrimaries(event);
-    }
-
-    else
-    {
-        particle_gun_->GeneratePrimaryVertex(event);
-
-        // get generated particle
-        G4ParticleDefinition * const particle_definition = particle_gun_->GetParticleDefinition();
-
-        int const pdg_code = particle_definition->GetPDGEncoding();
-        double const charge = particle_definition->GetPDGCharge();
-        double const mass = particle_definition->GetPDGMass() * CLHEP::MeV;
-
-        // if the particle is a nucleus
-        if (pdg_code > 1000000000)
-        {
-            if (decay_at_time_zero_ && !(particle_definition->GetPDGStable()))
-            {
-                // make unstable isotopes decay at t=0
-                particle_definition->SetPDGLifeTime(1.*CLHEP::ps);
-            }
-        } // if the particle is a nucleus
-
-        G4ThreeVector const & position = particle_gun_->GetParticlePosition();
-        G4ThreeVector const & direction = particle_gun_->GetParticleMomentumDirection();
-
-        double const x = position.x() / CLHEP::cm;
-        double const y = position.y() / CLHEP::cm;
-        double const z = position.z() / CLHEP::cm;
-        double const t = particle_gun_->GetParticleTime();  // ns
-
-        double const dx = direction.x();
-        double const dy = direction.y();
-        double const dz = direction.z();
-
-        double const kinetic_energy = particle_gun_->GetParticleEnergy() * CLHEP::MeV;
-        double const energy = kinetic_energy + mass;
-
-        double const momentum = std::sqrt(energy*energy - mass*mass);
-
-        double const px = momentum * dx;
-        double const py = momentum * dy;
-        double const pz = momentum * dz;
-
-        // create generator particle
-        GeneratorParticle * particle = new GeneratorParticle();
-        particle->SetPDGCode (pdg_code);
-        particle->SetMass    (mass    );
-        particle->SetCharge  (charge  );
-        particle->SetX       (x       );
-        particle->SetY       (y       );
-        particle->SetZ       (z       );
-        particle->SetT       (t       );
-        particle->SetPx      (px      );
-        particle->SetPy      (py      );
-        particle->SetPz      (pz      );
-        particle->SetEnergy  (energy  );
-
-        // add to MC truth manager
-        mc_truth_manager->AddInitialGeneratorParticle(particle);
-        mc_truth_manager->AddFinalGeneratorParticle(particle);
-    }
-
 }
