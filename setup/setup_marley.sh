@@ -28,10 +28,10 @@ cd $marleypath
 echo the new directory is $(pwd -P)
 
 echo sourcing setup_marley.sh
-source setup_marley.sh
+source ./setup_marley.sh
 
 
-echo adding the lines about exporting...
+echo Making it possible to build against marley...
 export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:$/include
 export LIBRARY_PATH=${LIBRARY_PATH}:${THIS_DIRECTORY}/build
 
