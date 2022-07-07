@@ -37,7 +37,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   G4LogicalVolume* world_logic_vol =
     new G4LogicalVolume(world_solid_vol, world_mat, "world.logical");
-  world_logic_vol->SetVisAttributes(G4VisAttributes::Invisible);
+  world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
 
   G4VPhysicalVolume* world_phys_vol =
     new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
