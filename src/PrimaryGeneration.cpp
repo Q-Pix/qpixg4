@@ -195,30 +195,6 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
   MARLEYManager * marley_manager = MARLEYManager::Instance();
   marley::Generator & marley_generator = marley_manager->Generator();
 
-  // G4PrimaryVertex* vertex = new G4PrimaryVertex(G4ThreeVector(0., 0., 0.), 0.);
-
-  // // get detector dimensions
-  // if (!detector_solid_vol_)
-  // {
-  //   G4LogicalVolume* detector_logic_vol
-  //     = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
-  //   if (detector_logic_vol) detector_solid_vol_ = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
-  // }
-  // if (detector_solid_vol_)
-  // {
-  //   detector_length_x_ = detector_solid_vol_->GetXHalfLength() * 2.;
-  //   detector_length_y_ = detector_solid_vol_->GetYHalfLength() * 2.;
-  //   detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
-  //   // G4cout << "det. dim.: " << detector_length_x_ << " m × "
-  //   //                         << detector_length_y_ << " m × "
-  //   //                         << detector_length_z_ << " m"
-  //   //        << G4endl;
-  // }
-
-  // G4ThreeVector offset(detector_length_x_/2.,
-  //                      detector_length_y_/2.,
-  //                      detector_length_z_/2.);
-
   // add padding so that electron tracks don't get truncated near the
   // boundaries of an APA drift volume
   double const padding = 20 * CLHEP::cm;
@@ -232,13 +208,9 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
     offset = G4ThreeVector(vertex_x_, vertex_y_, vertex_z_);
   }
 
-  // G4PrimaryVertex* vertex = new G4PrimaryVertex(offset, 0.);
 
   // Generate a new MARLEY event using the owned marley::Generator object
   marley::Event ev = marley_generator.create_event();
-
-  // // print MARLEY event information
-  // ev.print_human_readable(G4cout);
 
   double p_array[3] = { 0, 0, 0 };
 
@@ -324,7 +296,7 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
     R = I + V + V*V*(1-cosine)/sine/sine;
 
     //-------------------------------------------------------------------------
-  }
+  } // End IF isotrpoic
 
   //---------------------------------------------------------------------------
 
@@ -342,8 +314,7 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
   }
 
   // initialize vertex
-  G4PrimaryVertex* vertex = new G4PrimaryVertex(offset, time);
-
+  G4PrimaryVertex* vertex_generator_initial_state = new G4PrimaryVertex(offset, time);
   // std::cout << "vertex->GetT0() [ns]: " << vertex->GetT0() << std::endl;
 
   // Loop over each of the initial particles in the MARLEY event
@@ -354,10 +325,10 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
     generatorParticle->SetPDGCode (ip->pdg_code());
     generatorParticle->SetMass    (ip->mass());
     generatorParticle->SetCharge  (ip->charge());
-    generatorParticle->SetX       (vertex->GetX0() / CLHEP::cm);
-    generatorParticle->SetY       (vertex->GetY0() / CLHEP::cm);
-    generatorParticle->SetZ       (vertex->GetZ0() / CLHEP::cm);
-    generatorParticle->SetT       (vertex->GetT0());
+    generatorParticle->SetX       (vertex_generator_initial_state->GetX0() / CLHEP::cm);
+    generatorParticle->SetY       (vertex_generator_initial_state->GetY0() / CLHEP::cm);
+    generatorParticle->SetZ       (vertex_generator_initial_state->GetZ0() / CLHEP::cm);
+    generatorParticle->SetT       (vertex_generator_initial_state->GetT0());
     // generatorParticle->SetPx      (ip->px());
     // generatorParticle->SetPy      (ip->py());
     // generatorParticle->SetPz      (ip->pz());
@@ -373,22 +344,35 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
     // add initial MARLEY particle to the MC truth manager
     mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
   }
-
   // Loop over each of the final particles in the MARLEY event
   for (const auto& fp : ev.get_final_particles())
   {
+
+
+    // Marley does not handle delayed de-excitation processes correctly.
+    // Here we set the time-offset for the delayed 0+ -> 3- decay of K*
+    // Select photons of the correct energy and off-set them by 336 ns
+
+    // This could be done for all kinds of different particle with case statements
+    double time_inital_state = vertex_generator_initial_state->GetT0();
+    double time_offset = 0;
+    if(fp->pdg_code() == 22 && fp->total_energy() > 1.61 && fp->total_energy() < 1.63){
+	    time_offset = 336.;
+     }
+
+    // Create a vertex for every final state particle in the event
+    // Allows for extension for different timings to model delayed de-excitation etc.
+     G4PrimaryVertex* vertex_final_state_particle = new G4PrimaryVertex(offset, time_inital_state + time_offset);
+
     // create generator particle
     GeneratorParticle * generatorParticle = new GeneratorParticle();
     generatorParticle->SetPDGCode (fp->pdg_code());
     generatorParticle->SetMass    (fp->mass());
     generatorParticle->SetCharge  (fp->charge());
-    generatorParticle->SetX       (vertex->GetX0() / CLHEP::cm);
-    generatorParticle->SetY       (vertex->GetY0() / CLHEP::cm);
-    generatorParticle->SetZ       (vertex->GetZ0() / CLHEP::cm);
-    generatorParticle->SetT       (vertex->GetT0());
-    // generatorParticle->SetPx      (fp->px());
-    // generatorParticle->SetPy      (fp->py());
-    // generatorParticle->SetPz      (fp->pz());
+    generatorParticle->SetX       (vertex_final_state_particle->GetX0() / CLHEP::cm);
+    generatorParticle->SetY       (vertex_final_state_particle->GetY0() / CLHEP::cm);
+    generatorParticle->SetZ       (vertex_final_state_particle->GetZ0() / CLHEP::cm);
+    generatorParticle->SetT       (vertex_final_state_particle->GetT0());
     generatorParticle->SetEnergy  (fp->total_energy());
 
     ROOT::Math::SVector< double, 3 > a(fp->px(), fp->py(), fp->pz());
@@ -449,24 +433,18 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
                   FatalException, message.c_str());
     }
 
-    // G4PrimaryParticle* particle = new G4PrimaryParticle(pdef,
-    //                                                     fp->px(),
-    //                                                     fp->py(),
-    //                                                     fp->pz());
 
     G4PrimaryParticle* particle = new G4PrimaryParticle(pdef, a(0), a(1), a(2));
 
     // Also set the charge of the G4PrimaryParticle appropriately
     particle->SetCharge( fp->charge() );
 
-    // particle->SetPolarization(); ??
+
 
     // Add the fully-initialized G4PrimaryParticle to the primary vertex
-    vertex->SetPrimary( particle );
-  }
+    vertex_final_state_particle->SetPrimary(particle);
+    // Add a primary vertex to the event record
+    event->AddPrimaryVertex(vertex_final_state_particle);
+}
 
-  // The primary vertex has been fully populated with all final-state particles
-  // from the MARLEY event. Add it to the G4Event object so that Geant4 can
-  // begin tracking the particles through the simulated geometry.
-  event->AddPrimaryVertex( vertex );
 }

@@ -38,6 +38,10 @@ include(${ROOT_USE_FILE})
 ## link ROOT libraries
 link_libraries(${ROOT_LIBRARIES})
 
+## MARLEY stuff
+include_directories($ENV{MARLEY_INC})
+link_directories($ENV{MARLEY_LIB})
+
 ## Recurse through sub-directories
 add_subdirectory(src)
 add_subdirectory(app)
