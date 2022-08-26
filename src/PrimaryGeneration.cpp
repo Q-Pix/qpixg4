@@ -38,6 +38,7 @@
 // ROOT includes
 #include "Math/SVector.h"
 #include "Math/SMatrix.h"
+#include "TF1.h"
 
 // C++ includes
 #include <chrono>
@@ -344,6 +345,11 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
     // add initial MARLEY particle to the MC truth manager
     mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
   }
+
+  // Get a function to randomize over for the exponential decay of the K40
+  // Keep flexible to set different decay times if later needed
+  TF1 *expDecay = new TF1("exponentialDecay","exp(-x/[0])",0,10000);
+
   // Loop over each of the final particles in the MARLEY event
   for (const auto& fp : ev.get_final_particles())
   {
@@ -351,13 +357,22 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
 
     // Marley does not handle delayed de-excitation processes correctly.
     // Here we set the time-offset for the delayed 0+ -> 3- decay of K*
-    // Select photons of the correct energy and off-set them by 336 ns
-
+    // Select photons of the correct energy and off-set them by a randomized sample of the decay time
     // This could be done for all kinds of different particle with case statements
     double time_inital_state = vertex_generator_initial_state->GetT0();
     double time_offset = 0;
+
+    // Select photons with the specified energy of a 0+->3- decay
     if(fp->pdg_code() == 22 && fp->total_energy() > 1.61 && fp->total_energy() < 1.63){
-	    time_offset = 336.;
+	    //make sure that a K40 exists in the same event
+	    for(const auto& fp_temp : ev.get_final_particles()){
+		    if(fp_temp->pdg_code()==1000190400){
+			    	   // Mean decay time is 485 ns
+			    	    expDecay->SetParameter(0,485);
+			    	    time_offset = expDecay->GetRandom();
+			    	    break;
+		     }
+	    }
      }
 
     // Create a vertex for every final state particle in the event
