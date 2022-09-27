@@ -314,9 +314,10 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
 //-----------------------------------------------------------------------------
 int AnalysisManager::ProcessToKey(std::string const & process)
 {
-    int key = -1;
+    int key = -2;
 
-    if      (process.compare("primary")              == 0) key =  0;
+    if (process.compare("NoProcess")                 == 0) key = -1;
+    else if (process.compare("primary")              == 0) key =  0;
     else if (process.compare("eIoni")                == 0) key =  1;
     else if (process.compare("msc")                  == 0) key =  2;
     else if (process.compare("compt")                == 0) key =  3;
@@ -334,6 +335,11 @@ int AnalysisManager::ProcessToKey(std::string const & process)
     else if (process.compare("nCapture")             == 0) key = 15;
     else if (process.compare("neutronInelastic")     == 0) key = 16;
     else if (process.compare("photonNuclear")        == 0) key = 17;
+    else if (process.compare("protonInelastic")      == 0) key = 18;
+    else if (process.compare("dInelastic")           == 0) key = 19;
+    else if (process.compare("Decay")                == 0) key = 20;
+    else if (process.compare("RadioactiveDecay")     == 0) key = 21;
+    else { std::cout << "Uncategorized process: " << process << std::endl; }
 
     return key;
 }
