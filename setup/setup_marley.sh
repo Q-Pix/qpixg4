@@ -32,7 +32,7 @@ source ./setup_marley.sh
 
 
 echo Making it possible to build against marley...
-export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:$/include
+export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${THIS_DIRECTORY}/include
 export LIBRARY_PATH=${LIBRARY_PATH}:${THIS_DIRECTORY}/build
 
 
