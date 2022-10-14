@@ -1,9 +1,9 @@
 ## ---------------------------------------------------------
-##  G4_QPIX | src/CMakeLists.txt
+##  qpixg4 | src/CMakeLists.txt
 ##
 ##  CMake build script.
-##   * Author: Justo Martin-Albo
-##   * Creation date: 14 Aug 2019
+##   * Author: Q-Pix
+##   * Creation date: 1 May 2020
 ## ---------------------------------------------------------
 
 include_directories(${CMAKE_SOURCE_DIR}/src)
@@ -24,9 +24,16 @@ SET(SRC   AnalysisManager.cpp
           Supernova.cpp
           SupernovaTiming.cpp)
 
+add_library(${CMAKE_PROJECT_NAME} SHARED ${SRC} QPixG4Dict.cxx)
+
+# link to the filesystem library on linux
+if (UNIX AND NOT APPLE)
+  target_link_libraries(${CMAKE_PROJECT_NAME} stdc++fs)
+endif ()
+
+# link to GEANT4, ROOT, and MARLEY libraries
+target_link_libraries(${CMAKE_PROJECT_NAME} ${Geant4_LIBRARIES} ${ROOT_LIBRARIES} MARLEY)
+
 # generate ROOT dictionary
 ROOT_GENERATE_DICTIONARY(QPixG4Dict AnalysisManager.h LINKDEF LinkDef.h)
-
-add_library(${CMAKE_PROJECT_NAME} SHARED ${SRC} QPixG4Dict.cxx)
-target_link_libraries(${PROJECT_NAME} stdc++fs)
 
