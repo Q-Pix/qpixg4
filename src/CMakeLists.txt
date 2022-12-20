@@ -10,6 +10,7 @@ include_directories(${CMAKE_SOURCE_DIR}/src)
 
 SET(SRC   ActionInitialization.cpp
           AnalysisManager.cpp
+          AnalysisData.cpp
           ConfigManager.cpp
           DetectorConstruction.cpp
           EventAction.cpp
