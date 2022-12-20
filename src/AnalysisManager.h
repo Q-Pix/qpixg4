@@ -18,6 +18,7 @@
 
 class TFile;
 class TTree;
+class AnalysisData;
 
 class AnalysisManager {
 
