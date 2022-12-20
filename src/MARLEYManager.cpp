@@ -6,7 +6,11 @@
 //   * Creation date: 7 August 2020
 // -----------------------------------------------------------------------------
 
+// Class includes
 #include "MARLEYManager.h"
+
+// Qpix includes
+#include "ConfigManager.h"
 
 // MARLEY includes
 #include "marley/JSONConfig.hh"
@@ -15,6 +19,7 @@ MARLEYManager * MARLEYManager::instance_ = 0;
 
 //-----------------------------------------------------------------------------
 MARLEYManager::MARLEYManager()
+  : marley_json(ConfigManager::GetMarleyJson())
 {
 }
 

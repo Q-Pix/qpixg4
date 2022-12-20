@@ -9,9 +9,10 @@
 #include "PrimaryGeneration.h"
 
 // Q-Pix includes
+#include "ConfigManager.h"
+#include "GeneratorParticle.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
-#include "GeneratorParticle.h"
 
 // MARLEY includes
 #include "marley/Event.hh"
@@ -47,25 +48,14 @@
 
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
-    decay_at_time_zero_(false),
-    isotropic_(false),
-    override_vertex_position_(false),
-    vertex_x_(2.3/2),
-    vertex_y_(6.0/2),
-    vertex_z_(3.6/2),
+    decay_at_time_zero_(ConfigManager::GetDecayAtTimeZero()),
+    isotropic_(ConfigManager::GetIsotropic()),
+    override_vertex_position_(ConfigManager::GetOverrideVertexPosition()),
+    vertex_x_(ConfigManager::GetVertexX()),
+    vertex_y_(ConfigManager::GetVertexY()),
+    vertex_z_(ConfigManager::GetVertexZ()),
     particle_gun_(0)
 {
-  msg_ = new G4GenericMessenger(this, "/Inputs/", "Control commands of the ion primary generator.");
-  msg_->DeclareProperty("Particle_Type", Particle_Type_,  "which particle?");
-  msg_->DeclareProperty("decay_at_time_zero", decay_at_time_zero_,
-                        "Set to true to make unstable isotopes decay at t=0.");
-  msg_->DeclareProperty("isotropic", isotropic_, "isotropic");
-  msg_->DeclareProperty("override_vertex_position",
-                        override_vertex_position_,
-                        "override vertex position");
-  msg_->DeclareProperty("vertex_x", vertex_x_, "vertex x").SetUnit("mm");
-  msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("mm");
-  msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("mm");
 
   particle_gun_ = new G4GeneralParticleSource();
 
@@ -86,7 +76,6 @@ PrimaryGeneration::PrimaryGeneration()
 
 PrimaryGeneration::~PrimaryGeneration()
 {
-  delete msg_;
   delete particle_gun_;
   delete supernova_timing_;
   delete super;

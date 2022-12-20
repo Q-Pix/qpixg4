@@ -16,18 +16,19 @@ class G4GenericMessenger;
 
 class EventAction: public G4UserEventAction
 {
-    public:
+  public:
 
-        EventAction();
-        virtual ~EventAction();
-        virtual void BeginOfEventAction(const G4Event*);
-        virtual void EndOfEventAction(const G4Event*);
+    EventAction();
+    virtual ~EventAction();
+    virtual void BeginOfEventAction(const G4Event*);
+    virtual void EndOfEventAction(const G4Event*);
 
-    private:
+  private:
 
-        G4GenericMessenger* msg_; // Messenger for configuration parameters
-        int event_id_offset_;
-        double energy_threshold_;
+    G4GenericMessenger* msg_; // Messenger for configuration parameters
+    int event_id_offset_;
+    double energy_threshold_;
+    AnalysisData event;
 };
 
 #endif

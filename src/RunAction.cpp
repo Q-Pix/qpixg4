@@ -10,6 +10,7 @@
 
 // Q-Pix includes
 #include "AnalysisManager.h"
+#include "ConfigManager.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
 
@@ -22,21 +23,23 @@
 #include <filesystem>
 
 
-RunAction::RunAction(): G4UserRunAction(), multirun_(false)
+RunAction::RunAction()
+  : G4UserRunAction(),
+  inputFile_(ConfigManager::GetInputFile()),
+  outputFile_(ConfigManager::GetOutputFile()),
+  marleyJson_(ConfigManager::GetMarleyJson()),
+  generator_(ConfigManager::GetGenerator()),
+  genieFormat_(ConfigManager::GetGenieFormat()),
+  multirun_(ConfigManager::GetMultirun()),
+  particleType_(ConfigManager::GetParticleType())
 {
-    messenger_ = new G4GenericMessenger(this, "/Inputs/");
-    messenger_->DeclareProperty("root_output", root_output_path_,
-                                "path to output ROOT file");
-    messenger_->DeclareProperty("MARLEY_json", marley_json_,
-                                "MARLEY configuration file");
-    messenger_->DeclareProperty("multirun", multirun_,
-                                "Multiple runs");
+  ConfigManager::Instance();
+{
 }
 
 
 RunAction::~RunAction()
 {
-    delete messenger_;
 }
 
 
@@ -44,12 +47,45 @@ void RunAction::BeginOfRunAction(const G4Run* run)
 {
     G4cout << "RunAction::BeginOfRunAction: Run #" << run->GetRunID() << " start." << G4endl;
 
-    // get MARLEY manager
-    MARLEYManager * marley_manager = MARLEYManager::Instance();
-    // configure and create MARLEY generator
-    marley_manager->Initialize(marley_json_);
+    particleType_.toLower();
+    generator_.toLower();
+    genieFormat_.toLower();
 
-    std::string root_output_path = root_output_path_;
+
+
+    if (generator_ == "marley") {
+
+        G4cout << "RunAction determines this to be a MARLEY generated event" << G4endl;
+        // get MARLEY manager
+        MARLEYManager * marleyManager = MARLEYManager::Instance();
+        G4cout << "RA Test Point 0" << G4endl;
+    
+    
+        // configure and create MARLEY generator
+        marleyManager->Initialize(marleyJson_);
+        G4cout << " RA Test Point 1" << G4endl;
+    
+        if (particleType_ == "supernova")
+        {
+        }
+
+    } else if (generator_ == "genie")
+    {
+        G4cout << "RunAction determines this to be a GENIE generated event" << G4endl;
+
+        // get ROOT manager
+        ROOTManager *rootManager=ROOTManager::Instance();
+        if (rootManager->Initialize())
+        {
+            rootManager->SetBranches();
+            G4int NumberEventsInTheFile=(G4int)rootManager->GetNEntries();
+            G4cout << "nEntries = " << NumberEventsInTheFile << G4endl;
+        } else
+        {
+            G4Exception("[RunAction]","[BeginOfRunAction]",G4ExceptionSeverity::FatalException ,"RootManager is not properly initialized. Check to see if the following file exist /Inputs/ReadFrom_Root_Path in macros/ROOTRead.macro   ") ;
+
+
+    G4String root_output_path = root_output_path_;
 
     if (multirun_)
     {
@@ -71,17 +107,22 @@ void RunAction::BeginOfRunAction(const G4Run* run)
         // G4cout << "stem:           " << path.stem()           << G4endl;
         // G4cout << "extension:      " << path.extension()      << G4endl;
 
-        std::string parent_path = path.parent_path();
-        std::string stem = path.stem();
-        std::string extension = path.extension();
+        G4String parentPath_ = outputFile_(0, outputFile_.last('/'));
+        G4String baseName_ = outputFile_(outputFile_.last('/')+1, outputFile_.length());
+        G4String stem_ = baseName_(0, baseName_.last('.'));
+        G4String extension_ = baseName_(baseName_.last('.'), baseName_.length());
 
         // G4cout << "parent_path: " << parent_path << G4endl;
         // G4cout << "stem:        " << stem        << G4endl;
         // G4cout << "extension:   " << extension   << G4endl;
 
-        root_output_path = parent_path + "/" + stem + "_" + run_str + extension;
 
-        // G4cout << "root_output_path: " << root_output_path << G4endl;
+        root_output_path = parentPath_;
+        root_output_path += "/";
+        root_output_path += stem_;
+        root_output_path += "_";
+        root_output_path += runStr_;
+        root_output_path += extension_;
 
     }
 
@@ -89,10 +130,10 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
     // analysis_manager->Book(root_output_path_);
     analysis_manager->Book(root_output_path);
-    analysis_manager->SetRun(run->GetRunID());
+    event.SetRun(run->GetRunID());
 
     // reset event variables
-    analysis_manager->EventReset();
+    event.EventReset();
 
     // get MC truth manager
     MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
