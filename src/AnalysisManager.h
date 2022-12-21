@@ -9,6 +9,9 @@
 #ifndef AnalysisManager_h
 #define AnalysisManager_h 1
 
+// Qpix includes
+#include "AnalysisData.h"
+
 // GEANT4 includes
 #include "globals.hh"
 
@@ -31,14 +34,13 @@ class AnalysisManager {
     void FillMetadata(double const &, double const &, double const &);
     static AnalysisManager* Instance();
 
+    AnalysisData event;
+
   private:
 
     AnalysisManager();
 
     static AnalysisManager * instance_;
-
-    // AnalysisData objects
-    AnalysisData event; 
 
     // ROOT objects
     TFile * tfile_;

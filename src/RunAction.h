@@ -9,9 +9,12 @@
 #ifndef RUN_ACTION_H
 #define RUN_ACTION_H
 
+#include "AnalysisData.h"
+
 #include <G4UserRunAction.hh>
 #include "G4GenericMessenger.hh"
 
+class AnalysisData;
 
 class RunAction: public G4UserRunAction
 {
@@ -29,6 +32,14 @@ class RunAction: public G4UserRunAction
         G4String marley_json_;
         bool multirun_;
         AnalysisData event;
+
+
+        G4String        inputFile_;
+        G4String        outputFile_;
+        G4String        marleyJson_;
+        G4String        generator_;
+        G4String        genieFormat_;
+        G4String        particleType_; 
 };
 
 #endif

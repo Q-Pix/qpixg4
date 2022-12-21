@@ -6,6 +6,7 @@
 //   * Creation date: 25 September 2020
 // -----------------------------------------------------------------------------
 
+#include "ConfigManager.h"
 #include "SupernovaTiming.h"
 
 //-----------------------------------------------------------------------------
@@ -13,7 +14,7 @@ SupernovaTiming::SupernovaTiming()
   : initialized_(false),
     on_(ConfigManager::GetSNTimingOn()),
     input_file_(ConfigManager::GetInputFile()),
-    th2_name_(ConfigManager::GetTh2Name())
+    th2_name_(ConfigManager::GetTh2Name()),
     tfile_(0)
 {
 }

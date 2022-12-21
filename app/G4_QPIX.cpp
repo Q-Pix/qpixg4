@@ -77,7 +77,7 @@ int main(int argc, char** argv)
     // batch mode
     // Execute Macro file using any aliases set above
     G4String command = "/control/execute ";
-    G4String fileName = argv[1];
+    G4String macro_name = argv[1];
     uimgr->ApplyCommand(command+macro_name);
   }
   else {

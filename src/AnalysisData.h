@@ -15,10 +15,17 @@
 // C++ includes
 #include <map>
 #include <set>
+#include <string>
+#include <vector>
+
+
+class GeneratorParticle;
+class MCParticle;
 
 class AnalysisData {
 
   public:
+    AnalysisData();
     ~AnalysisData();
 
     void EventReset();
@@ -35,10 +42,6 @@ class AnalysisData {
 
     inline void AddProcess(std::string const & process) { process_names_.insert(process); }
     inline std::set< std::string > GetProcessNames() const { return process_names_; }
-
-
-  private:
-    AnalysisData();
 
     // declarations to use automatically generated copy constructor and assignment operators
     AnalysisData(const AnalysisData& rhs) = default;

@@ -15,6 +15,7 @@
 #include "G4ParticleDefinition.hh"
 #include "G4GenericMessenger.hh"
 
+#include "ConfigManager.h"
 #include "Supernova.h"
 
 #include <math.h> 

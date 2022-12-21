@@ -8,6 +8,8 @@
 
 // QPix includes
 #include "AnalysisData.h"
+#include "GeneratorParticle.h"
+#include "MCParticle.h"
 
 // Geant4 includes
 #include "G4AutoLock.hh"

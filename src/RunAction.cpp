@@ -13,6 +13,7 @@
 #include "ConfigManager.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
+#include "ROOTManager.h"
 
 // GEANT4 includes
 #include "G4Box.hh"
@@ -34,7 +35,6 @@ RunAction::RunAction()
   particleType_(ConfigManager::GetParticleType())
 {
   ConfigManager::Instance();
-{
 }
 
 
@@ -43,9 +43,9 @@ RunAction::~RunAction()
 }
 
 
-void RunAction::BeginOfRunAction(const G4Run* run)
+void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
-    G4cout << "RunAction::BeginOfRunAction: Run #" << run->GetRunID() << " start." << G4endl;
+    G4cout << "RunAction::BeginOfRunAction: Run #" << g4run->GetRunID() << " start." << G4endl;
 
     particleType_.toLower();
     generator_.toLower();
@@ -62,7 +62,7 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     
     
         // configure and create MARLEY generator
-        marleyManager->Initialize(marleyJson_);
+        marleyManager->Initialize();
         G4cout << " RA Test Point 1" << G4endl;
     
         if (particleType_ == "supernova")
@@ -84,6 +84,8 @@ void RunAction::BeginOfRunAction(const G4Run* run)
         {
             G4Exception("[RunAction]","[BeginOfRunAction]",G4ExceptionSeverity::FatalException ,"RootManager is not properly initialized. Check to see if the following file exist /Inputs/ReadFrom_Root_Path in macros/ROOTRead.macro   ") ;
 
+        }
+    }
 
     G4String root_output_path = root_output_path_;
 
@@ -91,8 +93,8 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     {
 
         std::ostringstream ss;
-        ss << std::setw(4) << std::setfill('0') << run->GetRunID();
-        std::string run_str(ss.str());
+        ss << std::setw(4) << std::setfill('0') << g4run->GetRunID();
+        std::string runStr_(ss.str());
 
         // G4cout << "run_str: " << run_str << G4endl;
 
@@ -130,7 +132,7 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
     // analysis_manager->Book(root_output_path_);
     analysis_manager->Book(root_output_path);
-    event.SetRun(run->GetRunID());
+    event.SetRun(g4run->GetRunID());
 
     // reset event variables
     event.EventReset();

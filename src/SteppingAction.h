@@ -9,8 +9,12 @@
 #ifndef STEPPING_ACTION_H
 #define STEPPING_ACTION_H
 
+
+#include "AnalysisData.h"
+
 #include <G4UserSteppingAction.hh>
 
+class AnalysisData;
 
 class SteppingAction: public G4UserSteppingAction
 {

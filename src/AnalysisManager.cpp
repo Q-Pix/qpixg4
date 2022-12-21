@@ -15,11 +15,16 @@
 // Geant4 includes
 #include "G4AutoLock.hh"
 
+// ROOT includes
+#include "TFile.h"
+#include "TTree.h"
+
 namespace {
   G4Mutex bookMutex = G4MUTEX_INITIALIZER;
   G4Mutex saveMutex = G4MUTEX_INITIALIZER;
   G4Mutex fillMutex = G4MUTEX_INITIALIZER;
   G4Mutex instMutex = G4MUTEX_INITIALIZER;
+  G4Mutex metaMutex = G4MUTEX_INITIALIZER;
 }
 
 AnalysisManager * AnalysisManager::instance_ = 0;
@@ -49,18 +54,18 @@ AnalysisManager * AnalysisManager::Instance()
 //-----------------------------------------------------------------------------
 void AnalysisManager::Book(std::string const file_path)
 {
-  if (!G4Threading::isMasterThread()) 
+  if (!G4Threading::IsMasterThread()) 
   {
     return;
   }  // only run Book() for the master thread
 
   // Check if tfile_ is a null pointer, if so, create ROOT output file
-  if (tfile_ = 0) {
+  if (tfile_ == 0) {
     tfile_ = new TFile(file_path.data(), "recreate", "qpix");
   }
 
   // check if metadata_ is a null pointer, if so, create metadata tree
-  if (metadata_ = 0)
+  if (metadata_ == 0)
   {
     metadata_ = new TTree("metadata", "metadata");
 
@@ -70,7 +75,7 @@ void AnalysisManager::Book(std::string const file_path)
   }
 
   // check if event_tree_ is a null pointer, if so, create event tree
-  if (event_tree_ = 0) 
+  if (event_tree_ == 0) 
   {
     event_tree_ = new TTree("event_tree", "event tree");
 
@@ -168,6 +173,7 @@ void AnalysisManager::FillMetadata(double const & detector_length_x,
                                    double const & detector_length_y,
                                    double const & detector_length_z)
 {
+  G4AutoLock metaLock(&metaMutex);
   detector_length_x_ = detector_length_x;
   detector_length_y_ = detector_length_y;
   detector_length_z_ = detector_length_z;

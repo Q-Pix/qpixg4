@@ -42,7 +42,7 @@ void EventAction::BeginOfEventAction(const G4Event*)
 }
 
 
-void EventAction::EndOfEventAction(const G4Event* event)
+void EventAction::EndOfEventAction(const G4Event* g4event)
 {
     // get MC truth manager
     MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
@@ -60,10 +60,10 @@ void EventAction::EndOfEventAction(const G4Event* event)
         // std::cout << "Energy deposited by particle PDG (" << particle->PDGCode() << "): " << particle->EnergyDeposited() << std::endl;
     }
 
-    int mod = event->GetEventID() % 1000;
+    int mod = g4event->GetEventID() % 1000;
     if (mod == 0)
     {
-        G4cout << "Event " << event->GetEventID() << "..." << G4endl;
+        G4cout << "Event " << g4event->GetEventID() << "..." << G4endl;
         // G4cout << "Energy threshold: " << energy_threshold_ << G4endl;
         // G4cout << "Total energy deposited: " << energy_deposited << G4endl;
     }
@@ -83,7 +83,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
     // set event number
     // event->SetEventID(event->GetEventID() + event_id_offset_);
     // analysis_manager->SetEvent(event->GetEventID());
-    event.SetEvent(event->GetEventID() + event_id_offset_);
+    event.SetEvent(g4event->GetEventID() + event_id_offset_);
 
     // add initial generator particles to analysis manager
     for (auto const& particle : mc_truth_manager->GetInitialGeneratorParticles())
@@ -110,7 +110,7 @@ void EventAction::EndOfEventAction(const G4Event* event)
 
     // write event to ROOT file and reset event variables
     AnalysisManager * analysisManager = AnalysisManager::Instance();
-    analysis_manager->EventFill();
+    analysisManager->EventFill(event);
     event.EventReset();
 
     // reset event in MC truth manager
