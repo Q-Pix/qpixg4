@@ -32,6 +32,9 @@ class ConfigManager {
     ConfigManager();
     ConfigManager(const ConfigManager&);
     ~ConfigManager();
+    
+    void CreateCommands();
+
 
     // Access current values
     static G4int    GetEventIDOffset()                 { return Instance()->eventIDOffset_; }

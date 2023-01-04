@@ -60,6 +60,8 @@ class MCTruthManager {
 
         inline std::map< int, MCParticle * > GetMCParticleMap() const { return mc_particle_map_; }
 
+        typedef std::map<int,MCParticle*> MCParticleMap;
+
     private:
 
         static MCTruthManager * instance_;

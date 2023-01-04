@@ -27,9 +27,7 @@ class RunAction: public G4UserRunAction
 
     private:
 
-        G4GenericMessenger * messenger_;
         G4String root_output_path_;
-        G4String marley_json_;
         bool multirun_;
         AnalysisData event;
 

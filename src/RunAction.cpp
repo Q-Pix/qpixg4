@@ -25,16 +25,9 @@
 
 
 RunAction::RunAction()
-  : G4UserRunAction(),
-  inputFile_(ConfigManager::GetInputFile()),
-  outputFile_(ConfigManager::GetOutputFile()),
-  marleyJson_(ConfigManager::GetMarleyJson()),
-  generator_(ConfigManager::GetGenerator()),
-  genieFormat_(ConfigManager::GetGenieFormat()),
-  multirun_(ConfigManager::GetMultirun()),
-  particleType_(ConfigManager::GetParticleType())
+  : G4UserRunAction()
 {
-  ConfigManager::Instance();
+  ConfigManager * configManager = ConfigManager::Instance();
 }
 
 
@@ -46,12 +39,25 @@ RunAction::~RunAction()
 void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
     G4cout << "RunAction::BeginOfRunAction: Run #" << g4run->GetRunID() << " start." << G4endl;
+    ConfigManager * configManager = ConfigManager::Instance();
+    ConfigManager::Print();
+
+    G4String inputFile_ = ConfigManager::GetInputFile();
+    G4String outputFile_ = ConfigManager::GetOutputFile();
+    G4String marleyJson_ = ConfigManager::GetMarleyJson();
+    G4String generator_ = ConfigManager::GetGenerator();
+    G4String genieFormat_ = ConfigManager::GetGenieFormat();
+    G4bool multirun_ = ConfigManager::GetMultirun();
+    G4String particleType_ = ConfigManager::GetParticleType();
+
+
 
     particleType_.toLower();
     generator_.toLower();
     genieFormat_.toLower();
 
-
+    G4cout << "Testpoint 1" << G4endl << "generator_ = " << generator_ << G4endl;
+    ConfigManager::Print();
 
     if (generator_ == "marley") {
 
@@ -87,7 +93,7 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
         }
     }
 
-    G4String root_output_path = root_output_path_;
+    G4String root_output_path = outputFile_;
 
     if (multirun_)
     {
@@ -98,7 +104,7 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
         // G4cout << "run_str: " << run_str << G4endl;
 
-        std::filesystem::path path = static_cast<std::string> (root_output_path_);
+        //std::filesystem::path path = static_cast<std::string> (root_output_path_);
 
         // G4cout << "root_name:      " << path.root_name()      << G4endl;
         // G4cout << "root_directory: " << path.root_directory() << G4endl;
@@ -131,6 +137,8 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
     // get run number
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
     // analysis_manager->Book(root_output_path_);
+
+    G4cout << "RunAction BeginOfRunAction: root_output_path = " << root_output_path << G4endl;
     analysis_manager->Book(root_output_path);
     event.SetRun(g4run->GetRunID());
 
@@ -147,6 +155,14 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
 void RunAction::EndOfRunAction(const G4Run*)
 {
+    G4String inputFile_ = ConfigManager::GetInputFile();
+    G4String outputFile_ = ConfigManager::GetOutputFile();
+    G4String marleyJson_ = ConfigManager::GetMarleyJson();
+    G4String generator_ = ConfigManager::GetGenerator();
+    G4String genieFormat_ = ConfigManager::GetGenieFormat();
+    G4bool multirun_ = ConfigManager::GetMultirun();
+    G4String particleType_ = ConfigManager::GetParticleType();
+
     // get analysis manager
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
 

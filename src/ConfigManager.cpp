@@ -26,9 +26,8 @@
 #include <stdlib.h>
 
 
-
+//-----------------------------------------------------------------------------
 // Singleton Initializers for master and worker threads
-
 ConfigManager* ConfigManager::Instance() {
   static const ConfigManager* masterInstance = 0;
   static G4ThreadLocal ConfigManager* theInstance = 0;
@@ -45,7 +44,7 @@ ConfigManager* ConfigManager::Instance() {
   return theInstance;
 }
 
-
+//-----------------------------------------------------------------------------
 ConfigManager::ConfigManager()
   : eventIDOffset_(0), energyThreshold_(0), particleType_(""), decayAtTimeZero_(false), isotropic_(true),
   overrideVertexPosition_(false), printParticleInfo_(false), inputFile_(""), outputFile_(""), marleyJson_(""), generator_(""),
@@ -54,18 +53,50 @@ ConfigManager::ConfigManager()
   nK42Decays_(0), nBi214Decays_(0), nPb214Decays_(0), nPo210Decays_(0), nRn222Decays_(0), eventCutoff_(0),
   eventWindow_(0), snTimingOn_(false), th2Name_("nusperbin2d_nue") 
 {
-  // Instantiate all G4GenericMessengers
+  CreateCommands();
+}
+
+//-----------------------------------------------------------------------------
+ConfigManager::ConfigManager(const ConfigManager& master)
+  : eventIDOffset_(master.eventIDOffset_), energyThreshold_(master.energyThreshold_), particleType_(master.particleType_),
+  decayAtTimeZero_(master.decayAtTimeZero_), isotropic_(master.isotropic_), overrideVertexPosition_(master.overrideVertexPosition_),
+  printParticleInfo_(master.printParticleInfo_), inputFile_(master.inputFile_), outputFile_(master.outputFile_),
+  marleyJson_(master.marleyJson_), generator_(master.generator_), genieFormat_(master.genieFormat_), multirun_(master.multirun_),
+  vertexX_(master.vertexX_), vertexY_(master.vertexY_), vertexZ_(master.vertexZ_), nAr39Decays_(master.nAr39Decays_),
+  nAr42Decays_(master.nAr42Decays_), nKr85Decays_(master.nKr85Decays_), nCo60Decays_(master.nCo60Decays_),
+  nK40Decays_(master.nK40Decays_), nK42Decays_(master.nK42Decays_), nBi214Decays_(master.nBi214Decays_),
+  nPb214Decays_(master.nPb214Decays_), nPo210Decays_(master.nPo210Decays_), nRn222Decays_(master.nRn222Decays_),
+  eventCutoff_(master.eventCutoff_), eventWindow_(master.eventWindow_), snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_)
+{
+  CreateCommands();
+}
+
+//-----------------------------------------------------------------------------
+ConfigManager::~ConfigManager()
+{
+  delete msgEvent_;
+  delete msgInputs_;
+  delete msgSupernova_;
+  delete msgSupernovaTiming_;
+}
+
+//-----------------------------------------------------------------------------
+void ConfigManager::CreateCommands()
+{
+  // Instantiate all messengers
   msgEvent_ = new G4GenericMessenger(this, "/event/", "user-defined event configuration");
   msgInputs_ = new G4GenericMessenger(this, "/inputs/", "Control commands of the ion primary generator.");
   msgSupernova_ = new G4GenericMessenger(this, "/supernova/", "Control commands of the supernova generator.");
   msgSupernovaTiming_ = new G4GenericMessenger(this, "/supernova/timing/", "control commands for SupernovaTiming");
-  
-  //Declare all properties for msgEvent
+
+
+  // Declare all properties for msgEvent
   msgEvent_->DeclareProperty("offset", eventIDOffset_, "Event ID offset.");
-  
+
   msgEvent_->DeclarePropertyWithUnit("energy_threshold", "MeV", energyThreshold_, "Events that deposit less energy than this energy threshold will not be saved.");
 
-  //Declare all properties for msgInputs
+
+  // Declare all properties for msgInputs
   msgInputs_->DeclareProperty("particle_type", particleType_,  "which kind of particle?");
   msgInputs_->DeclareProperty("decay_at_time_zero", decayAtTimeZero_, "Set to true to make unstable isotopes decay at t=0.");
   msgInputs_->DeclareProperty("isotropic", isotropic_, "isotropic");
@@ -82,7 +113,8 @@ ConfigManager::ConfigManager()
   msgInputs_->DeclarePropertyWithUnit("vertex_y", "mm", vertexY_, "vertex y");
   msgInputs_->DeclarePropertyWithUnit("vertex_z", "mm", vertexZ_, "vertex z");
 
-  //Declare all properties for msgSupernova
+
+  // Declare all properties for msgSupernova
   msgSupernova_->DeclareProperty("N_Ar39_Decays", nAr39Decays_,  "number of Ar39 decays");
   msgSupernova_->DeclareProperty("N_Ar42_Decays", nAr42Decays_,  "number of Ar42 decays");
   msgSupernova_->DeclareProperty("N_Kr85_Decays", nKr85Decays_,  "number of Kr85 decays");
@@ -97,31 +129,14 @@ ConfigManager::ConfigManager()
   msgSupernova_->DeclarePropertyWithUnit("Event_Cutoff", "ns", eventCutoff_,  "window to simulate the times");
   msgSupernova_->DeclarePropertyWithUnit("Event_Window", "ns", eventWindow_,  "window to simulate the times");
 
-  //Declare all properties for msgSupernovaTiming
+
+  // Declare all properties for msg
   msgSupernovaTiming_->DeclareProperty("on", snTimingOn_, "turn on SupernovaTiming");
   msgSupernovaTiming_->DeclareProperty("th2_name", th2Name_, "name of TH2");
+
 }
 
-ConfigManager::~ConfigManager()
-{
-  delete msgEvent_;
-  delete msgInputs_;
-  delete msgSupernova_;
-  delete msgSupernovaTiming_;
-}
-
-ConfigManager::ConfigManager(const ConfigManager& master)
-  : eventIDOffset_(master.eventIDOffset_), energyThreshold_(master.energyThreshold_), particleType_(master.particleType_),
-  decayAtTimeZero_(master.decayAtTimeZero_), isotropic_(master.isotropic_), overrideVertexPosition_(master.overrideVertexPosition_),
-  printParticleInfo_(master.printParticleInfo_), inputFile_(master.inputFile_), outputFile_(master.outputFile_),
-  marleyJson_(master.marleyJson_), generator_(master.generator_), genieFormat_(master.genieFormat_), multirun_(master.multirun_),
-  vertexX_(master.vertexX_), vertexY_(master.vertexY_), vertexZ_(master.vertexZ_), nAr39Decays_(master.nAr39Decays_),
-  nAr42Decays_(master.nAr42Decays_), nKr85Decays_(master.nKr85Decays_), nCo60Decays_(master.nCo60Decays_),
-  nK40Decays_(master.nK40Decays_), nK42Decays_(master.nK42Decays_), nBi214Decays_(master.nBi214Decays_),
-  nPb214Decays_(master.nPb214Decays_), nPo210Decays_(master.nPo210Decays_), nRn222Decays_(master.nRn222Decays_),
-  eventCutoff_(master.eventCutoff_), eventWindow_(master.eventWindow_), snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_)
-{}
-
+//-----------------------------------------------------------------------------
 void ConfigManager::PrintConfig() const
 {
   G4cout << "EventAction -- Event_ID_Offset:    " << eventIDOffset_ << G4endl
@@ -160,7 +175,7 @@ void ConfigManager::PrintConfig() const
      << G4endl;
 }
 
-
+//-----------------------------------------------------------------------------
 
 
 

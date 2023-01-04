@@ -31,6 +31,7 @@ AnalysisManager * AnalysisManager::instance_ = 0;
 
 //-----------------------------------------------------------------------------
 AnalysisManager::AnalysisManager()
+  : tfile_(0), metadata_(0), event_tree_(0)
 {
 #ifdef G4ANALYSIS_USE
 #endif
@@ -52,15 +53,19 @@ AnalysisManager * AnalysisManager::Instance()
 }
 
 //-----------------------------------------------------------------------------
-void AnalysisManager::Book(std::string const file_path)
+void AnalysisManager::Book(const std::string& file_path)
 {
+  G4cout << "Beginning of AnalysisManager::Book() -- file_path = " << file_path << G4endl;
+
   if (!G4Threading::IsMasterThread()) 
+  //G4AutoLock bookLock(&bookMutex);
   {
     return;
   }  // only run Book() for the master thread
 
   // Check if tfile_ is a null pointer, if so, create ROOT output file
   if (tfile_ == 0) {
+    G4cout << "Testing file_path.data() for null pointer. file_path.data() = " << file_path.data() << G4endl;
     tfile_ = new TFile(file_path.data(), "recreate", "qpix");
   }
 
@@ -151,6 +156,8 @@ void AnalysisManager::Book(std::string const file_path)
 void AnalysisManager::Save()
 {
   if (!G4Threading::IsMasterThread()) {return;}  // only run Save() with the master thread
+
+  //G4AutoLock saveLock(&saveMutex);
 
   // write TTree objects to file and close file
   tfile_->cd();

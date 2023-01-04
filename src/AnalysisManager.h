@@ -28,7 +28,7 @@ class AnalysisManager {
   public:
     ~AnalysisManager();
 
-    void Book(std::string const);
+    void Book(const std::string&);
     void Save();
     void EventFill(const AnalysisData&);
     void FillMetadata(double const &, double const &, double const &);

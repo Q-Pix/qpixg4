@@ -149,6 +149,12 @@ void AnalysisData::AddFinalGeneratorParticle(GeneratorParticle const * particle)
 //-----------------------------------------------------------------------------
 void AnalysisData::AddMCParticle(MCParticle const * particle)
 {
+  if (particle == 0) {
+    G4cout << "particle pointer is null" << G4endl;
+    abort;
+  } else {
+    G4cout << "Particle Mass: " << particle->Mass() << G4endl;}
+
   particle_track_id_.push_back(particle->TrackID());
   particle_parent_track_id_.push_back(particle->ParentTrackID());
   particle_pdg_code_.push_back(particle->PDGCode());
@@ -173,6 +179,8 @@ void AnalysisData::AddMCParticle(MCParticle const * particle)
   number_particles_ += 1;
 
   std::vector< TrajectoryHit > const hits = particle->Hits();
+
+  G4cout << "hits size: " << G4endl << hits.size() << G4endl;
 
   for (auto const & hit : hits)
   {

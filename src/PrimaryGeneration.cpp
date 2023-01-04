@@ -13,6 +13,7 @@
 #include "GeneratorParticle.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
+#include "ROOTManager.h"
 
 // MARLEY includes
 #include "marley/Event.hh"
@@ -48,13 +49,15 @@
 
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
-    decay_at_time_zero_(ConfigManager::GetDecayAtTimeZero()),
-    isotropic_(ConfigManager::GetIsotropic()),
-    override_vertex_position_(ConfigManager::GetOverrideVertexPosition()),
-    vertex_x_(ConfigManager::GetVertexX()),
-    vertex_y_(ConfigManager::GetVertexY()),
-    vertex_z_(ConfigManager::GetVertexZ()),
-    particle_gun_(0)
+    particle_gun_(0)//,
+    //isotropic_(false),
+    //decay_at_time_zero_(false),
+    //override_vertex_position_(false),
+    //vertex_x_(0),
+    //vertex_y_(0),
+    //vertex_z_(0),
+    //printParticleInfo_(false),
+    //particleType_("")
 {
 
   particle_gun_ = new G4GeneralParticleSource();
@@ -84,6 +87,19 @@ PrimaryGeneration::~PrimaryGeneration()
 
 void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 {
+
+  // Set variables from ConfigManager
+  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  G4bool isotropic_ = ConfigManager::GetIsotropic();
+  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
+  G4double vertex_x_ = ConfigManager::GetVertexX();
+  G4double vertex_y_ = ConfigManager::GetVertexY();
+  G4double vertex_z_ = ConfigManager::GetVertexZ();
+  G4String particleType_ = ConfigManager::GetParticleType();
+
+  particleType_.toLower();
+
+
   // get MC truth manager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
@@ -101,16 +117,21 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
   }
 
-  if (Particle_Type_ ==  "SUPERNOVA")
+  if (particleType_ ==  "supernova")
   {
     super->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
     super->Gen_Supernova_Background(event);
   }
 
-  else if (Particle_Type_ ==  "MARLEY")
+  else if (particleType_ ==  "marley")
   {
     this->MARLEYGeneratePrimaries(event);
   }
+
+  else if (particleType_ == "beam")
+  {
+    this->GENIEGeneratePrimaries(event);
+  } 
 
   else
   {
@@ -175,9 +196,120 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
 }
 
+void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
+{
+
+  G4cout << "Starting GENIEGeneratePrimaries" << G4endl;
+
+  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  G4bool isotropic_ = ConfigManager::GetIsotropic();
+  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
+  G4bool printParticleInfo_ = ConfigManager::GetPrintParticleInfo();
+  G4double vertex_x_ = ConfigManager::GetVertexX();
+  G4double vertex_y_ = ConfigManager::GetVertexY();
+  G4double vertex_z_ = ConfigManager::GetVertexZ();
+  G4String particleType = ConfigManager::GetParticleType();
+
+  // Get MCTruthManager
+  MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
+
+  ROOTManager * rootManager = ROOTManager::Instance();
+
+  rootManager->Cd();
+
+  TTree * tree = rootManager->GetTTree_();
+
+  // Getting the event from the ROOT file
+  Long64_t ientry = tree->LoadTree(event->GetEventID());
+
+  if (ientry < 0) {
+    std::cout<<"Event does not exist in the Root file!!"<<std::endl;
+    return;
+  }
+
+  if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
+  tree->GetEntry(event->GetEventID());
+
+  G4ThreeVector vertex3d = G4ThreeVector (vertex_x_, vertex_y_, vertex_z_);
+
+  G4PrimaryVertex * vertex = new G4PrimaryVertex(vertex3d, 0);
+
+  for (int np = 0; np<rootManager->GetNParticles_(); np++){
+    if (!((rootManager->GetIdx_(np)>=0) && (rootManager->GetFirstMother_(np)<2))) {std::cout<<"Skipping this particle PDGCode-> "<< rootManager->GetPDG_(np)<< " Idx-> "<<rootManager->GetIdx_(np)<<" Mother= "<<rootManager->GetFirstMother_(np)<<std::endl; continue;}
+
+    // If the particle is a nucleus
+    G4ParticleDefinition *pdef=0;
+
+    if (rootManager->GetPDG_(np) > 1000000000 && rootManager->GetPDG_(np)<2000000000)
+    {
+      if (!pdef)
+      {
+        int const Z = (rootManager->GetPDG_(np) % 10000000) / 10000; // atomic number
+        int const A = (rootManager->GetPDG_(np) % 10000) / 10; // mass number
+        pdef = particle_table_->GetIonTable()->GetIon(Z, A, 0.);
+      }
+    } 
+    else
+    {
+      pdef = particle_table_->FindParticle(rootManager->GetPDG_(np));
+    }
+
+    if (pdef==0){
+      G4String str1="Couldnt find the particle table for " + std::to_string(rootManager->GetPDG_(np));
+      G4Exception("[PrimaryGeneration]","GENIEGeneratePrimaries",G4ExceptionSeverity::JustWarning,str1.c_str());
+      continue;
+    }
+
+    // filter the particles less than 1 eV
+    // if(rootManager->GetE_(np)<(1 *CLHEP::eV)) continue;
+    G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::MeV,rootManager->GetPy_(np)*CLHEP::MeV,rootManager->GetPz_(np)*CLHEP::MeV,rootManager->GetE_(np)*CLHEP::MeV);
+
+    // create a generator particle
+    GeneratorParticle * generatorParticle = new GeneratorParticle();
+    generatorParticle->SetPDGCode (RootParticle->GetPDGcode());
+    generatorParticle->SetMass    (RootParticle->GetMass()/CLHEP::MeV);
+    generatorParticle->SetCharge  (RootParticle->GetCharge());
+    generatorParticle->SetX       (vertex3d[0] / CLHEP::cm);
+    generatorParticle->SetY       (vertex3d[1] / CLHEP::cm);
+    generatorParticle->SetZ       (vertex3d[2] / CLHEP::cm);
+    generatorParticle->SetT       (0);
+    generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy()/CLHEP::MeV);
+    generatorParticle->SetPx      (RootParticle->GetPx()/CLHEP::MeV);
+    generatorParticle->SetPy      (RootParticle->GetPy()/CLHEP::MeV);
+    generatorParticle->SetPz      (RootParticle->GetPz()/CLHEP::MeV);
+
+    // add ROOT particle to MCTruthManager
+    (rootManager->GetFirstMother_(np)<1 )? mc_truth_manager->AddInitialGeneratorParticle(generatorParticle):mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
+
+    if(printParticleInfo_){
+      std::cout<<"Event -> "<<event->GetEventID()<<" "<<rootManager->Getevent_()<<std::endl;
+      std::cout<<"PDG -> "<<RootParticle->GetPDGcode()<<" "<<rootManager->GetPDG_(np)<<std::endl;
+      std::cout<<"E -> "<<RootParticle->GetTotalEnergy()<<" "<<rootManager->GetE_(np)*CLHEP::MeV<<std::endl;
+      std::cout<<"px -> "<<RootParticle->GetPx()<<" "<<rootManager->GetPx_(np)*CLHEP::MeV<<std::endl;
+      std::cout<<"py -> "<<RootParticle->GetPy()<<" "<<rootManager->GetPy_(np)*CLHEP::MeV<<std::endl;
+      std::cout<<"pz -> "<<RootParticle->GetPz()<<" "<<rootManager->GetPz_(np)*CLHEP::MeV<<std::endl;
+      std::cout<<"Idx -> "<<rootManager->GetIdx_(np)<<std::endl;
+      std::cout<<"Mother -> "<<rootManager->GetFirstMother_(np)<<std::endl;
+    }
+    vertex->SetPrimary(RootParticle);
+
+  }
+
+  event->AddPrimaryVertex(vertex);
+
+}
 
 void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
 {
+
+  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  G4bool isotropic_ = ConfigManager::GetIsotropic();
+  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
+  G4double vertex_x_ = ConfigManager::GetVertexX();
+  G4double vertex_y_ = ConfigManager::GetVertexY();
+  G4double vertex_z_ = ConfigManager::GetVertexZ();
+  G4String particleType_ = ConfigManager::GetParticleType();
+
   // get MC truth manager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 

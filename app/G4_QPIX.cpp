@@ -37,7 +37,8 @@
 int main(int argc, char** argv)
 {
 
-  ConfigManager::Instance();
+  ConfigManager * configManager = ConfigManager::Instance();
+  ConfigManager::Print();
   //choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
   //set random seed with system time

@@ -4,23 +4,27 @@
 /tracking/verbose 0
 
 # configure marley
-/Inputs/Particle_Type MARLEY
-/Inputs/MARLEY_json ../cfg/marley_config.js
-/Inputs/isotropic false
-/Inputs/override_vertex_position false
-/Inputs/vertex_x 1.15 m
-/Inputs/vertex_y 3.0 m
-/Inputs/vertex_z 1.8 m
+/inputs/input_file /scratch/group/mitchcomp/DUNE/data/GENIE_data/gntp.0.gtrac.root
+/inputs/particle_type Beam
+/inputs/generator GENIE
+/inputs/genie_format gRooTracker
+/inputs/isotropic false
+/inputs/override_vertex_position false
+/inputs/vertex_x 1.15 m
+/inputs/vertex_y 3.0 m
+/inputs/vertex_z 1.8 m
 
 # output path
-/Inputs/root_output ../output/MARLEY.root
+/inputs/output_file /scratch/user/dave.elofson/software/qpixg4/output/test.root
 
 # initialize run
+/run/numberOfThreads 1
+/run/printProgress 1
 /run/initialize
 /random/setSeeds 0 31
 
 # limit radioactive decays 
-/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+#/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 
 # run
 /run/beamOn 100

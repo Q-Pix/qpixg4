@@ -54,7 +54,7 @@ G4int ROOTManager::Initialize() {
   
   genieFormat_.toLower();
 
-  if (genieFormat_ == "rootracker") {
+  if (genieFormat_ == "rootracker" || genieFormat_ == "grootracker") {
     treeName_ = "gRooTracker";
   } else {
     G4cerr << "The genie format entered: '" << genieFormat_ << "' is not currently supported." << G4endl
@@ -71,16 +71,23 @@ G4int ROOTManager::Initialize() {
     std::cout << "Configuring to Read From ROOT File..." << std::endl;
     // Reading the root file to extract the info
     if (tree_ == 0) {
+      G4cout << "Test 1" << G4endl;
       f_ = (TFile*)gROOT->GetListOfFiles()->FindObject(inputFile_);
+      G4cout << "Test 2" << G4endl;
       if (!f_ || !f_->IsOpen()) {
+        G4cout << "Test 2.0.0" << G4endl;
         f_ = new TFile(inputFile_);
+        G4cout << "Test 2.0.1" << G4endl;
       }
       if(f_->IsZombie()){
+        G4cout << "Test 2.1.0" << G4endl;
         return isInitialized ;
       }
+      G4cout << "Test 2.2" << G4endl;
       f_->GetObject(treeName_,tree_);
     }
     isInitialized=1;
+    G4cout << "Test 3" << G4endl;
     return isInitialized;
   }
   else {
