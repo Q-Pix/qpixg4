@@ -55,7 +55,6 @@ AnalysisManager * AnalysisManager::Instance()
 //-----------------------------------------------------------------------------
 void AnalysisManager::Book(const std::string& file_path)
 {
-  G4cout << "Beginning of AnalysisManager::Book() -- file_path = " << file_path << G4endl;
 
   if (!G4Threading::IsMasterThread()) 
   //G4AutoLock bookLock(&bookMutex);
@@ -65,7 +64,7 @@ void AnalysisManager::Book(const std::string& file_path)
 
   // Check if tfile_ is a null pointer, if so, create ROOT output file
   if (tfile_ == 0) {
-    G4cout << "Testing file_path.data() for null pointer. file_path.data() = " << file_path.data() << G4endl;
+    //G4cout << "Testing file_path.data() for null pointer. file_path.data() = " << file_path.data() << G4endl;
     tfile_ = new TFile(file_path.data(), "recreate", "qpix");
   }
 
@@ -114,7 +113,7 @@ void AnalysisManager::Book(const std::string& file_path)
     event_tree_->Branch("generator_final_particle_charge",     &event.generator_final_particle_charge_);
 
     event_tree_->Branch("number_particles", &event.number_particles_, "number_particles/I");
-    event_tree_->Branch("number_hits",      &event.number_hits_,      "number_hits/I");
+    event_tree_->Branch("number_hits",      &event.number_hits_,      "number_hits/L");
 
     event_tree_->Branch("energy_deposit",   &event.energy_deposit_,   "energy_deposit/D");
 

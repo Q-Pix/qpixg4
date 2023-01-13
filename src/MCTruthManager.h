@@ -64,7 +64,7 @@ class MCTruthManager {
 
     private:
 
-        static MCTruthManager * instance_;
+        static G4ThreadLocal MCTruthManager * instance_;
 
         int run_;
         int event_;

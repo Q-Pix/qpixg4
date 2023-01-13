@@ -8,7 +8,7 @@
 
 #include "MCTruthManager.h"
 
-MCTruthManager * MCTruthManager::instance_ = 0;
+G4ThreadLocal MCTruthManager * MCTruthManager::instance_ = 0;
 
 //-----------------------------------------------------------------------------
 MCTruthManager::MCTruthManager()

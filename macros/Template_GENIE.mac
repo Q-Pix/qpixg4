@@ -11,11 +11,11 @@
 /inputs/isotropic false
 /inputs/override_vertex_position false
 /inputs/vertex_x 1.15 m
-/inputs/vertex_y 3.0 m
+/inputs/vertex_y 0.5 m
 /inputs/vertex_z 1.8 m
 
 # output path
-/inputs/output_file /scratch/user/dave.elofson/software/qpixg4/output/test.root
+/inputs/output_file /scratch/user/dave.elofson/data/systems_tests/NEW_genie/qpixg4-output-genie.root
 
 # initialize run
 /run/numberOfThreads 1

@@ -51,10 +51,6 @@ void EventAction::EndOfEventAction(const G4Event* g4event)
     // get map of particles from MC truth manager
     const MCTruthManager::MCParticleMap& particleMap = mc_truth_manager->GetMCParticleMap();
 
-    if (particleMap.empty() == 1) {
-        G4cout << "particleMap is empty." << G4endl;
-    } else {
-        G4cout << "size of particleMap: " << particleMap.size() << G4endl;}
 
     double energy_deposited = 0.;
 
@@ -87,7 +83,6 @@ void EventAction::EndOfEventAction(const G4Event* g4event)
         return;
     }
 
-    G4cout << "Test Point Alpha -- energy_deposited exceeds threshold" << G4endl;
 
     // set event number
     // event->SetEventID(event->GetEventID() + event_id_offset_);

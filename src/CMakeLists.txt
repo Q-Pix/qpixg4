@@ -15,11 +15,11 @@ SET(SRC   ActionInitialization.cpp
           DetectorConstruction.cpp
           EventAction.cpp
           GeneratorParticle.cpp
+          GENIEManager.cpp
           MARLEYManager.cpp
           MCTruthManager.cpp
           MCParticle.cpp
           PrimaryGeneration.cpp
-          ROOTManager.cpp
           RunAction.cpp
           SteppingAction.cpp
           Supernova.cpp

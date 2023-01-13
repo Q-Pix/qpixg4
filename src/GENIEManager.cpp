@@ -1,10 +1,17 @@
+///////////////////////////////////////////////////////////////////////////////
 //
-// Created by ilker on 12/20/21.
+// GENIEManager.cpp
 //
+// Manages GENIE input to qpixg4
+//
+// Created by: Ilker 20122021
+// Modified by: Dave Elofson 01092022
+//
+///////////////////////////////////////////////////////////////////////////////
 
 
 // Class Includes
-#include "ROOTManager.h"
+#include "GENIEManager.h"
 
 // Package Includes
 #include "ConfigManager.h"
@@ -27,10 +34,10 @@
 
 
 
-ROOTManager * ROOTManager::instance_=0;
+GENIEManager * GENIEManager::instance_=0;
 
 //--------------------------------
-ROOTManager::ROOTManager()
+GENIEManager::GENIEManager()
   : inputFile_(ConfigManager::GetInputFile()),
   particleType_(ConfigManager::GetParticleType()),
   genieFormat_(ConfigManager::GetGenieFormat())
@@ -39,18 +46,18 @@ ROOTManager::ROOTManager()
 
 
 //--------------------------------
-ROOTManager::~ROOTManager() {
+GENIEManager::~GENIEManager() {
 }
 //--------------------------------
-ROOTManager * ROOTManager::Instance()
+GENIEManager * GENIEManager::Instance()
 {
-  if (instance_ == 0) instance_ = new ROOTManager();
+  if (instance_ == 0) instance_ = new GENIEManager();
   return instance_;
 }
 
 
 
-G4int ROOTManager::Initialize() {
+G4int GENIEManager::Initialize() {
   
   genieFormat_.toLower();
 
@@ -58,7 +65,7 @@ G4int ROOTManager::Initialize() {
     treeName_ = "gRooTracker";
   } else {
     G4cerr << "The genie format entered: '" << genieFormat_ << "' is not currently supported." << G4endl
-           << "Please make the necessary adjustments in ROOTManager.cpp and ROOTManager.h and try again." << G4endl
+           << "Please make the necessary adjustments in GENIEManager.cpp and GENIEManager.h and try again." << G4endl
            << G4endl
            << "Current list of supported genie formats:" << G4endl
            << " - rootracker" << G4endl;
@@ -71,23 +78,16 @@ G4int ROOTManager::Initialize() {
     std::cout << "Configuring to Read From ROOT File..." << std::endl;
     // Reading the root file to extract the info
     if (tree_ == 0) {
-      G4cout << "Test 1" << G4endl;
       f_ = (TFile*)gROOT->GetListOfFiles()->FindObject(inputFile_);
-      G4cout << "Test 2" << G4endl;
       if (!f_ || !f_->IsOpen()) {
-        G4cout << "Test 2.0.0" << G4endl;
         f_ = new TFile(inputFile_);
-        G4cout << "Test 2.0.1" << G4endl;
       }
       if(f_->IsZombie()){
-        G4cout << "Test 2.1.0" << G4endl;
         return isInitialized ;
       }
-      G4cout << "Test 2.2" << G4endl;
       f_->GetObject(treeName_,tree_);
     }
     isInitialized=1;
-    G4cout << "Test 3" << G4endl;
     return isInitialized;
   }
   else {
@@ -99,7 +99,7 @@ G4int ROOTManager::Initialize() {
 }
 
 
-void ROOTManager::SetBranches() {
+void GENIEManager::SetBranches() {
   // Creating Root Branches
   if (treeName_=="gRooTracker") {
     tree_->SetBranchAddress("EvtNum",           &event_,            &b_event);
@@ -125,18 +125,44 @@ void ROOTManager::SetBranches() {
 
 }
 
-Int_t ROOTManager::GetNEntries() {
+Int_t GENIEManager::GetNEntries() {
   return tree_->GetEntriesFast();
 }
 
 
-void ROOTManager::Cd(){
+void GENIEManager::Cd(){
   if(f_)
     f_->cd();
 }
 
 
-void ROOTManager::Close(){
+void GENIEManager::SaveMomentum(){
+  std::vector<G4double> px, py, pz, e;
+  for (int i=0; i<this->GetNEntries(); i++){
+     tree_->GetEntry(i);
+     px.push_back(P4_[i][0]);
+     py.push_back(P4_[i][1]);
+     pz.push_back(P4_[i][2]);
+     e.push_back(P4_[i][3]);
+  }
+
+  TFile * fout = new TFile("momentum_report.root","recreate");
+  TTree * p4 = new TTree("p4", "split momentums");
+  p4->Branch("px",&px);
+  p4->Branch("py",&py);
+  p4->Branch("pz",&pz);
+  p4->Branch("e",&e);
+
+  p4->Fill();
+
+  fout->Write();
+
+  delete fout; 
+
+}
+
+
+void GENIEManager::Close(){
   if(f_){
     this->Cd();
     f_->Close();

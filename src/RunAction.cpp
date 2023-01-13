@@ -13,7 +13,7 @@
 #include "ConfigManager.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
-#include "ROOTManager.h"
+#include "GENIEManager.h"
 
 // GEANT4 includes
 #include "G4Box.hh"
@@ -38,7 +38,6 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
-    G4cout << "RunAction::BeginOfRunAction: Run #" << g4run->GetRunID() << " start." << G4endl;
     ConfigManager * configManager = ConfigManager::Instance();
     ConfigManager::Print();
 
@@ -56,20 +55,16 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
     generator_.toLower();
     genieFormat_.toLower();
 
-    G4cout << "Testpoint 1" << G4endl << "generator_ = " << generator_ << G4endl;
     ConfigManager::Print();
 
     if (generator_ == "marley") {
 
-        G4cout << "RunAction determines this to be a MARLEY generated event" << G4endl;
         // get MARLEY manager
         MARLEYManager * marleyManager = MARLEYManager::Instance();
-        G4cout << "RA Test Point 0" << G4endl;
     
     
         // configure and create MARLEY generator
         marleyManager->Initialize();
-        G4cout << " RA Test Point 1" << G4endl;
     
         if (particleType_ == "supernova")
         {
@@ -77,14 +72,13 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
     } else if (generator_ == "genie")
     {
-        G4cout << "RunAction determines this to be a GENIE generated event" << G4endl;
 
         // get ROOT manager
-        ROOTManager *rootManager=ROOTManager::Instance();
-        if (rootManager->Initialize())
+        GENIEManager *genieManager=GENIEManager::Instance();
+        if (genieManager->Initialize())
         {
-            rootManager->SetBranches();
-            G4int NumberEventsInTheFile=(G4int)rootManager->GetNEntries();
+            genieManager->SetBranches();
+            G4int NumberEventsInTheFile=(G4int)genieManager->GetNEntries();
             G4cout << "nEntries = " << NumberEventsInTheFile << G4endl;
         } else
         {
@@ -138,7 +132,6 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
     // analysis_manager->Book(root_output_path_);
 
-    G4cout << "RunAction BeginOfRunAction: root_output_path = " << root_output_path << G4endl;
     analysis_manager->Book(root_output_path);
     event.SetRun(g4run->GetRunID());
 
@@ -191,5 +184,7 @@ void RunAction::EndOfRunAction(const G4Run*)
 
     // save run to ROOT file
     analysis_manager->Save();
+
+    GENIEManager *genieManager=GENIEManager::Instance();
 }
 

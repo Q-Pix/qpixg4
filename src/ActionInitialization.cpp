@@ -37,7 +37,6 @@ ActionInitialization::~ActionInitialization()
 
 void ActionInitialization::BuildForMaster() const
 {
-  G4cout << "AI particleType = " << string << G4endl;
 
   SetUserAction(new RunAction());
 

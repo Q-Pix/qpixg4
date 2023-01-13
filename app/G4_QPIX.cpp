@@ -11,7 +11,7 @@
 #include "DetectorConstruction.h"
 #include "EventAction.h"
 #include "PrimaryGeneration.h"
-#include "ROOTManager.h"
+#include "GENIEManager.h"
 #include "RunAction.h"
 #include "SteppingAction.h"
 #include "TrackingAction.h"
@@ -43,8 +43,8 @@ int main(int argc, char** argv)
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
   //set random seed with system time
   G4long seed = time(NULL);
-  CLHEP::HepRandom::setTheSeed(seed);
-
+  //CLHEP::HepRandom::setTheSeed(seed);
+  CLHEP::HepRandom::setTheSeed(1234567890); // For debuging purposes
 
 
   // Detect interactive mode (if no arguments) and define UI session

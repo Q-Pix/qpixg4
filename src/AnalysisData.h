@@ -55,7 +55,7 @@ class AnalysisData {
     int event_;
 
     int number_particles_;
-    int number_hits_;
+    long long number_hits_;
 
     double energy_deposit_;
 

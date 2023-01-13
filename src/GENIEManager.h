@@ -1,6 +1,11 @@
+///////////////////////////////////////////////////////////////////////////////
 //
-// Created by ilker on 12/20/21.
+// GENIEManager.h
 //
+// Created by: Ilker 20122021
+// Modifield by: Dave Elofson 01092023
+//
+///////////////////////////////////////////////////////////////////////////////
 
 
 
@@ -19,14 +24,14 @@
 // C++ includes
 #include <map>
 #include <set>
-class ROOTManager {
+class GENIEManager {
 
   public:
 
-    ROOTManager();
-    ~ROOTManager();
+    GENIEManager();
+    ~GENIEManager();
 
-    static ROOTManager * Instance();
+    static GENIEManager * Instance();
     G4int  Initialize();
     static const Int_t   Size_=51;
 
@@ -37,7 +42,7 @@ class ROOTManager {
     G4int  GetPDG_(Int_t ev)             const {return pdg_[ev];};
     G4int  GetIdx_(Int_t ev)             const {return idx[ev];};
     G4int  GetFirstMother_(Int_t ev)     const {return FirstMother[ev];};
-    G4int  IsROOTManagerInitialized_()   const {return isInitialized;};
+    G4int  IsGENIEManagerInitialized_()   const {return isInitialized;};
 
 
     G4double  GetE_(Int_t ev)               const {return P4_[ev][0];};
@@ -52,7 +57,7 @@ class ROOTManager {
     Int_t GetNEntries();
     void Cd();
     void Close();
-
+    void SaveMomentum();
 
   protected:
 
@@ -111,7 +116,7 @@ class ROOTManager {
 
 
   private:
-    static ROOTManager *instance_;
+    static GENIEManager *instance_;
 
 
 
