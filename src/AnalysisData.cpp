@@ -49,7 +49,7 @@ void AnalysisData::EventReset()
   generator_initial_particle_mass_.clear();
   generator_initial_particle_charge_.clear();
 
-  generator_intermediate_number_particles = 0;
+  generator_intermediate_number_particles_ = 0;
   generator_intermediate_particle_x_.clear();
   generator_intermediate_particle_y_.clear();
   generator_intermediate_particle_z_.clear();

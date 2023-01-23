@@ -26,7 +26,7 @@ void GeneratorParticle::Print() const
          << "Charge:   " << charge_/CLHEP::eplus << G4endl
          << "X:        " << x_/CLHEP::mm << "mm" << G4endl
          << "Y:        " << y_/CLHEP::mm << "mm" << G4endl
-         << "Z:        " << z_/CLHEP::mm << "mm" << G4endl;
+         << "Z:        " << z_/CLHEP::mm << "mm" << G4endl
          << "T:        " << t_/CLHEP::ns << "ns" << G4endl
          << "Px:       " << px_/CLHEP::GeV << "GeV" << G4endl
          << "Py:       " << py_/CLHEP::GeV << "GeV" << G4endl
