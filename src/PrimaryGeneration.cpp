@@ -208,6 +208,10 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
   G4double vertex_y_ = ConfigManager::GetVertexY();
   G4double vertex_z_ = ConfigManager::GetVertexZ();
   G4String particleType = ConfigManager::GetParticleType();
+  G4ThreeVector momentumDirection_ = ConfigManager::GetMomentumDirection();
+
+  particleType.toLower();
+
 
   // Get MCTruthManager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
@@ -234,7 +238,11 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
   G4PrimaryVertex * vertex = new G4PrimaryVertex(vertex3d, 0);
 
   for (int np = 0; np<genieManager->GetNParticles_(); np++){
-    if (!((genieManager->GetIdx_(np)>=0) && (genieManager->GetFirstMother_(np)<2))) {std::cout<<"Skipping this particle PDGCode-> "<< genieManager->GetPDG_(np)<< " Idx-> "<<genieManager->GetIdx_(np)<<" Mother= "<<genieManager->GetFirstMother_(np)<<std::endl; continue;}
+    if (!((genieManager->GetIdx_(np)>=0)))
+    {
+      std::cout<<"Skipping this particle PDGCode-> "<< genieManager->GetPDG_(np)<< " Idx-> "<<genieManager->GetIdx_(np)<<" Status= "<<genieManager->GetStatus_(np)<<std::endl;
+      continue;
+    }
 
     // If the particle is a nucleus
     G4ParticleDefinition *pdef=0;
@@ -261,28 +269,72 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
 
     // filter the particles less than 1 eV
     // if(genieManager->GetE_(np)<(1 *CLHEP::eV)) continue;
-    G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,genieManager->GetPx_(np)*CLHEP::MeV,genieManager->GetPy_(np)*CLHEP::MeV,genieManager->GetPz_(np)*CLHEP::MeV,genieManager->GetE_(np)*CLHEP::MeV);
+    G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,genieManager->GetPx_(np),genieManager->GetPy_(np),genieManager->GetPz_(np),genieManager->GetE_(np));
+
+    G4cout << "RootParticle:" << G4endl;
+    RootParticle->Print();
 
     // create a generator particle
     GeneratorParticle * generatorParticle = new GeneratorParticle();
     generatorParticle->SetPDGCode (RootParticle->GetPDGcode());
-    generatorParticle->SetMass    (RootParticle->GetMass()/CLHEP::MeV);
+    generatorParticle->SetMass    (RootParticle->GetMass());
     generatorParticle->SetCharge  (RootParticle->GetCharge());
-    generatorParticle->SetX       (vertex3d[0] / CLHEP::cm);
-    generatorParticle->SetY       (vertex3d[1] / CLHEP::cm);
-    generatorParticle->SetZ       (vertex3d[2] / CLHEP::cm);
-    generatorParticle->SetT       (0);
+    generatorParticle->SetX       (vertex3d[0]);
+    generatorParticle->SetY       (vertex3d[1]);
+    generatorParticle->SetZ       (vertex3d[2]);
+    generatorParticle->SetT       (0*CLHEP::ns);
     
+    //G4cout << "GeneratorParticle:" << G4endl;
+    //generatorParticle->Print();
+
+    // rotate momentum about x axis, so initial momentum is in desired direction. Energy remains the same
+    double identity_array[9] = { 1, 0, 0,
+                                 0, 1, 0,
+                                 0, 0, 1  };
+
+    ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
+    ROOT::Math::SMatrix< double, 3 > R = I;
+
+    if (particleType == "beam")
+    {
+	  G4ThreeVector p_i(0, 0, 1);
+      
+      R =this->Rotation_Matrix(p_i, momentumDirection_);
 
 
-    // rotate momentum about x axis, so initial momentum is in +y. Energy remains the same
-    generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy()/CLHEP::MeV);
-    generatorParticle->SetPx      (RootParticle->GetPx()/CLHEP::MeV);
-    generatorParticle->SetPy      (RootParticle->GetPz()/CLHEP::MeV);
-    generatorParticle->SetPz      (-1*RootParticle->GetPx()/CLHEP::MeV);
+    } else if (particleType == "atmosphere" || particleType == "atmospheric")
+    {
+      G4ThreeVector p_i(0, 0, 1);
+      
+      R = this->Rotation_Matrix(p_i, momentumDirection_);
+
+    } else
+    {
+      G4cerr << "Need to add '/inputs/momentum_direction <G4ThreeVector>' to your macro" << G4endl;
+    }
+    
+    ROOT::Math::SVector< double, 3 > a(RootParticle->GetPx(), RootParticle->GetPy(), RootParticle->GetPz());
+    a = R*a;
+
+    generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy());
+    generatorParticle->SetPx      (a(0));
+    generatorParticle->SetPy      (a(1));
+    generatorParticle->SetPz      (a(2));
 
     // add ROOT particle to MCTruthManager
-    (genieManager->GetFirstMother_(np)<1 )? mc_truth_manager->AddInitialGeneratorParticle(generatorParticle):mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
+    if (genieManager->GetFirstMother_(np)==-1 )
+    {
+      mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
+    }
+    else if (genieManager->GetStatus_(np)==1)
+    {
+      mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
+    }
+    else
+    {
+      mc_truth_manager->AddIntermediateGeneratorParticle(generatorParticle);
+      continue;
+    }
 
     if(printParticleInfo_){
       std::cout<<"Event -> "<<event->GetEventID()<<" "<<genieManager->Getevent_()<<std::endl;
@@ -587,3 +639,52 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
 }
 
 }
+
+ROOT::Math::SMatrix< double, 3 > PrimaryGeneration::Rotation_Matrix(G4ThreeVector vec1, G4ThreeVector vec2)
+{
+  // --------------------------------------------------------------------------
+  // Rotation matrix r that rotates vector vec1 onto vector vec2
+  // https://math.stackexchange.com/a/476311
+  // --------------------------------------------------------------------------
+  
+  double identity_array[9] = { 1, 0, 0,
+                               0, 1, 0,
+                               0, 0, 1  };
+
+  ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
+  ROOT::Math::SMatrix< double, 3 > r = I;
+
+  double b_array[3] = { vec2[0],
+                        vec2[1],
+                        vec2[2]  };
+  ROOT::Math::SVector< double, 3 > b(b_array, 3);
+  b = b.Unit();
+
+  double a_array[3] = { vec1[0],
+                        vec1[1],
+                        vec1[2] };
+
+  ROOT::Math::SVector< double, 3 > a(a_array, 3);
+  a = a.Unit();
+
+  double cosine = ROOT::Math::Dot(a, b);
+
+  // cross product between a and b
+  ROOT::Math::SVector< double, 3 > v = ROOT::Math::Cross(a, b);
+ 
+  // sine between a and b
+  double sine = ROOT::Math::Mag(v);
+ 
+  // skew-symmetric cross-product matrix of v
+  double V_array[9] = {     0, -v(2),  v(1),
+                         v(2),     0, -v(0),
+                        -v(1),  v(0),     0  };
+  ROOT::Math::SMatrix< double, 3 > V(V_array, 9);
+  
+  // rotation matrix
+  r = I + V + V*V*(1-cosine)/sine/sine;
+
+
+  return r;
+}
+

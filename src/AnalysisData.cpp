@@ -49,6 +49,19 @@ void AnalysisData::EventReset()
   generator_initial_particle_mass_.clear();
   generator_initial_particle_charge_.clear();
 
+  generator_intermediate_number_particles = 0;
+  generator_intermediate_particle_x_.clear();
+  generator_intermediate_particle_y_.clear();
+  generator_intermediate_particle_z_.clear();
+  generator_intermediate_particle_t_.clear();
+  generator_intermediate_particle_px_.clear();
+  generator_intermediate_particle_py_.clear();
+  generator_intermediate_particle_pz_.clear();
+  generator_intermediate_particle_energy_.clear();
+  generator_intermediate_particle_pdg_code_.clear();
+  generator_intermediate_particle_mass_.clear();
+  generator_intermediate_particle_charge_.clear();
+
   generator_final_number_particles_ = 0;
   generator_final_particle_x_.clear();
   generator_final_particle_y_.clear();
@@ -127,6 +140,23 @@ void AnalysisData::AddInitialGeneratorParticle(GeneratorParticle const * particl
   generator_initial_particle_py_.push_back(particle->Py());
   generator_initial_particle_pz_.push_back(particle->Pz());
   generator_initial_particle_energy_.push_back(particle->Energy());
+}
+
+//-----------------------------------------------------------------------------
+void AnalysisData::AddIntermediateGeneratorParticle(GeneratorParticle const * particle)
+{
+  generator_intermediate_number_particles_ += 1;
+  generator_intermediate_particle_pdg_code_.push_back(particle->PDGCode());
+  generator_intermediate_particle_mass_.push_back(particle->Mass());
+  generator_intermediate_particle_charge_.push_back(particle->Charge());
+  generator_intermediate_particle_x_.push_back(particle->X());
+  generator_intermediate_particle_y_.push_back(particle->Y());
+  generator_intermediate_particle_z_.push_back(particle->Z());
+  generator_intermediate_particle_t_.push_back(particle->T());
+  generator_intermediate_particle_px_.push_back(particle->Px());
+  generator_intermediate_particle_py_.push_back(particle->Py());
+  generator_intermediate_particle_pz_.push_back(particle->Pz());
+  generator_intermediate_particle_energy_.push_back(particle->Energy());
 }
 
 //-----------------------------------------------------------------------------

@@ -20,6 +20,7 @@
 // Geant4 includes
 #include "G4Types.hh"
 #include "G4String.hh"
+#include "G4SystemOfUnits.hh"
 
 // C++ includes
 #include <map>
@@ -43,12 +44,12 @@ class GENIEManager {
     G4int  GetIdx_(Int_t ev)             const {return idx[ev];};
     G4int  GetFirstMother_(Int_t ev)     const {return FirstMother[ev];};
     G4int  IsGENIEManagerInitialized_()   const {return isInitialized;};
+    G4int  GetStatus_(Int_t value)       const {return Status[value]; };
 
-
-    G4double  GetE_(Int_t ev)               const {return P4_[ev][0];};
-    G4double  GetPx_(Int_t ev)              const {return P4_[ev][1];};
-    G4double  GetPy_(Int_t ev)              const {return P4_[ev][2];};
-    G4double  GetPz_(Int_t ev)              const {return P4_[ev][3];};
+    G4double  GetE_(Int_t ev)               const {return P4_[ev][3]*CLHEP::GeV;};
+    G4double  GetPx_(Int_t ev)              const {return P4_[ev][0]*CLHEP::GeV;};
+    G4double  GetPy_(Int_t ev)              const {return P4_[ev][1]*CLHEP::GeV;};
+    G4double  GetPz_(Int_t ev)              const {return P4_[ev][2]*CLHEP::GeV;};
     G4String  GetInPutRootFilePath()        const {return inputFile_;};
     G4String  GetInPutRootTreeName()        const {return genieFormat_;};
 

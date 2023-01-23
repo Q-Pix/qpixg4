@@ -99,6 +99,19 @@ void AnalysisManager::Book(const std::string& file_path)
     event_tree_->Branch("generator_initial_particle_mass",     &event.generator_initial_particle_mass_);
     event_tree_->Branch("generator_initial_particle_charge",   &event.generator_initial_particle_charge_);
 
+    event_tree_->Branch("generator_intermediate_number_particles",  &event.generator_intermediate_number_particles_, "generator_intermediate_number_particles/I");
+    event_tree_->Branch("generator_intermediate_particle_x",        &event.generator_intermediate_particle_x_);
+    event_tree_->Branch("generator_intermediate_particle_y",        &event.generator_intermediate_particle_y_);
+    event_tree_->Branch("generator_intermediate_particle_z",        &event.generator_intermediate_particle_z_);
+    event_tree_->Branch("generator_intermediate_particle_t",        &event.generator_intermediate_particle_t_);
+    event_tree_->Branch("generator_intermediate_particle_px",       &event.generator_intermediate_particle_px_);
+    event_tree_->Branch("generator_intermediate_particle_py",       &event.generator_intermediate_particle_py_);
+    event_tree_->Branch("generator_intermediate_particle_pz",       &event.generator_intermediate_particle_pz_);
+    event_tree_->Branch("generator_intermediate_particle_energy",   &event.generator_intermediate_particle_energy_);
+    event_tree_->Branch("generator_intermediate_particle_pdg_code", &event.generator_intermediate_particle_pdg_code_);
+    event_tree_->Branch("generator_intermediate_particle_mass",     &event.generator_intermediate_particle_mass_);
+    event_tree_->Branch("generator_intermediate_particle_charge",   &event.generator_intermediate_particle_charge_);
+
     event_tree_->Branch("generator_final_number_particles",    &event.generator_final_number_particles_,   "generator_final_number_particles/I");
     event_tree_->Branch("generator_final_particle_x",          &event.generator_final_particle_x_);
     event_tree_->Branch("generator_final_particle_y",          &event.generator_final_particle_y_);

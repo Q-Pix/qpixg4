@@ -16,7 +16,7 @@
 #include "G4GenericMessenger.hh"
 #include "G4SystemOfUnits.hh"
 #include "G4Threading.hh"
-
+#include "G4ThreeVector.hh"
 
 // System Includes
 #include <fstream>
@@ -46,27 +46,44 @@ ConfigManager* ConfigManager::Instance() {
 
 //-----------------------------------------------------------------------------
 ConfigManager::ConfigManager()
-  : eventIDOffset_(0), energyThreshold_(0), particleType_(""), decayAtTimeZero_(false), isotropic_(true),
+  : eventIDOffset_(0), energyThreshold_(0),
+  
+  particleType_(""), decayAtTimeZero_(false), isotropic_(true),
   overrideVertexPosition_(false), printParticleInfo_(false), inputFile_(""), outputFile_(""), marleyJson_(""), generator_(""),
-  genieFormat_(""), multirun_(false),
-  vertexX_(2.3*m/2), vertexY_(6.0*m/2), vertexZ_(3.6*m/2), nAr39Decays_(0), nAr42Decays_(0), nKr85Decays_(0), nCo60Decays_(0), nK40Decays_(0),
+  genieFormat_(""), multirun_(false), momentumDirection_(0,0,0), vertexX_(2.3*m/2), vertexY_(6.0*m/2), vertexZ_(3.6*m/2),
+  
+  nAr39Decays_(0), nAr42Decays_(0), nKr85Decays_(0), nCo60Decays_(0), nK40Decays_(0),
   nK42Decays_(0), nBi214Decays_(0), nPb214Decays_(0), nPo210Decays_(0), nRn222Decays_(0), eventCutoff_(0),
-  eventWindow_(0), snTimingOn_(false), th2Name_("nusperbin2d_nue") 
+  eventWindow_(0),
+
+  snTimingOn_(false), th2Name_("nusperbin2d_nue") 
 {
   CreateCommands();
 }
 
 //-----------------------------------------------------------------------------
 ConfigManager::ConfigManager(const ConfigManager& master)
-  : eventIDOffset_(master.eventIDOffset_), energyThreshold_(master.energyThreshold_), particleType_(master.particleType_),
-  decayAtTimeZero_(master.decayAtTimeZero_), isotropic_(master.isotropic_), overrideVertexPosition_(master.overrideVertexPosition_),
-  printParticleInfo_(master.printParticleInfo_), inputFile_(master.inputFile_), outputFile_(master.outputFile_),
-  marleyJson_(master.marleyJson_), generator_(master.generator_), genieFormat_(master.genieFormat_), multirun_(master.multirun_),
-  vertexX_(master.vertexX_), vertexY_(master.vertexY_), vertexZ_(master.vertexZ_), nAr39Decays_(master.nAr39Decays_),
-  nAr42Decays_(master.nAr42Decays_), nKr85Decays_(master.nKr85Decays_), nCo60Decays_(master.nCo60Decays_),
-  nK40Decays_(master.nK40Decays_), nK42Decays_(master.nK42Decays_), nBi214Decays_(master.nBi214Decays_),
-  nPb214Decays_(master.nPb214Decays_), nPo210Decays_(master.nPo210Decays_), nRn222Decays_(master.nRn222Decays_),
-  eventCutoff_(master.eventCutoff_), eventWindow_(master.eventWindow_), snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_)
+  : eventIDOffset_(master.eventIDOffset_),
+  energyThreshold_(master.energyThreshold_),
+
+  particleType_(master.particleType_),
+  decayAtTimeZero_(master.decayAtTimeZero_), isotropic_(master.isotropic_),
+  overrideVertexPosition_(master.overrideVertexPosition_),
+  printParticleInfo_(master.printParticleInfo_), inputFile_(master.inputFile_),
+  outputFile_(master.outputFile_), marleyJson_(master.marleyJson_),
+  generator_(master.generator_), genieFormat_(master.genieFormat_),
+  multirun_(master.multirun_), momentumDirection_(master.momentumDirection_),
+  vertexX_(master.vertexX_), vertexY_(master.vertexY_),
+  vertexZ_(master.vertexZ_),
+
+  nAr39Decays_(master.nAr39Decays_), nAr42Decays_(master.nAr42Decays_),
+  nKr85Decays_(master.nKr85Decays_), nCo60Decays_(master.nCo60Decays_),
+  nK40Decays_(master.nK40Decays_), nK42Decays_(master.nK42Decays_),
+  nBi214Decays_(master.nBi214Decays_), nPb214Decays_(master.nPb214Decays_),
+  nPo210Decays_(master.nPo210Decays_), nRn222Decays_(master.nRn222Decays_),
+  eventCutoff_(master.eventCutoff_), eventWindow_(master.eventWindow_),
+
+  snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_)
 {
   CreateCommands();
 }
@@ -108,6 +125,8 @@ void ConfigManager::CreateCommands()
   msgInputs_->DeclareProperty("generator", generator_, "event generator of input file");
   msgInputs_->DeclareProperty("multirun", multirun_, "multiple runs");
   msgInputs_->DeclareProperty("genie_format", genieFormat_, "format of genie-produced input file");
+  msgInputs_->DeclareProperty("momentum_direction", momentumDirection_, "initial momentum of generator particles");
+
 
   msgInputs_->DeclarePropertyWithUnit("vertex_x", "mm", vertexX_, "vertex x");
   msgInputs_->DeclarePropertyWithUnit("vertex_y", "mm", vertexY_, "vertex y");
@@ -152,6 +171,7 @@ void ConfigManager::PrintConfig() const
      << "Input -- Input_File:               " << inputFile_ << G4endl
      << "Input -- Output_File:              " << outputFile_ << G4endl
      << "Input -- MARLEY_json:              " << marleyJson_ << G4endl
+     << "Input -- Momentum_Direction:       " << momentumDirection_ << G4endl
      << "Input -- Vertex_X:                 " << vertexX_/mm << " mm" << G4endl
      << "Input -- Vertex_Y:                 " << vertexY_/mm << " mm" <<  G4endl
      << "Input -- Vertex_Z:                 " << vertexZ_/mm << " mm" << G4endl

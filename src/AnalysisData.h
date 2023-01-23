@@ -34,6 +34,7 @@ class AnalysisData {
     void SetEvent(int const);
 
     void AddInitialGeneratorParticle(GeneratorParticle const *);
+    void AddIntermediateGeneratorParticle(GeneratorParticle const *);
     void AddFinalGeneratorParticle(GeneratorParticle const *);
 
     void AddMCParticle(MCParticle const *);
@@ -95,6 +96,7 @@ class AnalysisData {
 
     // number of generator particles
     int generator_initial_number_particles_;
+    int generator_intermediate_number_particles_;
     int generator_final_number_particles_;
 
     // vectors for initial generator particles
@@ -109,6 +111,19 @@ class AnalysisData {
     std::vector< int >    generator_initial_particle_pdg_code_;
     std::vector< double > generator_initial_particle_mass_;
     std::vector< double > generator_initial_particle_charge_;
+
+    // vectors for initial generator particles
+    std::vector< double > generator_intermediate_particle_x_;
+    std::vector< double > generator_intermediate_particle_y_;
+    std::vector< double > generator_intermediate_particle_z_;
+    std::vector< double > generator_intermediate_particle_t_;
+    std::vector< double > generator_intermediate_particle_px_;
+    std::vector< double > generator_intermediate_particle_py_;
+    std::vector< double > generator_intermediate_particle_pz_;
+    std::vector< double > generator_intermediate_particle_energy_;
+    std::vector< int >    generator_intermediate_particle_pdg_code_;
+    std::vector< double > generator_intermediate_particle_mass_;
+    std::vector< double > generator_intermediate_particle_charge_;
 
     // vectors for final generator particles
     std::vector< double > generator_final_particle_x_;

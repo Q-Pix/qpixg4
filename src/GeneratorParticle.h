@@ -40,6 +40,8 @@ class GeneratorParticle {
         inline void SetPz      (double const pz     ) { pz_       = pz;      }
         inline void SetEnergy  (double const energy ) { energy_   = energy;  }
 
+        void Print() const;
+
     private:
 
         int    pdg_code_;

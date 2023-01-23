@@ -44,6 +44,7 @@ class MCTruthManager {
         static MCTruthManager* Instance();
 
         void AddInitialGeneratorParticle(GeneratorParticle *);
+        void AddIntermediateGeneratorParticle(GeneratorParticle *);
         void AddFinalGeneratorParticle(GeneratorParticle *);
 
         void AddInitialMARLEYParticle(marley::Particle const &);
@@ -71,6 +72,7 @@ class MCTruthManager {
 
         // containers of generator particles
         std::vector< GeneratorParticle * > initial_generator_particles_;
+        std::vector< GeneratorParticle * > intermediate_generator_particles_;
         std::vector< GeneratorParticle * > final_generator_particles_;
 
         // containers of MARLEY particles
