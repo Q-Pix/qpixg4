@@ -52,13 +52,13 @@ int ROOTManager::Initialize(std::string FilePath,std::string TreeName) {
 
 void ROOTManager::SetBranches() {
     // Creating Root Branches
-        tree_->SetBranchAddress("event", &event_, &b_event);
-        tree_->SetBranchAddress("NParticles", &NParticles_, &b_NParticles);
-        tree_->SetBranchAddress("pdg", pdg_, &b_pdg);
-        tree_->SetBranchAddress("E", E_, &b_E);
-        tree_->SetBranchAddress("px", px_, &b_px);
-        tree_->SetBranchAddress("py", py_, &b_py);
-        tree_->SetBranchAddress("pz", pz_, &b_pz);
+        tree_->SetBranchAddress("ievt", &event_, &b_event);
+        tree_->SetBranchAddress("nFS", &NParticles_, &b_NParticles);
+        tree_->SetBranchAddress("fsPdg", pdg_, &b_pdg);
+        tree_->SetBranchAddress("fsE", E_, &b_E);
+        tree_->SetBranchAddress("fsPx", px_, &b_px);
+        tree_->SetBranchAddress("fsPy", py_, &b_py);
+        tree_->SetBranchAddress("fsPz", pz_, &b_pz);
     if (TreeName_=="anatree" ){
         tree_->SetBranchAddress("idx",                  idx,	    &bridx   );
         tree_->SetBranchAddress("status",               Status,	        &brStatus   );

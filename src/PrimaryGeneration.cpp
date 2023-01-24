@@ -156,21 +156,21 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
 
         // filter the particles less than 1 eV
         //if(rootManager->GetE_(np)<(1 *CLHEP::eV)) continue;
-        G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::GeV,rootManager->GetPy_(np)*CLHEP::GeV,rootManager->GetPz_(np)*CLHEP::GeV,rootManager->GetE_(np)*CLHEP::GeV);
+        G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::MeV,rootManager->GetPy_(np)*CLHEP::MeV,rootManager->GetPz_(np)*CLHEP::MeV,rootManager->GetE_(np)*CLHEP::MeV);
 
         // create generator particle
         GeneratorParticle * generatorParticle = new GeneratorParticle();
         generatorParticle->SetPDGCode (RootParticle->GetPDGcode());
-        generatorParticle->SetMass    (RootParticle->GetMass()/CLHEP::GeV);
+        generatorParticle->SetMass    (RootParticle->GetMass()/CLHEP::MeV);
         generatorParticle->SetCharge  (RootParticle->GetCharge());
         generatorParticle->SetX       (vertex3d[0] / CLHEP::cm);
         generatorParticle->SetY       (vertex3d[1] / CLHEP::cm);
         generatorParticle->SetZ       (vertex3d[2] / CLHEP::cm);
         generatorParticle->SetT       (0);
-        generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy()/CLHEP::GeV);
-        generatorParticle->SetPx      (RootParticle->GetPx()/CLHEP::GeV);
-        generatorParticle->SetPy      (RootParticle->GetPy()/CLHEP::GeV);
-        generatorParticle->SetPz      (RootParticle->GetPz()/CLHEP::GeV);
+        generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy()/CLHEP::MeV);
+        generatorParticle->SetPx      (RootParticle->GetPx()/CLHEP::MeV);
+        generatorParticle->SetPy      (RootParticle->GetPy()/CLHEP::MeV);
+        generatorParticle->SetPz      (RootParticle->GetPz()/CLHEP::MeV);
 
         // add ROOT particle to the MC truth manager
         (rootManager->GetFirstMother_(np)<1 )? mc_truth_manager->AddInitialGeneratorParticle(generatorParticle):mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
@@ -178,10 +178,10 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
         if(PrintParticleInfo_){
             std::cout<<"Event -> "<<event->GetEventID()<<" "<<rootManager->Getevent_()<<std::endl;
             std::cout<<"PDG -> "<<RootParticle->GetPDGcode()<<" "<<rootManager->GetPDG_(np)<<std::endl;
-            std::cout<<"E -> "<<RootParticle->GetTotalEnergy()<<" "<<rootManager->GetE_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"px -> "<<RootParticle->GetPx()<<" "<<rootManager->GetPx_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"py -> "<<RootParticle->GetPy()<<" "<<rootManager->GetPy_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"pz -> "<<RootParticle->GetPz()<<" "<<rootManager->GetPz_(np)*CLHEP::GeV<<std::endl;
+            std::cout<<"E -> "<<RootParticle->GetTotalEnergy()<<" "<<rootManager->GetE_(np)*CLHEP::MeV<<std::endl;
+            std::cout<<"px -> "<<RootParticle->GetPx()<<" "<<rootManager->GetPx_(np)*CLHEP::MeV<<std::endl;
+            std::cout<<"py -> "<<RootParticle->GetPy()<<" "<<rootManager->GetPy_(np)*CLHEP::MeV<<std::endl;
+            std::cout<<"pz -> "<<RootParticle->GetPz()<<" "<<rootManager->GetPz_(np)*CLHEP::MeV<<std::endl;
             std::cout<<"Idx -> "<<rootManager->GetIdx_(np)<<std::endl;
             std::cout<<"Mother -> "<<rootManager->GetFirstMother_(np)<<std::endl;
         }
@@ -244,21 +244,21 @@ void PrimaryGeneration::ROOTGeneratePrimaries(G4Event * event) {
 
         // filter the particles less than 1 eV
         //if(rootManager->GetE_(np)<(1 *CLHEP::eV)) continue;
-        G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::GeV,rootManager->GetPy_(np)*CLHEP::GeV,rootManager->GetPz_(np)*CLHEP::GeV,rootManager->GetE_(np)*CLHEP::GeV);
+        G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::MeV,rootManager->GetPy_(np)*CLHEP::MeV,rootManager->GetPz_(np)*CLHEP::MeV,rootManager->GetE_(np)*CLHEP::MeV);
 
         // create generator particle
         GeneratorParticle * generatorParticle = new GeneratorParticle();
         generatorParticle->SetPDGCode (RootParticle->GetPDGcode());
-        generatorParticle->SetMass    (RootParticle->GetMass()*CLHEP::GeV);
+        generatorParticle->SetMass    (RootParticle->GetMass()*CLHEP::MeV);
         generatorParticle->SetCharge  (RootParticle->GetCharge());
         generatorParticle->SetX       (vertex3d[0] / CLHEP::cm);
         generatorParticle->SetY       (vertex3d[1] / CLHEP::cm);
         generatorParticle->SetZ       (vertex3d[2] / CLHEP::cm);
         generatorParticle->SetT       (0);
-        generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy()*CLHEP::GeV);
-        generatorParticle->SetPx      (RootParticle->GetPx()*CLHEP::GeV);
-        generatorParticle->SetPy      (RootParticle->GetPy()*CLHEP::GeV);
-        generatorParticle->SetPz      (RootParticle->GetPz()*CLHEP::GeV);
+        generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy()*CLHEP::MeV);
+        generatorParticle->SetPx      (RootParticle->GetPx()*CLHEP::MeV);
+        generatorParticle->SetPy      (RootParticle->GetPy()*CLHEP::MeV);
+        generatorParticle->SetPz      (RootParticle->GetPz()*CLHEP::MeV);
 
         // add ROOT particle to the MC truth manager
         mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
@@ -266,10 +266,10 @@ void PrimaryGeneration::ROOTGeneratePrimaries(G4Event * event) {
         if(PrintParticleInfo_){
             std::cout<<"Event -> "<<event->GetEventID()<<" "<<rootManager->Getevent_()<<std::endl;
             std::cout<<"PDG -> "<<RootParticle->GetPDGcode()<<" "<<rootManager->GetPDG_(np)<<std::endl;
-            std::cout<<"E -> "<<RootParticle->GetTotalEnergy()*CLHEP::GeV<<" "<<rootManager->GetE_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"px -> "<<RootParticle->GetPx()*CLHEP::GeV<<" "<<rootManager->GetPx_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"py -> "<<RootParticle->GetPy()*CLHEP::GeV<<" "<<rootManager->GetPy_(np)*CLHEP::GeV<<std::endl;
-            std::cout<<"pz -> "<<RootParticle->GetPz()*CLHEP::GeV<<" "<<rootManager->GetPz_(np)*CLHEP::GeV<<std::endl;
+            std::cout<<"E -> "<<RootParticle->GetTotalEnergy()*CLHEP::MeV<<" "<<rootManager->GetE_(np)*CLHEP::MeV<<std::endl;
+            std::cout<<"px -> "<<RootParticle->GetPx()*CLHEP::MeV<<" "<<rootManager->GetPx_(np)*CLHEP::MeV<<std::endl;
+            std::cout<<"py -> "<<RootParticle->GetPy()*CLHEP::MeV<<" "<<rootManager->GetPy_(np)*CLHEP::MeV<<std::endl;
+            std::cout<<"pz -> "<<RootParticle->GetPz()*CLHEP::MeV<<" "<<rootManager->GetPz_(np)*CLHEP::MeV<<std::endl;
         }
         vertex->SetPrimary(RootParticle);
 

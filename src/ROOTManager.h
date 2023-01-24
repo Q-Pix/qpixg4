@@ -36,10 +36,10 @@ class ROOTManager {
         Int_t  IsROOTManagerInitialized_() const {return isInitialized;};
 
 
-        Double_t  GetE_(Int_t ev) const {return E_[ev];};
-        Double_t  GetPx_(Int_t ev) const {return px_[ev];};
-        Double_t  GetPy_(Int_t ev) const {return py_[ev];};
-        Double_t  GetPz_(Int_t ev) const {return pz_[ev];};
+        Float_t  GetE_(Int_t ev) const {return E_[ev];};
+        Float_t  GetPx_(Int_t ev) const {return px_[ev];};
+        Float_t  GetPy_(Int_t ev) const {return py_[ev];};
+        Float_t  GetPz_(Int_t ev) const {return pz_[ev];};
         std::string GetInPutRootFilePath()const {return FilePath_;};
         std::string  GetInPutRootTreeName()const{return TreeName_;};
 
@@ -57,10 +57,10 @@ class ROOTManager {
         TFile *         f_=0;
         TTree *         tree_=0;
         Int_t           pdg_[Size_];
-        Double_t        E_[Size_];
-        Double_t        px_[Size_];
-        Double_t        py_[Size_];
-        Double_t        pz_[Size_];
+        Float_t        E_[Size_];
+        Float_t        px_[Size_];
+        Float_t        py_[Size_];
+        Float_t        pz_[Size_];
         Int_t           idx[Size_];
         Int_t           Status[Size_];
         Int_t           FirstMother[Size_];
