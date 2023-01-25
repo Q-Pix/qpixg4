@@ -95,6 +95,12 @@ void EventAction::EndOfEventAction(const G4Event* g4event)
         event.AddInitialGeneratorParticle(particle);
     }
 
+    // add initial generator particles to analysis manager
+    for (auto const& particle : mc_truth_manager->GetIntermediateGeneratorParticles())
+    {
+      event.AddIntermediateGeneratorParticle(particle);
+    }
+
     // add final generator particles to analysis manager
     for (auto const& particle : mc_truth_manager->GetFinalGeneratorParticles())
     {

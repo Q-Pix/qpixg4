@@ -54,6 +54,7 @@ class MCTruthManager {
         MCParticle * GetMCParticle(int const);
 
         inline std::vector< GeneratorParticle * > GetInitialGeneratorParticles() const { return initial_generator_particles_; }
+        inline std::vector< GeneratorParticle * > GetIntermediateGeneratorParticles() const { return intermediate_generator_particles_; }
         inline std::vector< GeneratorParticle * > GetFinalGeneratorParticles()   const { return final_generator_particles_;   }
 
         inline std::vector< marley::Particle > GetInitialMARLEYParticles() const { return initial_marley_particles_; }

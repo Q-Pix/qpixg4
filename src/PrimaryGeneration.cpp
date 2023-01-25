@@ -238,7 +238,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
   G4PrimaryVertex * vertex = new G4PrimaryVertex(vertex3d, 0);
 
   for (int np = 0; np<genieManager->GetNParticles_(); np++){
-    if (!((genieManager->GetIdx_(np)>=0)))
+    if (genieManager->GetIdx_(np)<0)
     {
       std::cout<<"Skipping this particle PDGCode-> "<< genieManager->GetPDG_(np)<< " Idx-> "<<genieManager->GetIdx_(np)<<" Status= "<<genieManager->GetStatus_(np)<<std::endl;
       continue;
@@ -322,9 +322,10 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
     generatorParticle->SetPz      (a(2));
 
     // add ROOT particle to MCTruthManager
-    if (genieManager->GetFirstMother_(np)==-1 )
+    if (genieManager->GetStatus_(np)==0 )
     {
       mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
+      continue;
     }
     else if (genieManager->GetStatus_(np)==1)
     {

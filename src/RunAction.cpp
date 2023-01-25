@@ -39,7 +39,7 @@ RunAction::~RunAction()
 void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
     ConfigManager * configManager = ConfigManager::Instance();
-    ConfigManager::Print();
+    //ConfigManager::Print();
 
     G4String inputFile_ = ConfigManager::GetInputFile();
     G4String outputFile_ = ConfigManager::GetOutputFile();
@@ -55,7 +55,7 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
     generator_.toLower();
     genieFormat_.toLower();
 
-    ConfigManager::Print();
+    //ConfigManager::Print();
 
     if (generator_ == "marley") {
 
@@ -77,7 +77,6 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
         GENIEManager *genieManager=GENIEManager::Instance();
         if (genieManager->Initialize())
         {
-            genieManager->SetBranches();
             G4int NumberEventsInTheFile=(G4int)genieManager->GetNEntries();
             G4cout << "nEntries = " << NumberEventsInTheFile << G4endl;
         } else

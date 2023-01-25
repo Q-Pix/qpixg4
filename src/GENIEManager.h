@@ -34,7 +34,7 @@ class GENIEManager {
 
     static GENIEManager * Instance();
     G4int  Initialize();
-    static const Int_t   Size_=51;
+    static const Int_t   Size_=100;
 
     G4int  Getevent_()                   const {return event_; };
     G4int  GetNParticles_()              const {return NParticles_; };
