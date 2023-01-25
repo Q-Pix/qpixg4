@@ -30,12 +30,6 @@
 #include <string>
 
 
-namespace {
-  G4Mutex treeMutex = G4MUTEX_INITIALIZER;
-}
-
-
-
 
 GENIEManager * GENIEManager::instance_=0;
 
@@ -81,8 +75,6 @@ G4int GENIEManager::Initialize() {
   particleType_ = ConfigManager::GetParticleType();
  
   genieFormat_.toLower();
-
-  G4AutoLock treeLock(&treeMutex);
 
   if (genieFormat_ == "rootracker" || genieFormat_ == "grootracker") {
     treeName_ = "gRooTracker";
