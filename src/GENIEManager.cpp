@@ -98,7 +98,7 @@ G4int GENIEManager::Initialize() {
   if (!inputFile_.empty())
   {
     isInitialized=0;
-    std::cout << "Configuring to Read From ROOT File..." << std::endl;
+    G4cout << "Configuring to Read From ROOT File..." << G4endl;
     // Reading the root file to extract the info
     if (tree_ == 0) {
       f_ = (TFile*)gROOT->GetListOfFiles()->FindObject(inputFile_);

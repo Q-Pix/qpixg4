@@ -29,7 +29,6 @@ class GENIEManager {
 
   public:
 
-    GENIEManager();
     ~GENIEManager();
 
     static GENIEManager * Instance();
@@ -117,7 +116,10 @@ class GENIEManager {
 
 
   private:
-    static GENIEManager *instance_;
+
+    GENIEManager();
+
+    G4ThreadLocal static GENIEManager *instance_;
 
 
 
