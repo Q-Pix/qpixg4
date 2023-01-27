@@ -31,7 +31,7 @@
 
 
 
-GENIEManager * GENIEManager::instance_=0;
+G4ThreadLocal GENIEManager * GENIEManager::instance_=0;
 
 //--------------------------------
 GENIEManager::GENIEManager()
@@ -41,19 +41,19 @@ GENIEManager::GENIEManager()
   inputFile_(""), particleType_(""), genieFormat_(""), treeName_(""),
   isInitialized(0)
 {
-    //std::fill_n(pdg_, sizeof(pdg_)/sizeof(G4int), 0);
-    //std::fill_n(vtx_, sizeof(vtx_)/sizeof(G4double), 0);
-    //std::fill_n(X4_, sizeof(X4_)/sizeof(G4double), 0);
-    //std::fill_n(P4_, sizeof(P4_)/sizeof(G4double), 0);
-    //std::fill_n(polz_, sizeof(polz_)/sizeof(G4double), 0);
-    //std::fill_n(idx, sizeof(idx)/sizeof(G4int), 0);
-    //std::fill_n(Status, sizeof(Status)/sizeof(G4int), 0);
-    //std::fill_n(rescat_, sizeof(rescat_)/sizeof(G4int), 0);
-    //std::fill_n(FirstMother, sizeof(FirstMother)/sizeof(G4int), 0);
-    //std::fill_n(LastMother, sizeof(LastMother)/sizeof(G4int), 0);
-    //std::fill_n(FirstDaughter, sizeof(FirstDaughter)/sizeof(G4int), 0);
-    //std::fill_n(LastDaughter, sizeof(LastDaughter)/sizeof(G4int), 0);
-    
+    memset(pdg_, 0, Size_*sizeof(G4int));
+    memset(vtx_, 0, Size_*sizeof(G4double));
+    memset(X4_, 0, 4*Size_*sizeof(G4double));
+    memset(P4_, 0, 4*Size_*sizeof(G4double));
+    memset(polz_, 0, 3*Size_*sizeof(G4double));
+    memset(idx, 0, Size_*sizeof(G4int));
+    memset(Status, 0, Size_*sizeof(G4int));
+    memset(rescat_, 0, Size_*sizeof(G4int));
+    memset(FirstMother, 0, Size_*sizeof(G4int));
+    memset(LastMother, 0, Size_*sizeof(G4int));
+    memset(FirstDaughter, 0, Size_*sizeof(G4int));
+    memset(LastDaughter, 0, Size_*sizeof(G4int));
+
 }
 
 
@@ -112,7 +112,7 @@ G4int GENIEManager::Initialize() {
     return isInitialized;
   }
   else {
-    std::cout << "Generating from ROOT is not selected!  Continuing..."<< std::endl;
+    G4cout << "Generating from ROOT is not selected!  Continuing..."<< G4endl;
     isInitialized=0;
     return isInitialized;
   }
@@ -163,31 +163,6 @@ void GENIEManager::Cd(){
     f_->cd();
 }
 
-
-void GENIEManager::SaveMomentum(){
-  std::vector<G4double> px, py, pz, e;
-  for (int i=0; i<this->GetNEntries(); i++){
-     tree_->GetEntry(i);
-     px.push_back(P4_[i][0]);
-     py.push_back(P4_[i][1]);
-     pz.push_back(P4_[i][2]);
-     e.push_back(P4_[i][3]);
-  }
-
-  TFile * fout = new TFile("momentum_report.root","recreate");
-  TTree * p4 = new TTree("p4", "split momentums");
-  p4->Branch("px",&px);
-  p4->Branch("py",&py);
-  p4->Branch("pz",&pz);
-  p4->Branch("e",&e);
-
-  p4->Fill();
-
-  fout->Write();
-
-  delete fout; 
-
-}
 
 
 void GENIEManager::Close(){

@@ -226,7 +226,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
   Long64_t ientry = tree->LoadTree(event->GetEventID());
 
   if (ientry < 0) {
-    std::cout<<"Event does not exist in the Root file!!"<<std::endl;
+    G4cout<<"Event does not exist in the Root file!!"<<G4endl;
     return;
   }
 
@@ -240,7 +240,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
   for (int np = 0; np<genieManager->GetNParticles_(); np++){
     if (genieManager->GetIdx_(np)<0)
     {
-      std::cout<<"Skipping this particle PDGCode-> "<< genieManager->GetPDG_(np)<< " Idx-> "<<genieManager->GetIdx_(np)<<" Status= "<<genieManager->GetStatus_(np)<<std::endl;
+      G4cout<<"Skipping this particle PDGCode-> "<< genieManager->GetPDG_(np)<< " Idx-> "<<genieManager->GetIdx_(np)<<" Status= "<<genieManager->GetStatus_(np)<<G4endl;
       continue;
     }
 
@@ -338,14 +338,14 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
     }
 
     if(printParticleInfo_){
-      std::cout<<"Event -> "<<event->GetEventID()<<" "<<genieManager->Getevent_()<<std::endl;
-      std::cout<<"PDG -> "<<RootParticle->GetPDGcode()<<" "<<genieManager->GetPDG_(np)<<std::endl;
-      std::cout<<"E -> "<<RootParticle->GetTotalEnergy()<<" "<<genieManager->GetE_(np)*CLHEP::MeV<<std::endl;
-      std::cout<<"px -> "<<RootParticle->GetPx()<<" "<<genieManager->GetPx_(np)*CLHEP::MeV<<std::endl;
-      std::cout<<"py -> "<<RootParticle->GetPy()<<" "<<genieManager->GetPy_(np)*CLHEP::MeV<<std::endl;
-      std::cout<<"pz -> "<<RootParticle->GetPz()<<" "<<genieManager->GetPz_(np)*CLHEP::MeV<<std::endl;
-      std::cout<<"Idx -> "<<genieManager->GetIdx_(np)<<std::endl;
-      std::cout<<"Mother -> "<<genieManager->GetFirstMother_(np)<<std::endl;
+      G4cout<<"Event -> "<<event->GetEventID()<<" "<<genieManager->Getevent_()<<G4endl;
+      G4cout<<"PDG -> "<<RootParticle->GetPDGcode()<<" "<<genieManager->GetPDG_(np)<<G4endl;
+      G4cout<<"E -> "<<RootParticle->GetTotalEnergy()<<" "<<genieManager->GetE_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"px -> "<<RootParticle->GetPx()<<" "<<genieManager->GetPx_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"py -> "<<RootParticle->GetPy()<<" "<<genieManager->GetPy_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"pz -> "<<RootParticle->GetPz()<<" "<<genieManager->GetPz_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"Idx -> "<<genieManager->GetIdx_(np)<<G4endl;
+      G4cout<<"Mother -> "<<genieManager->GetFirstMother_(np)<<G4endl;
     }
     vertex->SetPrimary(RootParticle);
 
