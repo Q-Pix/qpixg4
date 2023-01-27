@@ -8,7 +8,7 @@
 
 #include "MCTruthManager.h"
 
-MCTruthManager * MCTruthManager::instance_ = 0;
+G4ThreadLocal MCTruthManager * MCTruthManager::instance_ = 0;
 
 //-----------------------------------------------------------------------------
 MCTruthManager::MCTruthManager()
@@ -30,6 +30,7 @@ void MCTruthManager::EventReset()
 {
     // clear containers of generator particles
     initial_generator_particles_.clear();
+    intermediate_generator_particles_.clear();
     final_generator_particles_.clear();
 
     // clear containers of MARLEY particles
@@ -68,6 +69,12 @@ void MCTruthManager::AddInitialGeneratorParticle(GeneratorParticle * particle)
 void MCTruthManager::AddFinalGeneratorParticle(GeneratorParticle * particle)
 {
     final_generator_particles_.push_back(particle);
+}
+
+//-----------------------------------------------------------------------------
+void MCTruthManager::AddIntermediateGeneratorParticle(GeneratorParticle * particle)
+{
+  intermediate_generator_particles_.push_back(particle);
 }
 
 //-----------------------------------------------------------------------------

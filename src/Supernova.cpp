@@ -15,39 +15,30 @@
 #include "G4ParticleDefinition.hh"
 #include "G4GenericMessenger.hh"
 
+#include "ConfigManager.h"
 #include "Supernova.h"
 
 #include <math.h> 
 
 
 //-----------------------------------------------------------------------------
-Supernova::Supernova():
-N_Ar39_Decays_(0),N_Ar42_Decays_(0),
-N_Kr85_Decays_(0),N_Co60_Decays_(0),
-N_K40_Decays_(0),N_K42_Decays_(0),
-N_Bi214_Decays_(0),N_Pb214_Decays_(0),
-N_Po210_Decays_(0),N_Rn222_Decays_(0)
+Supernova::Supernova()
+  : N_Ar39_Decays_(ConfigManager::GetNAr39Decays()),
+    N_Ar42_Decays_(ConfigManager::GetNAr42Decays()),
+    N_Kr85_Decays_(ConfigManager::GetNKr85Decays()),
+    N_Co60_Decays_(ConfigManager::GetNCo60Decays()),
+    N_K40_Decays_(ConfigManager::GetNK40Decays()),
+    N_K42_Decays_(ConfigManager::GetNK42Decays()),
+    N_Bi214_Decays_(ConfigManager::GetNBi214Decays()),
+    N_Pb214_Decays_(ConfigManager::GetNPb214Decays()),
+    N_Po210_Decays_(ConfigManager::GetNPo210Decays()),
+    N_Rn222_Decays_(ConfigManager::GetNRn222Decays())
 {
-    msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
-    msg_->DeclareProperty("Event_Window", Event_Window_,  "window to simulate the times").SetUnit("ns");
-
-    msg_->DeclareProperty("N_Ar39_Decays", N_Ar39_Decays_,  "number of Ar39 decays");
-    msg_->DeclareProperty("N_Ar42_Decays", N_Ar42_Decays_,  "number of Ar42 decays");
-    msg_->DeclareProperty("N_Kr85_Decays", N_Kr85_Decays_,  "number of Kr85 decays");
-    msg_->DeclareProperty("N_Co60_Decays", N_Co60_Decays_,  "number of Co60 decays");
-    msg_->DeclareProperty("N_K40_Decays", N_K40_Decays_,  "number of K40 decays");
-    msg_->DeclareProperty("N_K42_Decays", N_K42_Decays_,  "number of K42 decays");
-    msg_->DeclareProperty("N_Bi214_Decays", N_Bi214_Decays_,  "number of Bi214 decays");
-    msg_->DeclareProperty("N_Pb214_Decays", N_Pb214_Decays_,  "number of Pb214 decays");
-    msg_->DeclareProperty("N_Po210_Decays", N_Po210_Decays_,  "number of Po210 decays");
-    msg_->DeclareProperty("N_Rn222_Decays", N_Rn222_Decays_,  "number of Rn222 decays");
-
 }
 
 //-----------------------------------------------------------------------------
 Supernova::~Supernova()
 {
-    delete msg_;
 }
 
 

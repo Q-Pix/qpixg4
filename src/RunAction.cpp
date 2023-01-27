@@ -10,8 +10,10 @@
 
 // Q-Pix includes
 #include "AnalysisManager.h"
+#include "ConfigManager.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
+#include "GENIEManager.h"
 
 // GEANT4 includes
 #include "G4Box.hh"
@@ -22,45 +24,80 @@
 #include <filesystem>
 
 
-RunAction::RunAction(): G4UserRunAction(), multirun_(false)
+RunAction::RunAction()
+  : G4UserRunAction()
 {
-    messenger_ = new G4GenericMessenger(this, "/Inputs/");
-    messenger_->DeclareProperty("root_output", root_output_path_,
-                                "path to output ROOT file");
-    messenger_->DeclareProperty("MARLEY_json", marley_json_,
-                                "MARLEY configuration file");
-    messenger_->DeclareProperty("multirun", multirun_,
-                                "Multiple runs");
+  ConfigManager * configManager = ConfigManager::Instance();
 }
 
 
 RunAction::~RunAction()
 {
-    delete messenger_;
 }
 
 
-void RunAction::BeginOfRunAction(const G4Run* run)
+void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
-    G4cout << "RunAction::BeginOfRunAction: Run #" << run->GetRunID() << " start." << G4endl;
+    ConfigManager * configManager = ConfigManager::Instance();
+    //ConfigManager::Print();
 
-    // get MARLEY manager
-    MARLEYManager * marley_manager = MARLEYManager::Instance();
-    // configure and create MARLEY generator
-    marley_manager->Initialize(marley_json_);
+    G4String inputFile_ = ConfigManager::GetInputFile();
+    G4String outputFile_ = ConfigManager::GetOutputFile();
+    G4String marleyJson_ = ConfigManager::GetMarleyJson();
+    G4String generator_ = ConfigManager::GetGenerator();
+    G4String genieFormat_ = ConfigManager::GetGenieFormat();
+    G4bool multirun_ = ConfigManager::GetMultirun();
+    G4String particleType_ = ConfigManager::GetParticleType();
 
-    std::string root_output_path = root_output_path_;
+
+
+    particleType_.toLower();
+    generator_.toLower();
+    genieFormat_.toLower();
+
+    //ConfigManager::Print();
+
+    if (generator_ == "marley") {
+
+        // get MARLEY manager
+        MARLEYManager * marleyManager = MARLEYManager::Instance();
+    
+    
+        // configure and create MARLEY generator
+        marleyManager->Initialize();
+    
+        if (particleType_ == "supernova")
+        {
+        }
+
+    } else if (generator_ == "genie")
+    {
+
+        // get ROOT manager
+        GENIEManager *genieManager=GENIEManager::Instance();
+        if (genieManager->Initialize())
+        {
+            G4int NumberEventsInTheFile=(G4int)genieManager->GetNEntries();
+            G4cout << "nEntries = " << NumberEventsInTheFile << G4endl;
+        } else
+        {
+            G4Exception("[RunAction]","[BeginOfRunAction]",G4ExceptionSeverity::FatalException ,"RootManager is not properly initialized. Check to see if the following file exist /Inputs/ReadFrom_Root_Path in macros/ROOTRead.macro   ") ;
+
+        }
+    }
+
+    G4String root_output_path = outputFile_;
 
     if (multirun_)
     {
 
         std::ostringstream ss;
-        ss << std::setw(4) << std::setfill('0') << run->GetRunID();
-        std::string run_str(ss.str());
+        ss << std::setw(4) << std::setfill('0') << g4run->GetRunID();
+        std::string runStr_(ss.str());
 
         // G4cout << "run_str: " << run_str << G4endl;
 
-        std::filesystem::path path = static_cast<std::string> (root_output_path_);
+        //std::filesystem::path path = static_cast<std::string> (root_output_path_);
 
         // G4cout << "root_name:      " << path.root_name()      << G4endl;
         // G4cout << "root_directory: " << path.root_directory() << G4endl;
@@ -71,28 +108,34 @@ void RunAction::BeginOfRunAction(const G4Run* run)
         // G4cout << "stem:           " << path.stem()           << G4endl;
         // G4cout << "extension:      " << path.extension()      << G4endl;
 
-        std::string parent_path = path.parent_path();
-        std::string stem = path.stem();
-        std::string extension = path.extension();
+        G4String parentPath_ = outputFile_(0, outputFile_.last('/'));
+        G4String baseName_ = outputFile_(outputFile_.last('/')+1, outputFile_.length());
+        G4String stem_ = baseName_(0, baseName_.last('.'));
+        G4String extension_ = baseName_(baseName_.last('.'), baseName_.length());
 
         // G4cout << "parent_path: " << parent_path << G4endl;
         // G4cout << "stem:        " << stem        << G4endl;
         // G4cout << "extension:   " << extension   << G4endl;
 
-        root_output_path = parent_path + "/" + stem + "_" + run_str + extension;
 
-        // G4cout << "root_output_path: " << root_output_path << G4endl;
+        root_output_path = parentPath_;
+        root_output_path += "/";
+        root_output_path += stem_;
+        root_output_path += "_";
+        root_output_path += runStr_;
+        root_output_path += extension_;
 
     }
 
     // get run number
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
     // analysis_manager->Book(root_output_path_);
+
     analysis_manager->Book(root_output_path);
-    analysis_manager->SetRun(run->GetRunID());
+    event.SetRun(g4run->GetRunID());
 
     // reset event variables
-    analysis_manager->EventReset();
+    event.EventReset();
 
     // get MC truth manager
     MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
@@ -104,6 +147,14 @@ void RunAction::BeginOfRunAction(const G4Run* run)
 
 void RunAction::EndOfRunAction(const G4Run*)
 {
+    G4String inputFile_ = ConfigManager::GetInputFile();
+    G4String outputFile_ = ConfigManager::GetOutputFile();
+    G4String marleyJson_ = ConfigManager::GetMarleyJson();
+    G4String generator_ = ConfigManager::GetGenerator();
+    G4String genieFormat_ = ConfigManager::GetGenieFormat();
+    G4bool multirun_ = ConfigManager::GetMultirun();
+    G4String particleType_ = ConfigManager::GetParticleType();
+
     // get analysis manager
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
 
@@ -132,5 +183,7 @@ void RunAction::EndOfRunAction(const G4Run*)
 
     // save run to ROOT file
     analysis_manager->Save();
+
+    GENIEManager *genieManager=GENIEManager::Instance();
 }
 

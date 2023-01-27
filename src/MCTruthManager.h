@@ -44,6 +44,7 @@ class MCTruthManager {
         static MCTruthManager* Instance();
 
         void AddInitialGeneratorParticle(GeneratorParticle *);
+        void AddIntermediateGeneratorParticle(GeneratorParticle *);
         void AddFinalGeneratorParticle(GeneratorParticle *);
 
         void AddInitialMARLEYParticle(marley::Particle const &);
@@ -53,6 +54,7 @@ class MCTruthManager {
         MCParticle * GetMCParticle(int const);
 
         inline std::vector< GeneratorParticle * > GetInitialGeneratorParticles() const { return initial_generator_particles_; }
+        inline std::vector< GeneratorParticle * > GetIntermediateGeneratorParticles() const { return intermediate_generator_particles_; }
         inline std::vector< GeneratorParticle * > GetFinalGeneratorParticles()   const { return final_generator_particles_;   }
 
         inline std::vector< marley::Particle > GetInitialMARLEYParticles() const { return initial_marley_particles_; }
@@ -60,15 +62,18 @@ class MCTruthManager {
 
         inline std::map< int, MCParticle * > GetMCParticleMap() const { return mc_particle_map_; }
 
+        typedef std::map<int,MCParticle*> MCParticleMap;
+
     private:
 
-        static MCTruthManager * instance_;
+        static G4ThreadLocal MCTruthManager * instance_;
 
         int run_;
         int event_;
 
         // containers of generator particles
         std::vector< GeneratorParticle * > initial_generator_particles_;
+        std::vector< GeneratorParticle * > intermediate_generator_particles_;
         std::vector< GeneratorParticle * > final_generator_particles_;
 
         // containers of MARLEY particles

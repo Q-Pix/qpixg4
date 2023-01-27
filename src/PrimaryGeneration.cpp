@@ -9,9 +9,11 @@
 #include "PrimaryGeneration.h"
 
 // Q-Pix includes
+#include "ConfigManager.h"
+#include "GeneratorParticle.h"
+#include "GENIEManager.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
-#include "GeneratorParticle.h"
 
 // MARLEY includes
 #include "marley/Event.hh"
@@ -47,25 +49,16 @@
 
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
-    decay_at_time_zero_(false),
-    isotropic_(false),
-    override_vertex_position_(false),
-    vertex_x_(2.3/2),
-    vertex_y_(6.0/2),
-    vertex_z_(3.6/2),
-    particle_gun_(0)
+    particle_gun_(0)//,
+    //isotropic_(false),
+    //decay_at_time_zero_(false),
+    //override_vertex_position_(false),
+    //vertex_x_(0),
+    //vertex_y_(0),
+    //vertex_z_(0),
+    //printParticleInfo_(false),
+    //particleType_("")
 {
-  msg_ = new G4GenericMessenger(this, "/Inputs/", "Control commands of the ion primary generator.");
-  msg_->DeclareProperty("Particle_Type", Particle_Type_,  "which particle?");
-  msg_->DeclareProperty("decay_at_time_zero", decay_at_time_zero_,
-                        "Set to true to make unstable isotopes decay at t=0.");
-  msg_->DeclareProperty("isotropic", isotropic_, "isotropic");
-  msg_->DeclareProperty("override_vertex_position",
-                        override_vertex_position_,
-                        "override vertex position");
-  msg_->DeclareProperty("vertex_x", vertex_x_, "vertex x").SetUnit("mm");
-  msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("mm");
-  msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("mm");
 
   particle_gun_ = new G4GeneralParticleSource();
 
@@ -77,7 +70,7 @@ PrimaryGeneration::PrimaryGeneration()
 
   super = new Supernova();
 
-  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
+  unsigned seed = 1234567890; // std::chrono::system_clock::now().time_since_epoch().count();
   // std::default_random_engine generator(seed);
   generator_ = std::default_random_engine(seed);
   distribution_ = std::normal_distribution< double >(0, 1);
@@ -86,7 +79,6 @@ PrimaryGeneration::PrimaryGeneration()
 
 PrimaryGeneration::~PrimaryGeneration()
 {
-  delete msg_;
   delete particle_gun_;
   delete supernova_timing_;
   delete super;
@@ -95,6 +87,19 @@ PrimaryGeneration::~PrimaryGeneration()
 
 void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 {
+
+  // Set variables from ConfigManager
+  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  G4bool isotropic_ = ConfigManager::GetIsotropic();
+  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
+  G4double vertex_x_ = ConfigManager::GetVertexX();
+  G4double vertex_y_ = ConfigManager::GetVertexY();
+  G4double vertex_z_ = ConfigManager::GetVertexZ();
+  G4String particleType_ = ConfigManager::GetParticleType();
+
+  particleType_.toLower();
+
+
   // get MC truth manager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
@@ -112,16 +117,21 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
   }
 
-  if (Particle_Type_ ==  "SUPERNOVA")
+  if (particleType_ ==  "supernova")
   {
     super->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
     super->Gen_Supernova_Background(event);
   }
 
-  else if (Particle_Type_ ==  "MARLEY")
+  else if (particleType_ ==  "marley")
   {
     this->MARLEYGeneratePrimaries(event);
   }
+
+  else if (particleType_ == "beam")
+  {
+    this->GENIEGeneratePrimaries(event);
+  } 
 
   else
   {
@@ -186,9 +196,176 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
 }
 
+void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
+{
+
+
+  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  G4bool isotropic_ = ConfigManager::GetIsotropic();
+  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
+  G4bool printParticleInfo_ = ConfigManager::GetPrintParticleInfo();
+  G4double vertex_x_ = ConfigManager::GetVertexX();
+  G4double vertex_y_ = ConfigManager::GetVertexY();
+  G4double vertex_z_ = ConfigManager::GetVertexZ();
+  G4String particleType = ConfigManager::GetParticleType();
+  G4ThreeVector momentumDirection_ = ConfigManager::GetMomentumDirection();
+
+  particleType.toLower();
+
+
+  // Get MCTruthManager
+  MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
+
+  GENIEManager * genieManager = GENIEManager::Instance();
+
+  genieManager->Cd();
+
+  TTree * tree = genieManager->GetTTree_();
+
+  // Getting the event from the ROOT file
+  Long64_t ientry = tree->LoadTree(event->GetEventID());
+
+  if (ientry < 0) {
+    G4cout<<"Event does not exist in the Root file!!"<<G4endl;
+    return;
+  }
+
+  if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
+  tree->GetEntry(event->GetEventID());
+
+  G4ThreeVector vertex3d = G4ThreeVector (vertex_x_, vertex_y_, vertex_z_);
+
+  G4PrimaryVertex * vertex = new G4PrimaryVertex(vertex3d, 0);
+
+  for (int np = 0; np<genieManager->GetNParticles_(); np++){
+    if (genieManager->GetIdx_(np)<0)
+    {
+      G4cout<<"Skipping this particle PDGCode-> "<< genieManager->GetPDG_(np)<< " Idx-> "<<genieManager->GetIdx_(np)<<" Status= "<<genieManager->GetStatus_(np)<<G4endl;
+      continue;
+    }
+
+    // If the particle is a nucleus
+    G4ParticleDefinition *pdef=0;
+
+    if (genieManager->GetPDG_(np) > 1000000000 && genieManager->GetPDG_(np)<2000000000)
+    {
+      if (!pdef)
+      {
+        int const Z = (genieManager->GetPDG_(np) % 10000000) / 10000; // atomic number
+        int const A = (genieManager->GetPDG_(np) % 10000) / 10; // mass number
+        pdef = particle_table_->GetIonTable()->GetIon(Z, A, 0.);
+      }
+    } 
+    else
+    {
+      pdef = particle_table_->FindParticle(genieManager->GetPDG_(np));
+    }
+
+    if (pdef==0){
+      G4String str1="Couldnt find the particle table for " + std::to_string(genieManager->GetPDG_(np));
+      G4Exception("[PrimaryGeneration]","GENIEGeneratePrimaries",G4ExceptionSeverity::JustWarning,str1.c_str());
+      continue;
+    }
+
+    // filter the particles less than 1 eV
+    // if(genieManager->GetE_(np)<(1 *CLHEP::eV)) continue;
+    G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,genieManager->GetPx_(np),genieManager->GetPy_(np),genieManager->GetPz_(np),genieManager->GetE_(np));
+
+    G4cout << "RootParticle:" << G4endl;
+    RootParticle->Print();
+
+    // create a generator particle
+    GeneratorParticle * generatorParticle = new GeneratorParticle();
+    generatorParticle->SetPDGCode (RootParticle->GetPDGcode());
+    generatorParticle->SetMass    (RootParticle->GetMass());
+    generatorParticle->SetCharge  (RootParticle->GetCharge());
+    generatorParticle->SetX       (vertex3d[0]);
+    generatorParticle->SetY       (vertex3d[1]);
+    generatorParticle->SetZ       (vertex3d[2]);
+    generatorParticle->SetT       (0*CLHEP::ns);
+    
+    //G4cout << "GeneratorParticle:" << G4endl;
+    //generatorParticle->Print();
+
+    // rotate momentum about x axis, so initial momentum is in desired direction. Energy remains the same
+    double identity_array[9] = { 1, 0, 0,
+                                 0, 1, 0,
+                                 0, 0, 1  };
+
+    ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
+    ROOT::Math::SMatrix< double, 3 > R = I;
+
+    if (particleType == "beam")
+    {
+	  G4ThreeVector p_i(0, 0, 1);
+      
+      R =this->Rotation_Matrix(p_i, momentumDirection_);
+
+
+    } else if (particleType == "atmosphere" || particleType == "atmospheric")
+    {
+      G4ThreeVector p_i(0, 0, 1);
+      
+      R = this->Rotation_Matrix(p_i, momentumDirection_);
+
+    } else
+    {
+      G4cerr << "Need to add '/inputs/momentum_direction <G4ThreeVector>' to your macro" << G4endl;
+    }
+    
+    ROOT::Math::SVector< double, 3 > a(RootParticle->GetPx(), RootParticle->GetPy(), RootParticle->GetPz());
+    a = R*a;
+
+    generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy());
+    generatorParticle->SetPx      (a(0));
+    generatorParticle->SetPy      (a(1));
+    generatorParticle->SetPz      (a(2));
+
+    // add ROOT particle to MCTruthManager
+    if (genieManager->GetStatus_(np)==0 )
+    {
+      mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
+      continue;
+    }
+    else if (genieManager->GetStatus_(np)==1)
+    {
+      mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
+    }
+    else
+    {
+      mc_truth_manager->AddIntermediateGeneratorParticle(generatorParticle);
+      continue;
+    }
+
+    if(printParticleInfo_){
+      G4cout<<"Event -> "<<event->GetEventID()<<" "<<genieManager->Getevent_()<<G4endl;
+      G4cout<<"PDG -> "<<RootParticle->GetPDGcode()<<" "<<genieManager->GetPDG_(np)<<G4endl;
+      G4cout<<"E -> "<<RootParticle->GetTotalEnergy()<<" "<<genieManager->GetE_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"px -> "<<RootParticle->GetPx()<<" "<<genieManager->GetPx_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"py -> "<<RootParticle->GetPy()<<" "<<genieManager->GetPy_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"pz -> "<<RootParticle->GetPz()<<" "<<genieManager->GetPz_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"Idx -> "<<genieManager->GetIdx_(np)<<G4endl;
+      G4cout<<"Mother -> "<<genieManager->GetFirstMother_(np)<<G4endl;
+    }
+    vertex->SetPrimary(RootParticle);
+
+  }
+
+  event->AddPrimaryVertex(vertex);
+
+}
 
 void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
 {
+
+  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  G4bool isotropic_ = ConfigManager::GetIsotropic();
+  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
+  G4double vertex_x_ = ConfigManager::GetVertexX();
+  G4double vertex_y_ = ConfigManager::GetVertexY();
+  G4double vertex_z_ = ConfigManager::GetVertexZ();
+  G4String particleType_ = ConfigManager::GetParticleType();
+
   // get MC truth manager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
@@ -463,3 +640,52 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
 }
 
 }
+
+ROOT::Math::SMatrix< double, 3 > PrimaryGeneration::Rotation_Matrix(G4ThreeVector vec1, G4ThreeVector vec2)
+{
+  // --------------------------------------------------------------------------
+  // Rotation matrix r that rotates vector vec1 onto vector vec2
+  // https://math.stackexchange.com/a/476311
+  // --------------------------------------------------------------------------
+  
+  double identity_array[9] = { 1, 0, 0,
+                               0, 1, 0,
+                               0, 0, 1  };
+
+  ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
+  ROOT::Math::SMatrix< double, 3 > r = I;
+
+  double b_array[3] = { vec2[0],
+                        vec2[1],
+                        vec2[2]  };
+  ROOT::Math::SVector< double, 3 > b(b_array, 3);
+  b = b.Unit();
+
+  double a_array[3] = { vec1[0],
+                        vec1[1],
+                        vec1[2] };
+
+  ROOT::Math::SVector< double, 3 > a(a_array, 3);
+  a = a.Unit();
+
+  double cosine = ROOT::Math::Dot(a, b);
+
+  // cross product between a and b
+  ROOT::Math::SVector< double, 3 > v = ROOT::Math::Cross(a, b);
+ 
+  // sine between a and b
+  double sine = ROOT::Math::Mag(v);
+ 
+  // skew-symmetric cross-product matrix of v
+  double V_array[9] = {     0, -v(2),  v(1),
+                         v(2),     0, -v(0),
+                        -v(1),  v(0),     0  };
+  ROOT::Math::SMatrix< double, 3 > V(V_array, 9);
+  
+  // rotation matrix
+  r = I + V + V*V*(1-cosine)/sine/sine;
+
+
+  return r;
+}
+

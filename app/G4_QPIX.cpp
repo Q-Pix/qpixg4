@@ -6,34 +6,45 @@
 //   * Creation date: 14 Aug 2019
 // -----------------------------------------------------------------------------
 
+#include "ActionInitialization.h"
+#include "ConfigManager.h"
 #include "DetectorConstruction.h"
-#include "PrimaryGeneration.h"
-#include "RunAction.h"
 #include "EventAction.h"
-#include "TrackingAction.h"
+#include "PrimaryGeneration.h"
+#include "GENIEManager.h"
+#include "RunAction.h"
 #include "SteppingAction.h"
+#include "TrackingAction.h"
 
+
+#include "G4RunManagerFactory.hh"
 #include <G4RunManager.hh>
 #include <G4UImanager.hh>
-#include <G4VisExecutive.hh>
+#include "G4VisExecutive.hh"
 #include <G4UIExecutive.hh>
 #include <FTFP_BERT_HP.hh>
 #include <G4EmStandardPhysics_option4.hh>
+#include <G4OpticalPhysics.hh>
 
+#include "TROOT.h"
 
 #include "Randomize.hh"
 #include "time.h"
-
+#include <string>
+#include <typeinfo>
 
 
 int main(int argc, char** argv)
 {
 
+  ConfigManager * configManager = ConfigManager::Instance();
+  ConfigManager::Print();
   //choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
   //set random seed with system time
   G4long seed = time(NULL);
-  CLHEP::HepRandom::setTheSeed(seed);
+  //CLHEP::HepRandom::setTheSeed(seed);
+  CLHEP::HepRandom::setTheSeed(1234567890); // For debuging purposes
 
 
   // Detect interactive mode (if no arguments) and define UI session
@@ -44,7 +55,7 @@ int main(int argc, char** argv)
   }
 
   // Construct the run manager and set the initialization classes
-  G4RunManager* run_manager = new G4RunManager();
+  auto* run_manager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
   G4VModularPhysicsList* physics_list = new FTFP_BERT_HP();
   physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
@@ -52,11 +63,7 @@ int main(int argc, char** argv)
 
   run_manager->SetUserInitialization(new DetectorConstruction());
 
-  run_manager->SetUserAction(new PrimaryGeneration());
-  run_manager->SetUserAction(new RunAction());
-  run_manager->SetUserAction(new EventAction());
-  run_manager->SetUserAction(new TrackingAction());
-  run_manager->SetUserAction(new SteppingAction());
+  run_manager->SetUserInitialization(new ActionInitialization());
 
   // Initialize visualization
   G4VisManager* vismgr = new G4VisExecutive();
@@ -69,9 +76,10 @@ int main(int argc, char** argv)
   //
   if (!ui) {
     // batch mode
+    // Execute Macro file using any aliases set above
     G4String command = "/control/execute ";
-    G4String fileName = argv[1];
-    uimgr->ApplyCommand(command+fileName);
+    G4String macro_name = argv[1];
+    uimgr->ApplyCommand(command+macro_name);
   }
   else {
     // interactive mode

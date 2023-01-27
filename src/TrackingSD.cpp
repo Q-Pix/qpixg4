@@ -10,6 +10,7 @@
 #include "TrackingHit.h"
 
 // Q-Pix includes
+#include "ConfigManager.h"
 #include "MCTruthManager.h"
 #include "MCParticle.h"
 
@@ -23,20 +24,16 @@
 
 TrackingSD::TrackingSD(const G4String& sd_name, const G4String& hc_name):
   G4VSensitiveDetector(sd_name),
-  Event_Cutoff_(0.0)
+  Event_Cutoff_(ConfigManager::GetEventCutoff())
   // hc_(nullptr)
 {
   collectionName.insert(hc_name);
-
-  msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
-  msg_->DeclareProperty("Event_Cutoff", Event_Cutoff_,  "window to simulate the times").SetUnit("ns");
 
 }
 
 
 TrackingSD::~TrackingSD()
 {
-  delete msg_;
 }
 
 
