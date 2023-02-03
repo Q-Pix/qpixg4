@@ -220,18 +220,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
 
   genieManager->Cd();
 
-  TTree * tree = genieManager->GetTTree_();
-
-  // Getting the event from the ROOT file
-  Long64_t ientry = tree->LoadTree(event->GetEventID());
-
-  if (ientry < 0) {
-    G4cout<<"Event does not exist in the Root file!!"<<G4endl;
-    return;
-  }
-
-  if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
-  tree->GetEntry(event->GetEventID());
+  genieManager->LoadEvent(event);
 
   G4ThreeVector vertex3d = G4ThreeVector (vertex_x_, vertex_y_, vertex_z_);
 
