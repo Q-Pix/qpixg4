@@ -18,9 +18,12 @@
 #include "TBranch.h"
 
 // Geant4 includes
+#include "G4Event.hh"
+#include "G4ParticleTable.hh"
 #include "G4Types.hh"
 #include "G4String.hh"
 #include "G4SystemOfUnits.hh"
+
 
 // C++ includes
 #include <map>
@@ -57,7 +60,7 @@ class GENIEManager {
     Int_t GetNEntries();
     void Cd();
     void Close();
-    void SaveMomentum();
+    void LoadEvent(G4Event*);
 
   protected:
 
@@ -121,6 +124,10 @@ class GENIEManager {
 
     G4ThreadLocal static GENIEManager *instance_;
 
+  protected:
+
+    // GEANT4 dictionary of particles
+    G4ParticleTable* particle_table_;
 
 
 };

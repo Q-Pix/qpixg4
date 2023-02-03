@@ -172,3 +172,22 @@ void GENIEManager::Close(){
   }
 
 }
+
+
+void GENIEManager::LoadEvent(G4Event * event){
+
+  // Set tree pointer to genie event tree
+  TTree * tree = this->GetTTree_();
+
+  Long64_t ientry = tree->LoadTree(event->GetEventID());
+
+  if (ientry < 0) {
+    G4cout<<"Event does not exist in the Root file!!"<<G4endl;
+    return;
+  }
+
+  if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
+ 
+  // Set event 
+  tree->GetEntry(event->GetEventID());
+}
