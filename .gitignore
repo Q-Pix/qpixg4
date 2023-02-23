@@ -5,3 +5,6 @@ Build/*
 
 # but keep the folder
 !Build/.keep
+
+# use a normal build directory for cmaketools
+build
