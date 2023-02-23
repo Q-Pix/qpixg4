@@ -7,7 +7,7 @@
 /Inputs/Particle_Type SUPERNOVA
 
 # output path
-/Inputs/root_output ../output/SUPERNOVA_BACKGROUND.root
+/Inputs/root_output ./output/SUPERNOVA_BACKGROUND.root
 
 # initialize run
 /run/initialize
@@ -30,5 +30,5 @@
 /Supernova/N_Rn222_Decays 27740
 
 # run
-/run/beamOn 100
+/run/beamOn 1
 
