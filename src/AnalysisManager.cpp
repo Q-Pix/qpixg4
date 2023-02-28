@@ -131,31 +131,31 @@ void AnalysisManager::EventReset()
     event_ = -1;
     number_particles_ = 0;
 
-    generator_initial_number_particles_ = 0;
-    generator_initial_particle_x_.clear();
-    generator_initial_particle_y_.clear();
-    generator_initial_particle_z_.clear();
-    generator_initial_particle_t_.clear();
-    generator_initial_particle_px_.clear();
-    generator_initial_particle_py_.clear();
-    generator_initial_particle_pz_.clear();
-    generator_initial_particle_energy_.clear();
-    generator_initial_particle_pdg_code_.clear();
-    generator_initial_particle_mass_.clear();
-    generator_initial_particle_charge_.clear();
+    // generator_initial_number_particles_ = 0;
+    // generator_initial_particle_x_.clear();
+    // generator_initial_particle_y_.clear();
+    // generator_initial_particle_z_.clear();
+    // generator_initial_particle_t_.clear();
+    // generator_initial_particle_px_.clear();
+    // generator_initial_particle_py_.clear();
+    // generator_initial_particle_pz_.clear();
+    // generator_initial_particle_energy_.clear();
+    // generator_initial_particle_pdg_code_.clear();
+    // generator_initial_particle_mass_.clear();
+    // generator_initial_particle_charge_.clear();
 
-    generator_final_number_particles_ = 0;
-    generator_final_particle_x_.clear();
-    generator_final_particle_y_.clear();
-    generator_final_particle_z_.clear();
-    generator_final_particle_t_.clear();
-    generator_final_particle_px_.clear();
-    generator_final_particle_py_.clear();
-    generator_final_particle_pz_.clear();
-    generator_final_particle_energy_.clear();
-    generator_final_particle_pdg_code_.clear();
-    generator_final_particle_mass_.clear();
-    generator_final_particle_charge_.clear();
+    // generator_final_number_particles_ = 0;
+    // generator_final_particle_x_.clear();
+    // generator_final_particle_y_.clear();
+    // generator_final_particle_z_.clear();
+    // generator_final_particle_t_.clear();
+    // generator_final_particle_px_.clear();
+    // generator_final_particle_py_.clear();
+    // generator_final_particle_pz_.clear();
+    // generator_final_particle_energy_.clear();
+    // generator_final_particle_pdg_code_.clear();
+    // generator_final_particle_mass_.clear();
+    // generator_final_particle_charge_.clear();
 
     number_hits_ = 0;
     energy_deposit_ = 0;
@@ -171,15 +171,15 @@ void AnalysisManager::EventReset()
     particle_number_daughters_.clear();
     particle_daughter_track_ids_.clear();
 
-    particle_initial_x_.clear();
-    particle_initial_y_.clear();
-    particle_initial_z_.clear();
-    particle_initial_t_.clear();
+    // particle_initial_x_.clear();
+    // particle_initial_y_.clear();
+    // particle_initial_z_.clear();
+    // particle_initial_t_.clear();
 
-    particle_initial_px_.clear();
-    particle_initial_py_.clear();
-    particle_initial_pz_.clear();
-    particle_initial_energy_.clear();
+    // particle_initial_px_.clear();
+    // particle_initial_py_.clear();
+    // particle_initial_pz_.clear();
+    // particle_initial_energy_.clear();
 
     hit_track_id_.clear();
     hit_start_x_.clear();
@@ -228,35 +228,35 @@ void AnalysisManager::FillMetadata(double const & detector_length_x,
 //-----------------------------------------------------------------------------
 void AnalysisManager::AddInitialGeneratorParticle(GeneratorParticle const * particle)
 {
-    generator_initial_number_particles_ += 1;
-    generator_initial_particle_pdg_code_.push_back(particle->PDGCode());
-    generator_initial_particle_mass_.push_back(particle->Mass());
-    generator_initial_particle_charge_.push_back(particle->Charge());
-    generator_initial_particle_x_.push_back(particle->X());
-    generator_initial_particle_y_.push_back(particle->Y());
-    generator_initial_particle_z_.push_back(particle->Z());
-    generator_initial_particle_t_.push_back(particle->T());
-    generator_initial_particle_px_.push_back(particle->Px());
-    generator_initial_particle_py_.push_back(particle->Py());
-    generator_initial_particle_pz_.push_back(particle->Pz());
-    generator_initial_particle_energy_.push_back(particle->Energy());
+    // generator_initial_number_particles_ += 1;
+    // generator_initial_particle_pdg_code_.push_back(particle->PDGCode());
+    // generator_initial_particle_mass_.push_back(particle->Mass());
+    // generator_initial_particle_charge_.push_back(particle->Charge());
+    // generator_initial_particle_x_.push_back(particle->X());
+    // generator_initial_particle_y_.push_back(particle->Y());
+    // generator_initial_particle_z_.push_back(particle->Z());
+    // generator_initial_particle_t_.push_back(particle->T());
+    // generator_initial_particle_px_.push_back(particle->Px());
+    // generator_initial_particle_py_.push_back(particle->Py());
+    // generator_initial_particle_pz_.push_back(particle->Pz());
+    // generator_initial_particle_energy_.push_back(particle->Energy());
 }
 
 //-----------------------------------------------------------------------------
 void AnalysisManager::AddFinalGeneratorParticle(GeneratorParticle const * particle)
 {
-    generator_final_number_particles_ += 1;
-    generator_final_particle_pdg_code_.push_back(particle->PDGCode());
-    generator_final_particle_mass_.push_back(particle->Mass());
-    generator_final_particle_charge_.push_back(particle->Charge());
-    generator_final_particle_x_.push_back(particle->X());
-    generator_final_particle_y_.push_back(particle->Y());
-    generator_final_particle_z_.push_back(particle->Z());
-    generator_final_particle_t_.push_back(particle->T());
-    generator_final_particle_px_.push_back(particle->Px());
-    generator_final_particle_py_.push_back(particle->Py());
-    generator_final_particle_pz_.push_back(particle->Pz());
-    generator_final_particle_energy_.push_back(particle->Energy());
+    // generator_final_number_particles_ += 1;
+    // generator_final_particle_pdg_code_.push_back(particle->PDGCode());
+    // generator_final_particle_mass_.push_back(particle->Mass());
+    // generator_final_particle_charge_.push_back(particle->Charge());
+    // generator_final_particle_x_.push_back(particle->X());
+    // generator_final_particle_y_.push_back(particle->Y());
+    // generator_final_particle_z_.push_back(particle->Z());
+    // generator_final_particle_t_.push_back(particle->T());
+    // generator_final_particle_px_.push_back(particle->Px());
+    // generator_final_particle_py_.push_back(particle->Py());
+    // generator_final_particle_pz_.push_back(particle->Pz());
+    // generator_final_particle_energy_.push_back(particle->Energy());
 }
 
 //-----------------------------------------------------------------------------
