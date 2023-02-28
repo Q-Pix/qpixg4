@@ -81,24 +81,24 @@ void AnalysisManager::Book(std::string const file_path)
 
     event_tree_->Branch("energy_deposit",   &energy_deposit_,   "energy_deposit/D");
 
-    event_tree_->Branch("particle_track_id",        &particle_track_id_);
-    event_tree_->Branch("particle_parent_track_id", &particle_parent_track_id_);
-    event_tree_->Branch("particle_pdg_code",        &particle_pdg_code_);
-    event_tree_->Branch("particle_mass",            &particle_mass_);
-    event_tree_->Branch("particle_charge",          &particle_charge_);
-    event_tree_->Branch("particle_process_key",     &particle_process_key_);
-    event_tree_->Branch("particle_total_occupancy", &particle_total_occupancy_);
-    event_tree_->Branch("particle_initial_x",       &particle_initial_x_);
-    event_tree_->Branch("particle_initial_y",       &particle_initial_y_);
-    event_tree_->Branch("particle_initial_z",       &particle_initial_z_);
-    event_tree_->Branch("particle_initial_t",       &particle_initial_t_);
-    event_tree_->Branch("particle_initial_px",      &particle_initial_px_);
-    event_tree_->Branch("particle_initial_py",      &particle_initial_py_);
-    event_tree_->Branch("particle_initial_pz",      &particle_initial_pz_);
-    event_tree_->Branch("particle_initial_energy",  &particle_initial_energy_);
+    // event_tree_->Branch("particle_track_id",        &particle_track_id_);
+    // event_tree_->Branch("particle_parent_track_id", &particle_parent_track_id_);
+    // event_tree_->Branch("particle_pdg_code",        &particle_pdg_code_);
+    // event_tree_->Branch("particle_mass",            &particle_mass_);
+    // event_tree_->Branch("particle_charge",          &particle_charge_);
+    // event_tree_->Branch("particle_process_key",     &particle_process_key_);
+    // event_tree_->Branch("particle_total_occupancy", &particle_total_occupancy_);
+    // event_tree_->Branch("particle_initial_x",       &particle_initial_x_);
+    // event_tree_->Branch("particle_initial_y",       &particle_initial_y_);
+    // event_tree_->Branch("particle_initial_z",       &particle_initial_z_);
+    // event_tree_->Branch("particle_initial_t",       &particle_initial_t_);
+    // event_tree_->Branch("particle_initial_px",      &particle_initial_px_);
+    // event_tree_->Branch("particle_initial_py",      &particle_initial_py_);
+    // event_tree_->Branch("particle_initial_pz",      &particle_initial_pz_);
+    // event_tree_->Branch("particle_initial_energy",  &particle_initial_energy_);
 
-    event_tree_->Branch("particle_number_daughters",  &particle_number_daughters_);
-    event_tree_->Branch("particle_daughter_track_id", &particle_daughter_track_ids_);
+    // event_tree_->Branch("particle_number_daughters",  &particle_number_daughters_);
+    // event_tree_->Branch("particle_daughter_track_id", &particle_daughter_track_ids_);
 
     event_tree_->Branch("hit_track_id",       &hit_track_id_);
     event_tree_->Branch("hit_start_x",        &hit_start_x_);
@@ -262,26 +262,26 @@ void AnalysisManager::AddFinalGeneratorParticle(GeneratorParticle const * partic
 //-----------------------------------------------------------------------------
 void AnalysisManager::AddMCParticle(MCParticle const * particle)
 {
-    particle_track_id_.push_back(particle->TrackID());
-    particle_parent_track_id_.push_back(particle->ParentTrackID());
-    particle_pdg_code_.push_back(particle->PDGCode());
-    particle_mass_.push_back(particle->Mass());
-    particle_charge_.push_back(particle->Charge());
-    particle_process_key_.push_back(this->ProcessToKey(particle->Process()));
-    particle_total_occupancy_.push_back(particle->TotalOccupancy());
+    // particle_track_id_.push_back(particle->TrackID());
+    // particle_parent_track_id_.push_back(particle->ParentTrackID());
+    // particle_pdg_code_.push_back(particle->PDGCode());
+    // particle_mass_.push_back(particle->Mass());
+    // particle_charge_.push_back(particle->Charge());
+    // particle_process_key_.push_back(this->ProcessToKey(particle->Process()));
+    // particle_total_occupancy_.push_back(particle->TotalOccupancy());
 
-    particle_initial_x_.push_back(particle->InitialPosition().X());
-    particle_initial_y_.push_back(particle->InitialPosition().Y());
-    particle_initial_z_.push_back(particle->InitialPosition().Z());
-    particle_initial_t_.push_back(particle->InitialPosition().T());
+    // particle_initial_x_.push_back(particle->InitialPosition().X());
+    // particle_initial_y_.push_back(particle->InitialPosition().Y());
+    // particle_initial_z_.push_back(particle->InitialPosition().Z());
+    // particle_initial_t_.push_back(particle->InitialPosition().T());
 
-    particle_initial_px_.push_back(particle->InitialMomentum().X());
-    particle_initial_py_.push_back(particle->InitialMomentum().Y());
-    particle_initial_pz_.push_back(particle->InitialMomentum().Z());
-    particle_initial_energy_.push_back(particle->InitialMomentum().E());
+    // particle_initial_px_.push_back(particle->InitialMomentum().X());
+    // particle_initial_py_.push_back(particle->InitialMomentum().Y());
+    // particle_initial_pz_.push_back(particle->InitialMomentum().Z());
+    // particle_initial_energy_.push_back(particle->InitialMomentum().E());
 
-    particle_number_daughters_.push_back(particle->NumberDaughters());
-    particle_daughter_track_ids_.push_back(particle->Daughters());
+    // particle_number_daughters_.push_back(particle->NumberDaughters());
+    // particle_daughter_track_ids_.push_back(particle->Daughters());
 
     number_particles_ += 1;
 
