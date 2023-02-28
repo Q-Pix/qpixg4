@@ -91,16 +91,16 @@ void EventAction::EndOfEventAction(const G4Event* event)
     analysis_manager->SetEvent(event->GetEventID() + event_id_offset_);
 
     // add initial generator particles to analysis manager
-    for (auto const& particle : mc_truth_manager->GetInitialGeneratorParticles())
-    {
-        analysis_manager->AddInitialGeneratorParticle(particle);
-    }
+    // for (auto const& particle : mc_truth_manager->GetInitialGeneratorParticles())
+    // {
+        // analysis_manager->AddInitialGeneratorParticle(particle);
+    // }
 
     // add final generator particles to analysis manager
-    for (auto const& particle : mc_truth_manager->GetFinalGeneratorParticles())
-    {
-        analysis_manager->AddFinalGeneratorParticle(particle);
-    }
+    // for (auto const& particle : mc_truth_manager->GetFinalGeneratorParticles())
+    // {
+        // analysis_manager->AddFinalGeneratorParticle(particle);
+    // }
 
     // get map of particles from MC truth manager
     // auto const MCParticleMap = mc_truth_manager->GetMCParticleMap();
