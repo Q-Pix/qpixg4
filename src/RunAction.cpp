@@ -29,6 +29,8 @@ RunAction::RunAction(): G4UserRunAction(), multirun_(false)
                                 "path to output ROOT file");
     messenger_->DeclareProperty("MARLEY_json", marley_json_,
                                 "MARLEY configuration file");
+    messenger_->DeclareProperty("RadioParticleID", particle_type_,
+                                "Int ID for Decay Particle");
     messenger_->DeclareProperty("multirun", multirun_,
                                 "Multiple runs");
 }
@@ -87,9 +89,11 @@ void RunAction::BeginOfRunAction(const G4Run* run)
 
     // get run number
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
-    // analysis_manager->Book(root_output_path_);
+    if(particle_type_ > 0)
+        analysis_manager->SetParticleID(particle_type_);
     analysis_manager->Book(root_output_path);
     analysis_manager->SetRun(run->GetRunID());
+    // if we've passed a particle type, then activate and set the branch
 
     // reset event variables
     analysis_manager->EventReset();

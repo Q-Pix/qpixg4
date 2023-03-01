@@ -27,6 +27,7 @@ class RunAction: public G4UserRunAction
         G4GenericMessenger * messenger_;
         G4String root_output_path_;
         G4String marley_json_;
+        int particle_type_=-1;
         bool multirun_;
 };
 

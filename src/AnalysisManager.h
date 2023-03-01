@@ -40,6 +40,7 @@ class AnalysisManager {
 
         void SetRun(int const);
         void SetEvent(int const);
+        void SetParticleID(int const id){m_particle_id = id;};
 
         void FillMetadata(double const &, double const &, double const &);
 
@@ -47,6 +48,8 @@ class AnalysisManager {
         void AddFinalGeneratorParticle(GeneratorParticle const *);
 
         void AddMCParticle(MCParticle const *);
+        // adding to fill entries in tree by hits instead of events
+        void FillMCParticle(MCParticle const *);
 
         int ProcessToKey(std::string const &);
 
@@ -80,16 +83,31 @@ class AnalysisManager {
 
         double energy_deposit_;
 
-        std::vector< int >    particle_track_id_;
-        std::vector< int >    particle_parent_track_id_;
-        std::vector< int >    particle_pdg_code_;
-        std::vector< double > particle_mass_;
-        std::vector< double > particle_charge_;
-        std::vector< int >    particle_process_key_;
-        std::vector< int >    particle_total_occupancy_;
+        // for FillMCParticle to fill by event
+        int    m_hit_track_id_;
+        double m_hit_start_x_;
+        double m_hit_start_y_;
+        double m_hit_start_z_;
+        double m_hit_start_t_;
+        double m_hit_end_x_;
+        double m_hit_end_y_;
+        double m_hit_end_z_;
+        double m_hit_end_t_;
+        double m_hit_length_;
+        double m_hit_energy_deposit_;
+        int m_hit_process_key_;
+        int m_particle_id=-1; // helper from run action
 
-        std::vector< int >                particle_number_daughters_;
-        std::vector< std::vector< int > > particle_daughter_track_ids_;
+        // std::vector< int >    particle_track_id_;
+        // std::vector< int >    particle_parent_track_id_;
+        // std::vector< int >    particle_pdg_code_;
+        // std::vector< double > particle_mass_;
+        // std::vector< double > particle_charge_;
+        // std::vector< int >    particle_process_key_;
+        // std::vector< int >    particle_total_occupancy_;
+
+        // std::vector< int >                particle_number_daughters_;
+        // std::vector< std::vector< int > > particle_daughter_track_ids_;
 
         // std::vector< double > particle_initial_x_;
         // std::vector< double > particle_initial_y_;
@@ -101,18 +119,18 @@ class AnalysisManager {
         // std::vector< double > particle_initial_pz_;
         // std::vector< double > particle_initial_energy_;
 
-        std::vector< int >    hit_track_id_;
-        std::vector< double > hit_start_x_;
-        std::vector< double > hit_start_y_;
-        std::vector< double > hit_start_z_;
-        std::vector< double > hit_start_t_;
-        std::vector< double > hit_end_x_;
-        std::vector< double > hit_end_y_;
-        std::vector< double > hit_end_z_;
-        std::vector< double > hit_end_t_;
-        std::vector< double > hit_length_;
-        std::vector< double > hit_energy_deposit_;
-        std::vector< int >    hit_process_key_;
+        // std::vector< int >    hit_track_id_;
+        // std::vector< double > hit_start_x_;
+        // std::vector< double > hit_start_y_;
+        // std::vector< double > hit_start_z_;
+        // std::vector< double > hit_start_t_;
+        // std::vector< double > hit_end_x_;
+        // std::vector< double > hit_end_y_;
+        // std::vector< double > hit_end_z_;
+        // std::vector< double > hit_end_t_;
+        // std::vector< double > hit_length_;
+        // std::vector< double > hit_energy_deposit_;
+        // std::vector< int >    hit_process_key_;
 
         // number of generator particles
         // int generator_initial_number_particles_;
