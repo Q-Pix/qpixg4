@@ -3,13 +3,29 @@
 outputdir="/home/argon/Projects/Kevin/qpixg4/output/"
 outputMacroDir="/home/argon/Projects/Kevin/qpixg4/macros/long_macros/"
 prog="/home/argon/Projects/Kevin/qpixg4/build/app/G4_QPIX"
-NPROC=10
+
+if [ -z $1 ]
+  then
+    echo "No arguments for time received.."
+    exit 1
+fi
+
+if [ -z $2 ]
+  then
+    echo "No arguments for number of cores received.."
+    exit 1
+fi
+
+# required args to make the geant data
+time=$1
+maxCores=$2
 
 # clean macrodir
-rm "$outputMacroDir""/*"
+rm -rf "$outputMacroDir"
+mkdir $outputMacroDir
 
 function makeMacroFile {
-	dest="$outputMacroDir""$1"".mac"
+	dest="$outputMacroDir""$1""_$2.mac"
 
 	echo "making file: $dest"
   if test -f "$dest"; then
@@ -24,6 +40,7 @@ function makeMacroFile {
 
 	# configure supernova
 	echo "/Inputs/Particle_Type SUPERNOVA" >> $dest
+	echo "/Inputs/RadioParticleID $5" >> $dest
 
 	# output path
 	echo "/Inputs/root_output $outputdir$1_$2.root" >> $dest
@@ -36,40 +53,35 @@ function makeMacroFile {
 	echo "/event/offset 0" >> $dest
 
 	# Supernova configs
-	echo "/Supernova/Event_Window 1000 s" >> $dest
-	echo "/Supernova/Event_Cutoff 1000 s" >> $dest
+	echo "/Supernova/Event_Window $time s" >> $dest
+	echo "/Supernova/Event_Cutoff $time s" >> $dest
 
   # multiple macros
   echo "/Supernova/$3 1" >> $dest
 	echo "/run/beamOn $4" >> $dest
 }
 
-# multiple macros
-for i in {1..10} 
+# we need time/10 / 10s files per core
+maxTime=$(($time/10))
+how many cores we will eventually send to RTD code 
+for ((j=0; j<$maxCores; j++))
 do
-  echo "making macro.. $i"
-  makeMacroFile "Ar39"$file"_$i" "$i" "N_Ar39_Decays" 70700000
-  makeMacroFile "Ar42"$file"_$i" "$i" "N_Ar42_Decays" 6400
-  makeMacroFile "Bi214"$file"_$i" "$i" "N_Bi214_Decays" 700000
-  makeMacroFile "Co60"$file"_$i" "$i" "N_Co60_Decays" 4100
-  makeMacroFile "K40"$file"_$i" "$i" "N_K40_Decays" 1264200
-  makeMacroFile "K42"$file"_$i" "$i" "N_K42_Decays" 6400
-  makeMacroFile "Kr85"$file"_$i" "$i" "N_Kr85_Decays" 8050000
-  makeMacroFile "Pb214"$file"_$i" "$i" "N_Pb214_Decays" 700000
-  makeMacroFile "Po210"$file"_$i" "$i" "N_Po210_Decays" 500
-  makeMacroFile "Rn222"$file"_$i" "$i" "N_Rn222_Decays" 2774000
+  for ((i=1; i<=$maxTime; i++ ))
+  do
+    seed=$((100*$j+$i))
+    # echo "seed is: $seed"
+    # echo "making macro.. $i"
+    makeMacroFile "Ar39"$file"_core-$j" "$seed" "N_Ar39_Decays" 707000 1
+    makeMacroFile "Ar42"$file"_core-$j" "$seed" "N_Ar42_Decays" 64 2
+    makeMacroFile "Bi214"$file"_core-$j" "$seed" "N_Bi214_Decays" 7000 3
+    makeMacroFile "Co60"$file"_core-$j" "$seed" "N_Co60_Decays" 41 4
+    makeMacroFile "K40"$file"_core-$j" "$seed" "N_K40_Decays" 12642 5
+    makeMacroFile "K42"$file"_core-$j" "$seed" "N_K42_Decays" 64 6
+    makeMacroFile "Kr85"$file"_core-$j" "$seed" "N_Kr85_Decays" 80500 7
+    makeMacroFile "Pb214"$file"_core-$j" "$seed" "N_Pb214_Decays" 7000 8
+    makeMacroFile "Po210"$file"_core-$j" "$seed" "N_Po210_Decays" 5 9
+    makeMacroFile "Rn222"$file"_core-$j" "$seed" "N_Rn222_Decays" 27740 10
+  done
 done
 
-# mac_array=( $( ls "$outputMacroDir""/" ) )
-## now loop through the above array
-# for i in "${mac_array[@]}"
-# do
-#    echo "Running: $prog $outputMacroDir$i"
-#    $prog "$outputMacroDir""/""$i" &
-# done
-
-## Put all cust_func in the background and bash
-## would wait until those are completed
-## before displaying all done message
-wait
 echo "All done"
