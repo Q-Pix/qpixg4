@@ -16,6 +16,15 @@ if [ -z $2 ]
     exit 1
 fi
 
+# base seed
+if [ -z $3 ]
+  then
+    echo "No arguments for base seed of cores received.. using default"
+    baseseed=0
+  else
+    baseseed=$3
+fi
+
 # required args to make the geant data
 time=$1
 maxCores=$2
@@ -45,7 +54,7 @@ function makeMacroFile {
 	# output path
 	echo "/Inputs/root_output $outputdir$1_$2.root" >> $dest
 
-	# initialize run
+	# initialize run, with a seed
 	echo "/run/initialize" >> $dest
 	echo "/random/setSeeds 0 $2" >> $dest
 
@@ -63,14 +72,12 @@ function makeMacroFile {
 
 # we need time/10 / 10s files per core
 maxTime=$(($time/10))
-how many cores we will eventually send to RTD code 
 for ((j=0; j<$maxCores; j++))
 do
   for ((i=1; i<=$maxTime; i++ ))
   do
-    seed=$((100*$j+$i))
-    # echo "seed is: $seed"
-    # echo "making macro.. $i"
+    seed=$(($maxTime*$j+$i+$baseseed))
+    echo "making macro.. $i"
     makeMacroFile "Ar39"$file"_core-$j" "$seed" "N_Ar39_Decays" 707000 1
     makeMacroFile "Ar42"$file"_core-$j" "$seed" "N_Ar42_Decays" 64 2
     makeMacroFile "Bi214"$file"_core-$j" "$seed" "N_Bi214_Decays" 7000 3
