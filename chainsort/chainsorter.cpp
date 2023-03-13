@@ -183,6 +183,7 @@ int main(int argc, char** argv)
     // output 
     std::cout << "creating output file at: " << argv[argc-1] << std::endl;
     std::string output_file(argv[argc-1]);
+    TTree::SetMaxTreeSize( 500000000000LL ); // 500 GB
     TFile tf (output_file.data(), "RECREATE");
     TTree* tt = new TTree("event_tree", "tt");
 

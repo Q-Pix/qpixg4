@@ -105,7 +105,8 @@ def createGeantData(time, cores, seed):
     if not os.path.isfile(decay_script):
         print("WARNING unable to find decay script!")
         return -1 
-    subprocess.run(["bash", decay_script, str(time), str(cores), str(seed)])
+    outputPath="/mnt/nvme1/Kevin/qpix/output/"
+    subprocess.run(["bash", decay_script, str(time), str(cores), str(seed), str(outputPath)])
 
     if not os.path.isdir("./macros/long_macros/"):
         print("did not find macro directory!!")
@@ -113,7 +114,7 @@ def createGeantData(time, cores, seed):
 
     mac_files = os.listdir("./macros/long_macros/")
     mac_files = ["./macros/long_macros/"+f for f in mac_files]
-    pool = mp.Pool(50)
+    pool = mp.Pool()
     r = pool.map_async(run_g4, mac_files)
     r.wait()
     print("Geant4 Files created.")
@@ -124,9 +125,9 @@ def hadd_files():
     Wrapper function to hadd files after geant4 creation.
 
     final output of these files should be a single, unsorted ROOT file per
-    core in the ./output/ directory
+    core in the /mnt/nvme1/Kevin/qpix/output/ directory
     """
-    path = "./output/"
+    path = "/mnt/nvme1/Kevin/qpix/output/"
 
     if not os.path.isdir(path):
         print("did not find output directory!!")
@@ -168,12 +169,12 @@ def createSortData(time):
     """
 
     # now combine everything in terms of core
-    path="./output/"
+    path="/mnt/nvme1/Kevin/qpix/output/"
     if not os.path.isdir(path+"sorted"):
         print("could not find input file directory")
         return -1
 
-    sort_path = "./output/sorted/"
+    sort_path = "/mnt/nvme1/Kevin/qpix/output/sorted/"
     sort_files = [os.path.join(path, f) for f in os.listdir(path) if ".root" in f and "_" in f]
     dest_files = []
     for f in sort_files:
@@ -184,7 +185,7 @@ def createSortData(time):
 
     ## sort and move files to sorted output directory
     print("sorting files:", sort_files)
-    pool = mp.Pool(60) 
+    pool = mp.Pool() 
     r = pool.starmap_async(run_sort, zip(sort_files, dest_files))
     r.wait()
 
@@ -207,7 +208,7 @@ def createRTD(sorted_files):
     
     but change the postfix to _rtd.root.
     """
-    path = "./output/rtd/"
+    path = "/mnt/nvme1/Kevin/qpix/output/rtd/"
     if not os.path.isdir(path):
         print("unable to find output RTD path!")
         return -1
@@ -224,10 +225,10 @@ def createRTD(sorted_files):
 
 def chainCombineData(cores):
     """
-    Read from input_files from ./output/sorted/ to group all of the 
+    Read from input_files from /mnt/nvme1/Kevin/qpix/output/sorted/ to group all of the 
     cores together in long tchains
     """
-    path = "./output/sorted/"
+    path = "/mnt/nvme1/Kevin/qpix/output/sorted/"
     if not os.path.isdir(path):
         print("unable to find input sorted path!")
         return -1
@@ -239,7 +240,7 @@ def chainCombineData(cores):
         rtd_files.append(os.path.join(path, f"core_{core}_rtd_input.root"))
 
     # attempt chaining on every core
-    pool = mp.Pool(cores)
+    pool = mp.Pool(4)
     r = pool.starmap_async(run_chain, zip(chain_files, rtd_files))
     r.wait()
 
@@ -265,7 +266,7 @@ def main(time, cores, seed):
     # sort and combine all of the output files
     createSortData(time)
 
-    # all sorted data is now in ./output/sorted/ we can now create a tchain
+    # all sorted data is now in /mnt/nvme1/Kevin/qpix/output/sorted/ we can now create a tchain
     # to combine them all
     chain_files = chainCombineData(cores)
     if len(chain_files) == 0:
