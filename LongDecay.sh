@@ -1,6 +1,5 @@
 #!/bin/bash
 
-outputdir="/home/argon/Projects/Kevin/qpixg4/output/"
 outputMacroDir="/home/argon/Projects/Kevin/qpixg4/macros/long_macros/"
 prog="/home/argon/Projects/Kevin/qpixg4/build/app/G4_QPIX"
 
@@ -23,6 +22,18 @@ if [ -z $3 ]
     baseseed=0
   else
     baseseed=$3
+fi
+
+# find the outputdir from controlling python program
+if [ -z $4 ]
+  then
+    echo "No argument selected for outputdir, error!"
+    exit 1
+    # deprecated output
+    # outputdir="/home/argon/Projects/Kevin/qpixg4/output/"
+  else
+    # baseseed=$3
+    outputdir=$4
 fi
 
 # required args to make the geant data
