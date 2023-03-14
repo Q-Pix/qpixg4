@@ -28,4 +28,4 @@
 #/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 
 # run
-# /run/beamOn 1
+/run/beamOn 1

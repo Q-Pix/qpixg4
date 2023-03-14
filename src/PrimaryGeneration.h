@@ -37,6 +37,7 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     virtual ~PrimaryGeneration();
     virtual void GeneratePrimaries(G4Event*);
 
+
   protected:
 
     // GEANT4 dictionary of particles
@@ -46,6 +47,7 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
 
     G4GenericMessenger* msg_; // Messenger for configuration parameters
     G4String Particle_Type_;
+    bool PrintParticleInfo_;
     //double Particle_Energy_;
 
     bool decay_at_time_zero_;
@@ -66,8 +68,11 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     double detector_length_z_;
 
     G4Box* detector_solid_vol_;
+    std::string Particle_infoRoot_Path;
 
     void MARLEYGeneratePrimaries(G4Event*);
+    void GENIEGeneratePrimaries(G4Event*);
+    void ROOTGeneratePrimaries(G4Event * event);
 
     std::default_random_engine generator_;
     std::normal_distribution< double > distribution_;

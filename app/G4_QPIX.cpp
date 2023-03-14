@@ -12,19 +12,30 @@
 #include "EventAction.h"
 #include "TrackingAction.h"
 #include "SteppingAction.h"
-
+#include "../src/ROOTManager.h"
 #include <G4RunManager.hh>
 #include <G4UImanager.hh>
 #include <G4VisExecutive.hh>
 #include <G4UIExecutive.hh>
 #include <FTFP_BERT_HP.hh>
 #include <G4EmStandardPhysics_option4.hh>
+#include <G4OpticalPhysics.hh>
 
 
 #include "Randomize.hh"
 #include "time.h"
+#include <getopt.h>
 
 
+void PrintHelp(){
+    G4cerr << "\nUsage: ./build/app/G4_QPIX [-i/b] [-n number] <init_macro>\n"  << G4endl;
+    G4cerr << "Available options: " <<G4endl;
+    G4cerr << "-n --nevents --> number of events to simulate " <<G4endl;
+    G4cerr << "-i --interactive --> Interactive Mode   " <<G4endl;
+    G4cerr << "-b --batch  --> No Visual Mode " <<G4endl;
+    G4cerr << "-h --help --> Help" <<G4endl;
+    exit(EXIT_FAILURE);
+}
 
 int main(int argc, char** argv)
 {
@@ -34,7 +45,6 @@ int main(int argc, char** argv)
   //set random seed with system time
   G4long seed = time(NULL);
   CLHEP::HepRandom::setTheSeed(seed);
-
 
   // Detect interactive mode (if no arguments) and define UI session
   //

@@ -3,9 +3,9 @@
     "C_Cpp.default.configurationProvider": "ms-vscode.cmake-tools",
     "cmake.debugConfig": {
         // 'long' version arguments
-        "args": ["/home/argon/Projects/Kevin/qpixg4/macros/long_macros/LongDecay.mac"]
-        // useful for testing RTD
-        // "args": ["/home/argon/Projects/Kevin/qpixg4/output/poop.root", "/home/argon/Projects/Kevin/qpixg4/output/poop_RTD.root"]
+        // "args": ["/home/argon/Projects/Kevin/qpixg4/macros/long_macros/LongDecay.mac"]
+        // useful for testing F/RHC neutrino files
+        "args": ["/home/argon/Projects/Kevin/qpixg4/macros/ROOTFHC.macro"]
     },
     "files.associations": {
         "dfMacro.C": "cpp"

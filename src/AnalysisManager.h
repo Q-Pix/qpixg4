@@ -35,6 +35,7 @@ class AnalysisManager {
 
         void Book(std::string const);
         void Save();
+        void Cd();
         void EventFill();
         void EventReset();
 

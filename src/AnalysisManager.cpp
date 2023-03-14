@@ -397,3 +397,7 @@ int AnalysisManager::ProcessToKey(std::string const & process)
     return key;
 }
 
+void AnalysisManager::Cd(){
+    tfile_->cd();
+}
+
