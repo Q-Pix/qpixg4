@@ -47,31 +47,10 @@ def run_chain(input_files, dest_file):
     else:
         return -1 
 
-def run_hadd(combFiles):
-    """
-    main function here looks for the output ROOT files, finds the important
-    core counts, seed numbers, and isotope types.
-
-    It should call hadd -a iteratively continually appending to the base file
-    from all of the other output files to condense everything into a single
-    file.
-    """
-    assert len(combFiles) > 1, "combine files need more than one file to combine"
-    base_file = combFiles[0]
-    move_files = combFiles[1:]
-    print(f"move {len(move_files)} files into {base_file}")
-    for mf in move_files:
-        proc = subprocess.run(["hadd", "-a", base_file, mf])
-        if proc.returncode != 0:
-            print(f"WARNING hadd error failed at {mf} into {base_file}")
-            return
-        else:
-            proc = subprocess.run(["rm", mf])
-
 def run_sort(input_file, dest_file):
     """
     once the files are combined, we need to perform the following:
-    sort combined hadd ttree of all of the hits
+    sort geant ttree data
     move the sort_event_tree into a new tfile
     remove the old, unsorted tree
     """
@@ -118,49 +97,6 @@ def createGeantData(time, cores, seed):
     r = pool.map_async(run_g4, mac_files)
     r.wait()
     print("Geant4 Files created.")
-    return 1
-
-def hadd_files():
-    """
-    Wrapper function to hadd files after geant4 creation.
-
-    final output of these files should be a single, unsorted ROOT file per
-    core in the /mnt/nvme1/Kevin/qpix/output/ directory
-    """
-    path = "/mnt/nvme1/Kevin/qpix/output/"
-
-    if not os.path.isdir(path):
-        print("did not find output directory!!")
-        return -1
-
-    files = [os.path.join(path, f) for f in os.listdir(path) if ".root" in f and "_" in f]
-    isotopes = set([f.split("_")[0] for f in files if ".root" in f])
-    cores = set([f.split("_")[1] for f in files if ".root" in f])
-
-    combFiles = []
-    for iso in isotopes:
-        for core in cores:
-            combFiles.append([f for f in files if iso in f and core in f])
-
-    pool = mp.Pool(len(combFiles))
-    r = pool.map_async(run_hadd, combFiles)
-    r.wait()
-    print("files combined into isotopes.")
-
-    # files after the hadd
-    files = [os.path.join(path, f) for f in os.listdir(path) if ".root" in f and "_" in f]
-    files.sort() # Ar39 is base
-
-    # now combine everything in terms of core
-    coreFiles = []
-    for core in cores:
-        coreFiles.append([f for f in files if core in f])
-
-    pool = mp.Pool(len(coreFiles))
-    r = pool.map_async(run_hadd, coreFiles)
-    r.wait()
-    print("files combined into cores. Ready for sort!")
-
     return 1
 
 def createSortData(time):
@@ -247,6 +183,40 @@ def chainCombineData(cores):
     return rtd_files
 
 
+def makeNeutrinos():
+    """
+    Wrapper function to control the creation->RTD sequence for
+    generating RTD data from the FHC/RHC data. Use the nvme2 dir
+    for the output directory.
+    """
+    ## folders for odyssey are 0..29
+    folders = range(30)
+
+    outputPath="/mnt/nvme1/Kevin/qpix/output/"
+    inputPath="/home/argon/DUNE_FLUX_FILES/Odyssey/00/"
+
+    def run_neutrino(args):
+        args = [str(arg) for arg in args]
+        print("making args: ", args)
+        subprocess.run(["bash", "./NeutrinoMac.sh", *args])
+
+    fs = [f for f in os.listdir(inputPath) if ".root" in f]
+    fs = [os.path.join(inputPath, f) for f in fs]
+    seed = 420
+    args = []
+    for x in [5, 10, 15]:
+        for y in [5, 10, 15]:
+            for z in [5, 50, 150]:
+                for f in fs:
+                    args.append([x,y,z,seed,f,outputPath])
+
+    pool = mp.Pool()
+    r = pool.starmap_async(run_neutrino, args)
+    r.wait()
+    print("fin.")
+    # for arg in args:
+    #     run_neutrino(arg)
+
 def main(time, cores, seed):
     """
     Look for the macro files in ./macros/long_macros and create the output
@@ -274,6 +244,10 @@ def main(time, cores, seed):
 
     createRTD(chain_files)
     print("qpix rtd creation complete..\n")
+
+    # print("making neutrinos")
+    # makeNeutrinos()
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 4:
