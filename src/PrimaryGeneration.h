@@ -18,6 +18,10 @@
 #include "G4ParticleTable.hh"
 #include "G4String.hh"
 
+// ROOT includes
+#include "Math/SVector.h"
+#include "Math/SMatrix.h" 
+
 // Q-Pix includes
 #include "Supernova.h"
 #include "SupernovaTiming.h"
@@ -77,6 +81,7 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     std::default_random_engine generator_;
     std::normal_distribution< double > distribution_;
 
+    ROOT::Math::SMatrix< double, 3 > Rotation_Matrix(G4ThreeVector, G4ThreeVector);
 };
 
 #endif
