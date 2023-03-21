@@ -82,6 +82,15 @@ void TrackingAction::PostUserTrackingAction(const G4Track* track)
     MCParticle * particle = mc_truth_manager->GetMCParticle(track->GetTrackID());
 
     // set process
-    particle->SetProcess(track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
+    static int bla = 0;
+    ++bla;
+    if(bla == 139 || bla == 140 || bla == 141){
+        std::cout << "prepping..\n";
+    } 
+    if(track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep() == NULL){
+        particle->SetProcess("UserDefined"); // as defined in g4vprocess
+    }else{
+        particle->SetProcess(track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
+    }
 }
 
