@@ -2,6 +2,7 @@ import multiprocessing as mp
 import subprocess
 import os
 import sys
+import argparse
 
 def find_prog(path, prog):
     """
@@ -183,37 +184,45 @@ def chainCombineData(cores):
     return rtd_files
 
 
-def makeNeutrinos():
+def makeNeutrinos(args):
     """
     Wrapper function to control the creation->RTD sequence for
     generating RTD data from the FHC/RHC data. Use the nvme2 dir
     for the output directory.
+
+    Controlled via argparse nu subparser.
     """
     ## folders for odyssey are 0..29
     folders = range(30)
 
-    outputPath="/mnt/nvme1/Kevin/qpix/output/"
-    inputPath="/home/argon/DUNE_FLUX_FILES/Odyssey/00/"
+    outputPath = args.outDir
+    inputPath = args.srcDir
+    xpos = args.xpos
+    ypos = args.ypos
+    ncores = args.cores
+    assert xpos > 5 and xpos < 575, f"x position outside of APA: {x}"
+    assert ypos > 5 and ypos < 1500, f"y position outside of APA: {y}"
 
-    def run_neutrino(args):
-        args = [str(arg) for arg in args]
-        print("making args: ", args)
-        subprocess.run(["bash", "./NeutrinoMac.sh", *args])
+    # outputPath="/mnt/nvme1/Kevin/qpix/output/"
+    # inputPath="/home/argon/DUNE_FLUX_FILES/Odyssey/00/"
+
+    def run_neutrino(inp):
+        inp = [str(arg) for arg in inp]
+        print("making inp: ", inp)
+        subprocess.run(["bash", "./NeutrinoMac.sh", *inp])
 
     fs = [f for f in os.listdir(inputPath) if ".root" in f]
     fs = [os.path.join(inputPath, f) for f in fs]
-    seed = 420
-    args = []
-    for x in [5, 10, 15]:
-        for y in [5, 10, 15]:
-            for z in [5, 50, 150]:
-                for f in fs:
-                    args.append([x,y,z,seed,f,outputPath])
+    seed = args.seed
+    for z in args.zpos:
+        for f in fs:
+            print("running args:", args.xpos, args.ypos, z, seed, f, outputPath)
+            # args.append([x,y,z,seed,f,outputPath])
 
-    pool = mp.Pool()
-    r = pool.starmap_async(run_neutrino, args)
-    r.wait()
-    print("fin.")
+    # pool = mp.Pool(ncores)
+    # r = pool.starmap_async(run_neutrino, args)
+    # r.wait()
+    # print("fin.")
     # for arg in args:
     #     run_neutrino(arg)
 
@@ -245,19 +254,67 @@ def main(time, cores, seed):
     createRTD(chain_files)
     print("qpix rtd creation complete..\n")
 
-    # print("making neutrinos")
-    # makeNeutrinos()
+## ArgParse Config ##
+def get_args():
+    """
+    define arguments to be set into the parser here
+    """
+    parser = argparse.ArgumentParser()
+    subParsers = get_subParsers(parser)
+    args = parser.parse_args()
+    return args, parser
+
+def get_subParsers(parser):
+    """
+    define list of sub commands here to be parsed:
+    Command List:
+    g4   - make output of geant4 events from radiogenic data
+    """
+    subParsers = parser.add_subparsers(dest="mods")
+
+    # make g4 files
+    g4 = subParsers.add_parser("g4", description="create geant4 data")
+    g4.set_defaults(func=main)
+    g4.add_argument("-t", "--time", default=10, type=int, help="time in s to run g4 simulation for")
+    g4.add_argument("-c", "--cores", default=1, type=int, help="number of cores to produce")
+    g4.add_argument("-s", "--seed", default=420, type=int, help="random seed")
+
+    # make neutrino files
+    nu = subParsers.add_parser("nu", description="create geant4 data")
+    nu.set_defaults(func=makeNeutrinos)
+    nu.add_argument("-i", "--srcDir", required=True, type=str, help="source file where FHC and RHC files are found")
+    nu.add_argument("-o", "--outDir", required=True, type=str, help="output ROOT file location for hit generation")
+    nu.add_argument("-c", "--cores", default=50, type=int, help="number of cores to help produce")
+    nu.add_argument("-s", "--seed", default=420, type=int, help="random seed")
+    nu.add_argument("-n", "--nFiles", default=1000, type=int, help="number of RHC and FHC files to read first event from")
+    nu.add_argument("-z", "--zpos", nargs="+", default=[5, 10, 20, 40, 80, 160, 320], help="list of z position values")
+    nu.add_argument("-x", "--xpos", default=120, type=int, help="x position within APA, default near center")
+    nu.add_argument("-y", "--ypos", default=320, type=int, help="y position within APA, default near center")
+
+    return subParsers
+
+def run_args(args):
+    """
+    implent the arguments from the user here if they pass all of the
+    conditions from testing
+    """
+    print("running args:", args)
+    args.func(args)
 
 
 if __name__ == "__main__":
-    if len(sys.argv) != 4:
-        print("required to have time and number of cores supplied.")
-        sys.exit(-2)
-    time = int(sys.argv[1])
-    core = int(sys.argv[2])
-    assert core <= 10, "can't have more than 10 cores without exceeding RAM"
-    assert time <= 5000, "can't store more than 5k seconds of data.."
-    # ensure that time is a multiple of 10s
-    assert time%10==0, "must run in time multiples of 10s"
-    seed = int(sys.argv[3])
-    main(time, core, seed)
+    # if len(sys.argv) != 4:
+    #     print("required to have time and number of cores supplied.")
+    #     sys.exit(-2)
+    # time = int(sys.argv[1])
+    # core = int(sys.argv[2])
+    # assert core <= 10, "can't have more than 10 cores without exceeding RAM"
+    # assert time <= 5000, "can't store more than 5k seconds of data.."
+    # # ensure that time is a multiple of 10s
+    # assert time%10==0, "must run in time multiples of 10s"
+    # seed = int(sys.argv[3])
+    # main(time, core, seed)
+
+    # argparse ctrl
+    args, parser = get_args()
+    run_args(args)
