@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     in_tt->SetBranchAddress("hit_energy_deposit", &m_hit_energy_deposit_);
     in_tt->SetBranchAddress("hit_length",         &m_hit_length_);
     in_tt->SetBranchAddress("hit_process_key",    &m_hit_process_key_);
-    in_tt->SetBranchAddress("particle_id",        &m_particle_id);
+    int has_id = in_tt->SetBranchAddress("particle_id",        &m_particle_id);
 
     std::cout << "building entries..\n";
     std::vector<double> indices;
@@ -117,7 +117,10 @@ int main(int argc, char** argv)
         v_hit_length_ = m_hit_length_;
         v_hit_energy_deposit_ = m_hit_energy_deposit_;
         v_hit_process_key_ = m_hit_process_key_;
-        v_particle_id = m_particle_id;
+        if(has_id >= 0)
+            v_particle_id = m_particle_id;
+        else
+            v_particle_id = -1;
         tt.Fill();
         ++j;
         if(j%100000==0) std::cout << "Filling Entry " << j << ", from " << i << std::endl;
