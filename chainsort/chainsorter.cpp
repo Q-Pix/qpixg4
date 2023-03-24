@@ -24,7 +24,8 @@ TTree* addTree(const std::string& input_file,
     int& m_particle_id)
 {
     TFile* tf = new TFile(input_file.data(), "READ");
-    TTree* tt = (TTree*)tf->Get("event_tree");
+    TTree* tt = new TTree();
+    tt = (TTree*)tf->Get("event_tree");
     tt->SetBranchAddress("hit_track_id",       &m_hit_track_id_);
     tt->SetBranchAddress("hit_start_x",        &m_hit_start_x_);
     tt->SetBranchAddress("hit_start_y",        &m_hit_start_y_);
@@ -42,7 +43,7 @@ TTree* addTree(const std::string& input_file,
 }
 
 // iterate all through the trees sorting and filling as appropriate
-void FillChainTree(std::vector<TTree*>& v_tts, TTree* output_tree, 
+void FillChainTree(std::vector<TTree*>& v_tts, TTree* output_tree, TFile* output_file,
                 int*    p_hit_track_id_, double* p_hit_start_x_,
                 double* p_hit_start_y_, double* p_hit_start_z_,
                 double* p_hit_start_t_, double* p_hit_end_x_,
@@ -80,23 +81,22 @@ void FillChainTree(std::vector<TTree*>& v_tts, TTree* output_tree,
     output_tree->Branch("particle_id",        &m_particle_id);
 
     // build the total entries, and start each tree at zero
-    long int totalEntries(0);
+    unsigned long long totalEntries(0);
     std::vector<int> v_curEntry;
     std::vector<bool> b_curEntry;
     std::vector<int> v_maxEntries;
     std::cout << "beginning index building.. for: " << v_tts.size() << "\n";
     for(auto tt : v_tts){
         totalEntries += tt->GetEntries();
-        std::cout << "Creating sorted tree of max entries: " << totalEntries << std::endl;
         v_maxEntries.push_back(tt->GetEntries());
         tt->GetEntry(0);
         v_curEntry.push_back(0);
         b_curEntry.push_back(true);
     }
-    std::cout << "Found a total of " << v_tts.size() << "input Trees\n";
+    std::cout << "Found a total of " << v_tts.size() << " input Trees\n";
 
     // continue iterating through the tree vector, filling every basic hit
-    long int curEntry(0);
+    unsigned long long curEntry(0);
     while(curEntry < totalEntries)
     {
         double lowest_t = MAXFLOAT;
@@ -111,6 +111,7 @@ void FillChainTree(std::vector<TTree*>& v_tts, TTree* output_tree,
         }
 
         // assign and fill
+        v_tts[k]->GetDirectory()->cd();
         m_hit_track_id_ = p_hit_track_id_[k];
         m_hit_start_x_ = p_hit_start_x_[k];
         m_hit_start_y_ = p_hit_start_y_[k];
@@ -124,16 +125,23 @@ void FillChainTree(std::vector<TTree*>& v_tts, TTree* output_tree,
         m_hit_energy_deposit_ = p_hit_energy_deposit_[k];
         m_hit_process_key_ = p_hit_process_key_[k];
         m_particle_id = p_particle_id[k];
-        output_tree->Fill();
+        output_file->cd();
+        int val = output_tree->Fill();
+        if(val < 0){
+            std::cout << "error filling.. stopping..\n";
+            return;
+        }
 
         // move this tree forward, and flag if we've reached the end of this tree
         v_tts[k]->GetEntry(v_curEntry[k]++);
-        if(v_curEntry[k] == v_maxEntries[k]) 
+        if(v_curEntry[k] == v_maxEntries[k]) {
             b_curEntry[k] = false;
+            v_tts[k]->GetDirectory()->Close("R");
+        }
 
         curEntry++;
-        if(curEntry%10000 == 0)
-            std::cout << "Filling sorted entry: " << curEntry << std::endl;
+        if(curEntry%int(totalEntries/100) == 0)
+            std::cout << "Filling sorted entry: " << curEntry << " - " << curEntry*100/totalEntries+1 << "%" << std::endl;
     }
 
 }
@@ -184,20 +192,21 @@ int main(int argc, char** argv)
     std::cout << "creating output file at: " << argv[argc-1] << std::endl;
     std::string output_file(argv[argc-1]);
     TTree::SetMaxTreeSize( 500000000000LL ); // 500 GB
-    TFile tf (output_file.data(), "RECREATE");
+    TFile* tf = new TFile(output_file.data(), "RECREATE");
     TTree* tt = new TTree("event_tree", "tt");
+    tf->SetBufferSize(UINT32_MAX);
 
     // fill this new tree 
     std::cout << "Filling output tree\n";
-    FillChainTree(v_tts, tt, m_hit_track_id_,
+    FillChainTree(v_tts, tt, tf, m_hit_track_id_,
                   m_hit_start_x_, m_hit_start_y_,
                   m_hit_start_z_, m_hit_start_t_,
                   m_hit_end_x_, m_hit_end_y_,
                   m_hit_end_z_, m_hit_end_t_,
                   m_hit_length_, m_hit_energy_deposit_,
                   m_hit_process_key_, m_particle_id);
-    tf.Write();
-    tf.Close();
+    tf->Write();
+    tf->Close();
 
     return 0;
 }
