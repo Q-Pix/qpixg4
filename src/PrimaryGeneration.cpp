@@ -76,6 +76,8 @@ PrimaryGeneration::PrimaryGeneration()
   msg_->DeclareProperty("axis_x", axis_x_, "axis x").SetUnit("mm");
   msg_->DeclareProperty("axis_y", axis_y_, "axis y").SetUnit("mm");
   msg_->DeclareProperty("axis_z", axis_z_, "axis z").SetUnit("mm");
+  // get a certain event within the file
+  msg_->DeclareProperty("nEvt", nEvt_, "nEvt");
 
   particle_gun_ = new G4GeneralParticleSource();
 
@@ -121,7 +123,11 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     }
 
     if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
-    tree->GetEntry(event->GetEventID());
+    if(nEvt_ <= 0){
+      tree->GetEntry(event->GetEventID());
+    }else{
+      tree->GetEntry(nEvt_);
+    }
     G4ThreeVector vertex3d= G4ThreeVector (vertex_x_,vertex_y_,vertex_z_);
 
     // rotation direction

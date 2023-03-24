@@ -64,6 +64,14 @@ if [ -z $7 ]
     zaxis=0
 fi
 
+# optionally select an event
+if [ -z $8 ]
+  then
+    nEvts=$8
+  else
+    nEvts=-1
+fi
+
 # we only care about y and z positions, really
 xaxis=0
 function makeMacroFile {
@@ -80,7 +88,6 @@ function makeMacroFile {
   dest="$outputMacroDir""$name""_input.mac"
   output_file="$outputdir""$name"".root"
 
-	echo "making file: $dest"
   if test -f "$dest"; then
     rm "$dest"
   fi
@@ -99,6 +106,7 @@ function makeMacroFile {
   echo "/Inputs/axis_x $xaxis cm" >> $dest
   echo "/Inputs/axis_y $yaxis cm" >> $dest
   echo "/Inputs/axis_z $zaxis cm" >> $dest
+  echo "/Inputs/nEvts $nEvts" >> $dest
   echo "/Inputs/PrintParticleInfo false" >> $dest
   echo "/run/initialize" >> $dest
   echo "/random/setSeeds 0 $seed" >> $dest

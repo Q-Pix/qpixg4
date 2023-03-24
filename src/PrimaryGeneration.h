@@ -64,6 +64,8 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     double axis_x_;
     double axis_y_;
     double axis_z_;
+    // get a specific event
+    int nEvt_ = -1;
 
     G4GeneralParticleSource * particle_gun_;
 
