@@ -30,7 +30,7 @@ def run_g4(input_file):
     else:
         return -1 
 
-def run_chain(input_files, dest_file):
+def run_chain(input_files, dest_file, delete=False):
     """
     Run chain on sorted input files to create a single output file 
     which are sorted all of the inputs
@@ -43,8 +43,9 @@ def run_chain(input_files, dest_file):
         subprocess.run([prog, input_files[0]+":metadata", dest_file])
         # remove all of the base sorted files to preserve SSD space
         prog = "rm"
-        for f in input_files:
-            subprocess.run([prog, f])
+        if delete:
+            for f in input_files:
+                subprocess.run([prog, f])
     else:
         return -1 
 
@@ -174,15 +175,46 @@ def chainCombineData(cores, input_path="/media/argon/NVME1/Kevin/qpix/output/sor
         print("unable to find input sorted path!")
         return -1
 
-    # build input and output files
-    chain_files, rtd_files = [], []
+    # build all of the og chain files
+    chain_files = []
     for core in range(cores):
         chain_files.append([os.path.join(input_path, f) for f in
             os.listdir(input_path) if f"core-{core}" in f and ".root" in f])
+
+    steps = set()
+    for chain in chain_files:
+        for f in chain:
+            seed = f.split('_')[-3]
+            steps.add(int(seed))
+    print("found nsteps:", len(steps), steps)
+
+    # build input and output files for final chain
+    int_files, step_files = [], []
+    for core in range(cores):
+        for step in steps:
+            files = os.listdir(input_path)
+            ifs = [os.path.join(input_path, f) for f in
+                    files if f"core-{core}" in f and ".root" in f and f"_{step}_" in f]
+            if len(ifs) != 10:
+                continue
+            int_files.append(ifs)
+            step_files.append(os.path.join(input_path, f"core-{core}_step-{step}_input.root"))
+
+    # iterate through the chain files slowly grouping them down
+    pool = mp.Pool()
+    input("run the step chain")
+    r = pool.starmap_async(run_chain, zip(int_files, step_files, [False]*len(steps)))
+    r.wait()
+
+    # build input and output files for final chain
+    chain_files, rtd_files = [], []
+    for core in range(cores):
+        chain_files.append([os.path.join(input_path, f) for f in
+            os.listdir(input_path) if f"core-{core}" in f and ".root" in f and 'step-' in f])
         rtd_files.append(os.path.join(input_path, f"core_{core}_rtd_input.root"))
 
-    # attempt chaining on every core
-    pool = mp.Pool(2)
+    # final chain
+    pool = mp.Pool(5)
     r = pool.starmap_async(run_chain, zip(chain_files, rtd_files))
     r.wait()
 
@@ -273,9 +305,6 @@ def makeNeutrinos(args):
     r = pool.starmap_async(run_neutrino, neutrino_args)
     r.wait()
 
-    input()
-
-    pool = mp.Pool()
     g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
     r = pool.map_async(run_g4, g4_args)
     r.wait()
@@ -320,7 +349,7 @@ def main(args):
     #     return -1
 
     # sort and combine all of the output files
-    # sort_path = createSortData(time, input_path=output_path)
+    # sort_path = createSortData(time, input_path=geant4_data_path)
 
     # all sorted data is now in /media/argon/NVME1/Kevin/qpix/output/sorted/ we can now create a tchain
     # to combine them all
@@ -329,9 +358,7 @@ def main(args):
         return -1
 
     # input_path = "/media/argon/NVME1/Kevin/qpix/output/sorted/1ks/"
-    # chain_files = os.listdir(input_path)
-    # chain_files = [os.path.join(input_path, f) for f in chain_files]
-    createRTD(chain_files, output_path=output_path)
+    createRTD(chain_files, output_path="/media/argon/NVME1/Kevin/qpix/output/rtd/")
     print("qpix rtd creation complete..\n")
 
 ## ArgParse Config ##
