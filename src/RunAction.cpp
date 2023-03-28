@@ -144,10 +144,31 @@ void RunAction::BeginOfRunAction(const G4Run* run)
 
 void RunAction::EndOfRunAction(const G4Run*)
 {
-    // get analysis manager
+    // check the ROOTManager to add extra meta-data. this is a placeholder of a janky configmanager
     ROOTManager *rootManager=ROOTManager::Instance();
-    rootManager->Close();
+    // get analysis manager
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
+
+    // These are filled within the generate primaries only when a non-background
+    // event is created and there is metadata to add if the root manager has a
+    // non-default fsPdg number
+    if(rootManager->fsPdg != 0){
+        analysis_manager->FillROOTMeta(
+        rootManager->axis_x_,
+        rootManager->axis_y_,
+        rootManager->axis_z_,
+        rootManager->xpos,
+        rootManager->ypos,
+        rootManager->zpos,
+        rootManager->nEvt,
+        rootManager->fsPdg,
+        rootManager->fsEnergy,
+        rootManager->fsEvt,
+        rootManager->fsFHC,
+        rootManager->fsRun);
+    }
+    rootManager->Close();
+
 
     // get detector dimensions
     G4LogicalVolume* detector_logic_vol
@@ -171,6 +192,7 @@ void RunAction::EndOfRunAction(const G4Run*)
                                      detector_length_y,
                                      detector_length_z);
     }
+
 
     // save run to ROOT file
     analysis_manager->Save();

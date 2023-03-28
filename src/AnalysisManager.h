@@ -44,6 +44,8 @@ class AnalysisManager {
         void SetParticleID(int const id){m_particle_id = id;};
 
         void FillMetadata(double const &, double const &, double const &);
+        void FillROOTMeta(Float_t, Float_t, Float_t, Float_t, Float_t, Float_t,
+                          Int_t, Int_t, Float_t, Int_t, Int_t, Int_t);
 
         void AddInitialGeneratorParticle(GeneratorParticle const *);
         void AddFinalGeneratorParticle(GeneratorParticle const *);
@@ -74,6 +76,20 @@ class AnalysisManager {
         double detector_length_x_;
         double detector_length_y_;
         double detector_length_z_;
+
+        // extra meta variables from the Odyssey neutrino interactions, defined
+        // in ROOTManager.h
+        Float_t axis_x_ = kMaxLong64;
+        Float_t axis_y_ = kMaxLong64;
+        Float_t axis_z_ = kMaxLong64;
+        Float_t xpos_ = -1;
+        Float_t ypos_ = -1;
+        Float_t zpos_ = -1;
+        Int_t fsPdg_ = 0;
+        Float_t fsEnergy_ = -1;
+        Int_t fsEvt_ = -1;
+        Int_t fsFHC_ = -1;
+        Int_t fsRun_ = -1;
 
         // variables that will go into the event trees
         int run_;
