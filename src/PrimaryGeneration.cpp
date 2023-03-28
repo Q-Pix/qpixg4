@@ -109,7 +109,6 @@ PrimaryGeneration::~PrimaryGeneration()
 }
 
 
-
 void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     //MC Truth Manager
     MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
@@ -117,8 +116,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     rootManager->Cd();
 
     TTree *tree=rootManager->GetTTree_();
-
-    //Getting the event from the root file
     Long64_t  ientry=tree->LoadTree(event->GetEventID());
 
     if (ientry<0) {
@@ -129,7 +126,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
     G4ThreeVector vertex3d= G4ThreeVector (vertex_x_,vertex_y_,vertex_z_);
 
-    tree->GetEntry(event->GetEventID());
     if(nEvt_ < 0){
       tree->GetEntry(event->GetEventID());
     }else{
@@ -263,8 +259,6 @@ void PrimaryGeneration::ROOTGeneratePrimaries(G4Event * event) {
     ROOTManager *rootManager=ROOTManager::Instance();
     rootManager->Cd();
     TTree *tree=rootManager->GetTTree_();
-
-
 
     //Getting the event from the root file
     Long64_t  ientry=tree->LoadTree(event->GetEventID());
