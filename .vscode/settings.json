@@ -6,7 +6,7 @@
         // "args": ["/home/argon/Projects/Kevin/qpixg4/macros/long_macros/LongDecay.mac"]
         // useful for testing F/RHC neutrino files
         // "args": ["/home/argon/Projects/Kevin/qpixg4/macros/ROOTFHC.macro"]
-        "args": ["/home/argon/Projects/Kevin/qpixg4/macros/neutrino_macros/RHC_916_x-120_y-320_z-80_seed-420_zaxis-0_input.mac"]
+        "args": ["/home/argon/Projects/Kevin/qpixg4/macros/neutrino_macros/pdg-12_E-1000_evt-0_FHC-0_z-10_seed-420_t-1.mac"]
     },
     "files.associations": {
         "dfMacro.C": "cpp",
@@ -82,6 +82,8 @@
         "typeinfo": "cpp",
         "test.C": "cpp",
         "csignal": "cpp",
-        "cfenv": "cpp"
+        "cfenv": "cpp",
+        "testRotate.C": "cpp",
+        "directory": "cpp"
     }
 }
