@@ -28,8 +28,8 @@ class RunAction: public G4UserRunAction
         G4String root_output_path_;
         G4String marley_json_;
         G4String ReadFrom_Root_;
-        std::string TreeName_;
         bool multirun_;
+        std::string TreeName_;
         int particle_type_=-1;
         G4RunManager * runManager;
 };

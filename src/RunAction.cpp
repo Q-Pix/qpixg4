@@ -164,8 +164,11 @@ void RunAction::EndOfRunAction(const G4Run*)
         rootManager->fsPdg,
         rootManager->fsEnergy,
         rootManager->fsEvt,
+        rootManager->fsFileno,
         rootManager->fsFHC,
-        rootManager->fsRun);
+        rootManager->fsRun,
+        rootManager->nFS,
+        rootManager->fsLepKE);
     }
     rootManager->Close();
 

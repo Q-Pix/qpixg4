@@ -45,7 +45,7 @@ class AnalysisManager {
 
         void FillMetadata(double const &, double const &, double const &);
         void FillROOTMeta(Float_t, Float_t, Float_t, Float_t, Float_t, Float_t,
-                          Int_t, Int_t, Float_t, Int_t, Int_t, Int_t);
+                          Int_t, Int_t, Float_t, Int_t, Int_t, Int_t, Int_t, Int_t, Float_t);
 
         void AddInitialGeneratorParticle(GeneratorParticle const *);
         void AddFinalGeneratorParticle(GeneratorParticle const *);
@@ -85,11 +85,15 @@ class AnalysisManager {
         Float_t xpos_ = -1;
         Float_t ypos_ = -1;
         Float_t zpos_ = -1;
+        Int_t nEvt_ = -1;
         Int_t fsPdg_ = 0;
         Float_t fsEnergy_ = -1;
         Int_t fsEvt_ = -1;
+        Int_t fsFileNo_ = -1;
         Int_t fsFHC_ = -1;
         Int_t fsRun_ = -1;
+        Int_t nFS_ = -1;
+        Float_t lepKE_ = -1;
 
         // variables that will go into the event trees
         int run_;
