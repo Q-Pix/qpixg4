@@ -49,7 +49,6 @@ int ROOTManager::Initialize(std::string FilePath,std::string TreeName) {
 
 }
 
-
 void ROOTManager::SetBranches() {
     // Creating Root Branches
         tree_->SetBranchAddress("ievt", &event_, &b_event);

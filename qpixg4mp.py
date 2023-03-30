@@ -256,9 +256,10 @@ def makeNeutrinoArgsOdyssey(args):
     neutrino_args = []
     for z in args.zpos:
         for f in fs:
-            for t in ['1', '2', '3', '4', '5']:
+            for t in ['1']:
+            # for t in ['1', '2', '3', '4', '5']:
                 for nEvt in range(100):
-                    for nEng in range(250, 10001, 250):
+                    for nEng in range(250, 501, 250):
                         if 'aelectron' in f:
                             pdg = -12
                         elif 'electron' in f:
@@ -315,14 +316,16 @@ def makeNeutrinos(args):
     """
     neutrino_args = makeNeutrinoArgsOdyssey(args)
     msg = f"making {len(neutrino_args)} neutrino macro files. enter to continue"
-    input(msg)
 
     pool = mp.Pool()
     r = pool.map_async(run_neutrino, neutrino_args)
     r.wait()
 
+    # read in macro files and make files in source dir
     g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
-    print(f"found {len(g4_args)} files")
+    msg = f"found a total of {len(g4_args)} geant4 files to make"
+
+    # do the total number of neutrino files in batches..
     r = pool.map_async(run_g4, g4_args)
     r.wait()
 
@@ -336,11 +339,11 @@ def makeNeutrinos(args):
         assert ".root" == outf[-5:], "sort input code should only read .root files"
         outf = outf[:-5]
         dest_files.append(sort_path+f"/{outf}_sorted.root")
+    assert len(dest_files) == len(sort_files), "mismatch between dest sort files"
 
     # sort and move files to sorted output directory
     pool = mp.Pool()
-    d = [False]*len(dest_files)
-    r = pool.starmap_async(run_sort, zip(sort_files, dest_files, d))
+    r = pool.starmap_async(run_sort, zip(sort_files, dest_files))
     r.wait()
 
     createRTD(dest_files, output_path=sort_path+"/")
@@ -410,7 +413,7 @@ def get_subParsers(parser):
     nu.add_argument("-o", "--outDir", required=True, type=str, help="output ROOT file location for hit generation")
     nu.add_argument("-c", "--cores", default=50, type=int, help="number of cores to help produce")
     nu.add_argument("-s", "--seed", default=420, type=int, help="random seed")
-    nu.add_argument("-z", "--zpos", nargs="+", default=[10, 80, 180, 280, 350], help="list of z position values")
+    nu.add_argument("-z", "--zpos", nargs="+", default=[80], help="list of z position values")
     nu.add_argument("-x", "--xpos", default=120, type=int, help="x position within APA, default near center")
     nu.add_argument("-y", "--ypos", default=320, type=int, help="y position within APA, default near center")
     nu.add_argument("-e", "--nEvts", default=-1, type=int, help="construct event to read from a source file")

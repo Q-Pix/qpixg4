@@ -163,9 +163,9 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     ROOT::Math::SVector< double, 3 > rs(r_array, 3);
     rs = rs.Unit();
 
-    // build input momentum for this direction
+    // build input momentum for this direction, which uses only the first listed primary
     ROOT::Math::SVector< double, 3 > net_p;
-    for(int np=0;np<rootManager->GetNParticles_();np++){
+    for(int np=0;np<1;np++){
         G4ParticleDefinition *pdef=0;
         if (rootManager->GetPDG_(np) > 1000000000 && rootManager->GetPDG_(np)<2000000000)
         {
