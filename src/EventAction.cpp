@@ -59,13 +59,13 @@ void EventAction::EndOfEventAction(const G4Event* event)
         // std::cout << "Energy deposited by particle PDG (" << particle->PDGCode() << "): " << particle->EnergyDeposited() << std::endl;
     }
 
-    int mod = event->GetEventID() % 1000;
-    if (mod == 0)
-    {
-        G4cout << "Event " << event->GetEventID() << "..." << G4endl;
+    // int mod = event->GetEventID() % 100000;
+    // if (mod == 0)
+    // {
+        // G4cout << "Event " << event->GetEventID() << "..." << G4endl;
         // G4cout << "Energy threshold: " << energy_threshold_ << G4endl;
         // G4cout << "Total energy deposited: " << energy_deposited << G4endl;
-    }
+    // }
 
     // don't save event if total energy deposited is below the energy threshold
     if (energy_deposited < energy_threshold_)

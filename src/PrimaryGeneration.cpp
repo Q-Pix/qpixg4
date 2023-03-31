@@ -124,8 +124,8 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     }
 
     if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
-    G4ThreeVector vertex3d= G4ThreeVector (vertex_x_,vertex_y_,vertex_z_);
 
+    int i = 0, j = 0;
     if(nEvt_ < 0){
       tree->GetEntry(event->GetEventID());
     }else{
@@ -141,7 +141,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
       rootManager->fsRun = fsRun_;
       rootManager->fsEnergy = fsEnergy_; // use to select an event
       rootManager->nEvt = nEvt_;
-      int i = 0, j = 0;
       while(i < tree->GetEntries() && j < nEvt_){
         // get the next entry and check if this entry matches the conditions we want
         tree->GetEntry(i++); 
@@ -157,34 +156,17 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     rootManager->nFS = rootManager->GetNParticles_();
 
     // rotation direction
-    double r_array[3] = {axis_x_, 
-                         axis_y_,
-                         axis_z_};
+    double r_array[3] = {axis_x_, axis_y_, axis_z_};
     ROOT::Math::SVector< double, 3 > rs(r_array, 3);
     rs = rs.Unit();
 
     // build input momentum for this direction, which uses only the first listed primary
-    ROOT::Math::SVector< double, 3 > net_p;
-    for(int np=0;np<1;np++){
-        G4ParticleDefinition *pdef=0;
-        if (rootManager->GetPDG_(np) > 1000000000 && rootManager->GetPDG_(np)<2000000000)
-        {
-            if (!pdef)
-            {
-                int const Z = (rootManager->GetPDG_(np) % 10000000) / 10000; // atomic number
-                int const A = (rootManager->GetPDG_(np) % 10000) / 10; // mass number
-                pdef = particle_table_->GetIonTable()->GetIon(Z, A, 0.);
-            }
-        } else pdef = particle_table_->FindParticle(rootManager->GetPDG_(np));
-        G4PrimaryParticle RootParticle = G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::MeV,rootManager->GetPy_(np)*CLHEP::MeV,rootManager->GetPz_(np)*CLHEP::MeV,rootManager->GetE_(np)*CLHEP::MeV);
-        net_p[0] += RootParticle.GetPx();
-        net_p[1] += RootParticle.GetPy();
-        net_p[2] += RootParticle.GetPz();
-    }
+    ROOT::Math::SVector< double, 3 > net_p(rootManager->GetLepPx(), rootManager->GetLepPy(), rootManager->GetLepPz());
     net_p = net_p.Unit();
     G4ThreeVector v1(rs[0], rs[1], rs[2]), v2(net_p[0], net_p[1], net_p[2]);
     ROOT::Math::SMatrix< double, 3 > rot_matrix = Rotation_Matrix(v2, v1); // rotate momentum onto rs
 
+    G4ThreeVector vertex3d= G4ThreeVector (vertex_x_,vertex_y_,vertex_z_);
     G4PrimaryVertex* vertex = new G4PrimaryVertex(vertex3d,0);
     for(int np=0;np<rootManager->GetNParticles_();np++){
         // Get Particle definitition

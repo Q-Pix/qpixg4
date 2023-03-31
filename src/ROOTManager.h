@@ -30,6 +30,9 @@ class ROOTManager {
         Int_t Getfileno_ () const{return ifileno_; };
         Float_t GetlepKE_ () const{return lepKE_;};
         Int_t GetnFS_ () const{return NParticles_;};
+        Float_t GetLepPx () const{return p3lep_[0];};
+        Float_t GetLepPy () const{return p3lep_[1];};
+        Float_t GetLepPz () const{return p3lep_[2];};
         Int_t GetNParticles_ () const{return NParticles_; };
         TFile* GetFile_ () const{return f_; };
         TTree* GetTTree_ () const{return tree_; };
@@ -87,6 +90,7 @@ class ROOTManager {
         Float_t        px_[Size_];
         Float_t        py_[Size_];
         Float_t        pz_[Size_];
+        Float_t        p3lep_[3];
         Int_t           idx[Size_];
         Int_t           Status[Size_];
         Int_t           FirstMother[Size_];
@@ -101,6 +105,7 @@ class ROOTManager {
         TBranch        *b_px;   //!
         TBranch        *b_py;   //!
         TBranch        *b_pz;   //!
+        TBranch        *b_p3lep;   //!
         TBranch        *b_Mother;   //!
         TBranch        *b_Daughter;   //!
         TBranch        *bridx;
