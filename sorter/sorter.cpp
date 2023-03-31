@@ -2,6 +2,7 @@
 #include "TTree.h"
 #include "TFile.h"
 #include <vector>
+#include <fstream>
 
 // ## Preparation
 #include <numeric>      // std::iota
@@ -27,12 +28,19 @@ std::vector<double> sort_indexes(const std::vector<T> &v) {
 int main(int argc, char** argv)
 {
     if(argc != 2){
-        std::cout << "incorrect args";
+        std::cout << "sorter: incorrect args";
         return -1;
     }
     TTree::SetMaxTreeSize( 1000000000000LL ); // 1 TB
     TFile in_tf(argv[1], "UPDATE");
     TTree* in_tt = (TTree*)in_tf.Get("event_tree");
+    if(!in_tt){
+        std::cout << "sort file not found:" << argv[1] << std::endl;
+        std::ofstream ofile;
+        ofile.open("/home/argon/Projects/Kevin/err/sorter_err.txt", std::ios_base::app);
+        ofile << "no event tree at: " << argv[1] << "\n";
+        return -1;
+    }
     int    m_hit_track_id_;
     double m_hit_start_x_;
     double m_hit_start_y_;
@@ -67,9 +75,7 @@ int main(int argc, char** argv)
         indices.push_back(m_hit_start_t_);
     }
 
-    std::cout << "sorting entries..\n";
     auto sorted = sort_indexes(indices);
-    std::cout << "sorted " << sorted.size() << " entries..\n";
 
     // TFile out_tf(argv[2], "RECREATE");
     TTree tt("sort_event_tree", "sort_event_tree");
@@ -102,7 +108,6 @@ int main(int argc, char** argv)
 
     int j = 0;
     in_tt->LoadBaskets(50000000000LL); // 50 GB
-    std::cout << "Building tree..\n";
     for(auto i : sorted){
         in_tt->GetEntry(i);
         v_hit_track_id_ = m_hit_track_id_;
