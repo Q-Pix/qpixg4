@@ -12,6 +12,9 @@
 // GEANT4 includes
 #include "globals.hh"
 
+// ROOT includes
+#include "Rtypes.h"
+
 // C++ includes
 #include <map>
 #include <set>
@@ -56,7 +59,7 @@ class AnalysisData {
     int event_;
 
     int number_particles_;
-    long long number_hits_;
+    Long64_t number_hits_;
 
     double energy_deposit_;
 
@@ -82,6 +85,7 @@ class AnalysisData {
     std::vector< double > particle_initial_energy_;
 
     std::vector< int >    hit_track_id_;
+    std::vector< int >    hit_pdg_code_;
     std::vector< double > hit_start_x_;
     std::vector< double > hit_start_y_;
     std::vector< double > hit_start_z_;

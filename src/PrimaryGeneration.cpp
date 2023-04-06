@@ -70,7 +70,7 @@ PrimaryGeneration::PrimaryGeneration()
 
   super = new Supernova();
 
-  unsigned seed = 1234567890; // std::chrono::system_clock::now().time_since_epoch().count();
+  unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   // std::default_random_engine generator(seed);
   generator_ = std::default_random_engine(seed);
   distribution_ = std::normal_distribution< double >(0, 1);
@@ -156,6 +156,9 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
     G4ThreeVector const & position = particle_gun_->GetParticlePosition();
     G4ThreeVector const & direction = particle_gun_->GetParticleMomentumDirection();
+    G4cout << "position =  " << position << G4endl;
+    G4cout << "direction = " << direction << G4endl;
+
 
     double const x = position.x() / CLHEP::cm;
     double const y = position.y() / CLHEP::cm;

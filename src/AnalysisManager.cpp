@@ -150,6 +150,7 @@ void AnalysisManager::Book(const std::string& file_path)
     event_tree_->Branch("particle_daughter_track_id", &event.particle_daughter_track_ids_);
 
     event_tree_->Branch("hit_track_id",       &event.hit_track_id_);
+    event_tree_->Branch("hit_pdg_code",       &event.hit_pdg_code_);
     event_tree_->Branch("hit_start_x",        &event.hit_start_x_);
     event_tree_->Branch("hit_start_y",        &event.hit_start_y_);
     event_tree_->Branch("hit_start_z",        &event.hit_start_z_);
