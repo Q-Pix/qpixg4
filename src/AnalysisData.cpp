@@ -217,6 +217,7 @@ void AnalysisData::AddMCParticle(MCParticle const * particle)
     energy_deposit_ += hit.Energy();
 
     hit_track_id_.push_back(hit.TrackID());
+    hit_pdg_code_.push_back(hit.PDGCode());
 
     hit_start_x_.push_back(hit.StartPoint().X());
     hit_start_y_.push_back(hit.StartPoint().Y());

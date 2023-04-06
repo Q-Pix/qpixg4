@@ -50,7 +50,7 @@ ConfigManager::ConfigManager()
   
   particleType_(""), decayAtTimeZero_(false), isotropic_(true),
   overrideVertexPosition_(false), printParticleInfo_(false), inputFile_(""), outputFile_(""), marleyJson_(""), generator_(""),
-  genieFormat_(""), multirun_(false), momentumDirection_(0,0,0), vertexX_(2.3*m/2), vertexY_(6.0*m/2), vertexZ_(3.6*m/2),
+  genieFormat_(""), multirun_(false), momentumDirection_(0,0,0), vertexX_(2.3*m/2), vertexY_(6.0*m/2), vertexZ_(3.7*m/2),
   
   nAr39Decays_(0), nAr42Decays_(0), nKr85Decays_(0), nCo60Decays_(0), nK40Decays_(0),
   nK42Decays_(0), nBi214Decays_(0), nPb214Decays_(0), nPo210Decays_(0), nRn222Decays_(0), eventCutoff_(0),
