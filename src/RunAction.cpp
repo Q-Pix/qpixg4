@@ -168,7 +168,16 @@ void RunAction::EndOfRunAction(const G4Run*)
         rootManager->fsFHC,
         rootManager->fsRun,
         rootManager->nFS,
-        rootManager->fsLepKE);
+        rootManager->fsLepKE,
+        // add the hadron values
+        rootManager->hadTot_,
+        rootManager->hadPip_,
+        rootManager->hadPim_,
+        rootManager->hadPi0_,
+        rootManager->hadP_,
+        rootManager->hadN_,
+        rootManager->hadOther_
+        );
     }
     rootManager->Close();
 
