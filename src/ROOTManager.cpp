@@ -101,7 +101,9 @@ void ROOTManager::Close(){
 bool ROOTManager::GoodEvt() const {
     bool goodParticle = lepPdg_ == fsPdg;
     bool goodEnergy = false; 
-    if(lepKE_ > fsEnergy && lepKE_ < fsEnergy + 250) // 250 MeV bins
+    // reconstructed lepton KE is based on KE from other sources
+    double_t reconLepE = lepKE_ + hadTot_ + hadOther_;
+    if(reconLepE > fsEnergy && reconLepE < fsEnergy + 250) // 250 MeV bins
         goodEnergy = true;
     return goodParticle && goodEnergy;
 }
