@@ -5,7 +5,7 @@
         // 'long' version arguments
         // "args": ["/home/argon/Projects/Kevin/qpixg4/macros/long_macros/LongDecay.mac"]
         // useful for testing F/RHC neutrino files
-        "args": ["/home/argon/Projects/Kevin/qpixg4/macros/ROOTFHC.macro"]
+        "args": ["/home/argon/Projects/Kevin/qpixg4/macros/timelike.mac"]
         // "args": ["/home/argon/Projects/Kevin/qpixg4/macros/neutrino_macros/pdg-12_E-1000_evt-0_FHC-0_z-10_seed-420_t-1.mac"]
     },
     "files.associations": {

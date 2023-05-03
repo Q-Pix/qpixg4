@@ -90,6 +90,12 @@ if [ -z $7 ]
       yaxis=0
       zaxis=-1
       t=$7
+    elif [ "$7" == "6" ];  # theta = y dir
+    then
+      xaxis=0
+      yaxis=1
+      zaxis=0
+      t=$7
     else
       echo "incorrect argument supplied for angle!"
       exit 1

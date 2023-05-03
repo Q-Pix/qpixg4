@@ -149,6 +149,12 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
         }
       }
     }
+    // we reached the end of the file, so there was no good evt, and should close
+    if(i >= tree->GetEntries())
+    {
+      std::cout << "ERROR: was unable to find a good event. closing.\n";
+      exit(-1);
+    }
     // which odyssey file and event is the source of this particle
     rootManager->fsEvt = rootManager->Getevent_();
     rootManager->fsFileno = rootManager->Getfileno_();

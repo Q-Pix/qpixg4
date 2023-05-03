@@ -28,7 +28,11 @@ def run_g4(input_file):
     if prog is not None:
         ret = subprocess.run([prog, input_file], stdout=subprocess.DEVNULL)
         if ret.returncode != 0:
-            print(f"geant4 {input_file} process exited with:", ret.returncode)
+            msg = f"geant4 {input_file} process exited with:", ret.returncode
+            print(msg)
+            file1 = open("/home/argon/Projects/Kevin/err/g4_err.txt", "a")
+            file1.write(msg[0])
+            file1.close()
     else:
         return -1 
 
@@ -248,21 +252,21 @@ def makeNeutrinoArgsOdyssey(args):
     inputPath = args.srcDir
     xpos = args.xpos
     ypos = args.ypos
-    assert xpos > 5 and xpos < 575, f"x position outside of APA: {xpos}"
-    assert ypos > 5 and ypos < 1500, f"y position outside of APA: {ypos}"
+    assert xpos >= 1 and xpos < 575, f"x position outside of APA: {xpos}"
+    assert ypos >= 1 and ypos < 1500, f"y position outside of APA: {ypos}"
 
     path = inputPath
     fs = [os.path.join(path, f) for f in os.listdir(path)]
-    fs = [ good_file for good_file in fs if os.path.getsize(good_file) > 1e6]
+    fs = [good_file for good_file in fs if os.path.getsize(good_file) > 1e6 and "root" in good_file]
+    print(f"found input files: {fs}")
     seed = args.seed
     if len(fs) == 0:
         return -1
     neutrino_args = []
     for z in args.zpos:
         for f in fs:
-            # for t in ['1']:
-            for t in ['1', '2', '3', '4', '5']:
-                for nEvt in range(100):
+            for t in ['6']:
+                for nEvt in range(300):
                     for nEng in range(250, 10000, 250):
                         if 'aelectron' in f:
                             pdg = -12
@@ -316,40 +320,40 @@ def makeNeutrinos(args):
 
     Controlled via argparse nu subparser.
     """
-    # neutrino_args = makeNeutrinoArgsOdyssey(args)
-    # msg = f"making {len(neutrino_args)} neutrino macro files. enter to continue"
-    # input(msg)
+    neutrino_args = makeNeutrinoArgsOdyssey(args)
+    msg = f"making {len(neutrino_args)} neutrino macro files. enter to continue"
+    print(msg)
 
-    # pool = mp.Pool()
-    # r = pool.map(run_neutrino, neutrino_args)
+    pool = mp.Pool()
+    r = pool.map(run_neutrino, neutrino_args)
 
     # read in macro files and make files in source dir
     g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
     msg = f"found a total of {len(g4_args)} geant4 files to make enter to continue.."
-    input(msg)
+    print(msg)
 
     # do the total number of neutrino files in batches..
     pool = mp.Pool(50)
     r = pool.map(run_g4, g4_args)
 
-    inputPath = args.outDir
-    sort_path = inputPath+"/neutrinos_sort"
-    sort_path = os.path.abspath(sort_path)
-    sort_files = [os.path.join(inputPath, f) for f in os.listdir(inputPath) if ".root" in f and "_" in f]
+    sort_path = os.path.abspath(args.outDir)
+    sort_files = [os.path.join(sort_path, f) for f in os.listdir(sort_path) if ".root" in f and "_" in f]
     dest_files = []
     for f in sort_files:
         outf = f.split("/")[-1] 
         assert ".root" == outf[-5:], "sort input code should only read .root files"
         outf = outf[:-5]
-        dest_files.append(sort_path+f"/{outf}_sorted.root")
+        dest_files.append(sort_path+f"/neutrinos_sort/{outf}_sorted.root")
     assert len(dest_files) == len(sort_files), "mismatch between dest sort files"
 
     # sort and move files to sorted output directory
+    msg = f"found {len(dest_files)} dest files."
+    print(msg)
     pool = mp.Pool(50)
-    r = pool.map(run_sort, zip(sort_files, dest_files))
-    r.wait()
+    r = pool.starmap(run_sort, zip(sort_files, dest_files, [False]*len(dest_files)))
 
-    createRTD(dest_files, output_path=sort_path+"/")
+    msg = f"len dest files for rtd: {len(dest_files)}, {dest_files[0]}"
+    createRTD(dest_files, output_path=args.outDir+"/neutrinos_rtd/")
 
 def main(args):
     """
@@ -412,13 +416,13 @@ def get_subParsers(parser):
     # make neutrino files
     nu = subParsers.add_parser("nu", description="create geant4 data")
     nu.set_defaults(func=makeNeutrinos)
-    nu.add_argument("-i", "--srcDir", default="/home/argon/DUNE_FLUX_FILES/Odyssey/", type=str, help="source file where FHC and RHC files are found")
+    nu.add_argument("-i", "--srcDir", default="/media/argon/NVME2/Kevin/qpix/", type=str, help="source file where FHC and RHC files are found")
     nu.add_argument("-o", "--outDir", required=True, type=str, help="output ROOT file location for hit generation")
     nu.add_argument("-c", "--cores", default=50, type=int, help="number of cores to help produce")
     nu.add_argument("-s", "--seed", default=420, type=int, help="random seed")
-    nu.add_argument("-z", "--zpos", nargs="+", default=[10, 80, 180, 280, 350], help="list of z position values")
-    nu.add_argument("-x", "--xpos", default=120, type=int, help="x position within APA, default near center")
-    nu.add_argument("-y", "--ypos", default=320, type=int, help="y position within APA, default near center")
+    nu.add_argument("-z", "--zpos", nargs="+", default=[180], help="list of z position values")
+    nu.add_argument("-x", "--xpos", default=288, type=int, help="x position within APA, default near center")
+    nu.add_argument("-y", "--ypos", default=120, type=int, help="y position within APA, default near center")
     nu.add_argument("-e", "--nEvts", default=-1, type=int, help="construct event to read from a source file")
 
     return subParsers
