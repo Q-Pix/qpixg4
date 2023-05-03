@@ -167,7 +167,23 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     rs = rs.Unit();
 
     // build input momentum for this direction, which uses only the first listed primary
-    ROOT::Math::SVector< double, 3 > net_p(rootManager->GetLepPx(), rootManager->GetLepPy(), rootManager->GetLepPz());
+    ROOT::Math::SVector< double, 3 > net_p;
+    for(int np=0;np<1;np++){
+        G4ParticleDefinition *pdef=0;
+        if (rootManager->GetPDG_(np) > 1000000000 && rootManager->GetPDG_(np)<2000000000)
+        {
+            if (!pdef)
+            {
+                int const Z = (rootManager->GetPDG_(np) % 10000000) / 10000; // atomic number
+                int const A = (rootManager->GetPDG_(np) % 10000) / 10; // mass number
+                pdef = particle_table_->GetIonTable()->GetIon(Z, A, 0.);
+            }
+        } else pdef = particle_table_->FindParticle(rootManager->GetPDG_(np));
+        G4PrimaryParticle RootParticle = G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::MeV,rootManager->GetPy_(np)*CLHEP::MeV,rootManager->GetPz_(np)*CLHEP::MeV,rootManager->GetE_(np)*CLHEP::MeV);
+        net_p[0] += RootParticle.GetPx();
+        net_p[1] += RootParticle.GetPy();
+        net_p[2] += RootParticle.GetPz();
+    }
     net_p = net_p.Unit();
     G4ThreeVector v1(rs[0], rs[1], rs[2]), v2(net_p[0], net_p[1], net_p[2]);
     ROOT::Math::SMatrix< double, 3 > rot_matrix = Rotation_Matrix(v2, v1); // rotate momentum onto rs
