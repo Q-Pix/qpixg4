@@ -45,7 +45,8 @@ class AnalysisManager {
 
         void FillMetadata(double const &, double const &, double const &);
         void FillROOTMeta(Float_t, Float_t, Float_t, Float_t, Float_t, Float_t,
-                          Int_t, Int_t, Float_t, Int_t, Int_t, Int_t, Int_t, Int_t, Float_t);
+                          Int_t, Int_t, Float_t, Int_t, Int_t, Int_t, Int_t, Int_t, Float_t,
+                          Float_t, Float_t, Float_t, Float_t, Float_t, Float_t, Float_t);
 
         void AddInitialGeneratorParticle(GeneratorParticle const *);
         void AddFinalGeneratorParticle(GeneratorParticle const *);

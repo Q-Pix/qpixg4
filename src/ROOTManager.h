@@ -67,6 +67,15 @@ class ROOTManager {
         Int_t fsRun = -1;
         Int_t nFS = -1;
 
+        // hadronic information for energy recon
+        Float_t hadTot_;
+        Float_t hadPip_;
+        Float_t hadPim_;
+        Float_t hadPi0_;
+        Float_t hadP_;
+        Float_t hadN_;
+        Float_t hadOther_;
+
         // bool checks to make sure we found the right event
         Int_t lepPdg_;
         Float_t lepKE_;

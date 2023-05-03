@@ -220,7 +220,8 @@ void AnalysisManager::SetEvent(int const value)
 
 //-----------------------------------------------------------------------------
 void AnalysisManager::FillROOTMeta(Float_t axis_x, Float_t axis_y, Float_t axis_z, Float_t xpos, Float_t ypos, Float_t zpos,
-            Int_t nEvt, Int_t fsPdg, Float_t fsEnergy, Int_t fsEvt, Int_t fsFileNo, Int_t fsFHC, Int_t fsRun, Int_t nFS, Float_t lepKE)
+            Int_t nEvt, Int_t fsPdg, Float_t fsEnergy, Int_t fsEvt, Int_t fsFileNo, Int_t fsFHC, Int_t fsRun, Int_t nFS, Float_t lepKE,
+            Float_t hadTot_, Float_t hadPip_, Float_t hadPim_, Float_t hadPi0_, Float_t hadP_, Float_t hadN_, Float_t hadOther_)
 {
     metadata_->Branch("axis_x", &axis_x_, "axis_x/F");
     metadata_->Branch("axis_y", &axis_y_, "axis_y/F");
@@ -237,6 +238,15 @@ void AnalysisManager::FillROOTMeta(Float_t axis_x, Float_t axis_y, Float_t axis_
     metadata_->Branch("fsRun", &fsRun_, "fsRun/I");
     metadata_->Branch("nFS", &nFS_, "nFS/I");
     metadata_->Branch("lepKE", &lepKE_, "lepKE/F");
+    // add the hadron energy into the metadata_ branches
+    metadata_->Branch("hadTot", &hadTot_, "hadTot/F");
+    metadata_->Branch("hadPip", &hadPip_, "hadPip/F");
+    metadata_->Branch("hadPim", &hadPim_, "hadPim/F");
+    metadata_->Branch("hadPi0", &hadPi0_, "hadPi0/F");
+    metadata_->Branch("hadP", &hadP_, "hadP/F");
+    metadata_->Branch("hadN", &hadN_, "hadN/F");
+    metadata_->Branch("hadOther", &hadOther_, "hadOther/F");
+    // assign values
     axis_x_ =  axis_x;
     axis_y_ =  axis_y;
     axis_z_ =  axis_z;

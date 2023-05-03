@@ -61,6 +61,14 @@ void ROOTManager::SetBranches() {
         tree_->SetBranchAddress("fsPx", px_, &b_px);
         tree_->SetBranchAddress("fsPy", py_, &b_py);
         tree_->SetBranchAddress("fsPz", pz_, &b_pz);
+        // hadron energy branches
+        tree_->SetBranchAddress("hadTot", &hadTot_);
+        tree_->SetBranchAddress("hadPip", &hadPip_);
+        tree_->SetBranchAddress("hadPim", &hadPim_);
+        tree_->SetBranchAddress("hadPi0", &hadPi0_);
+        tree_->SetBranchAddress("hadP", &hadP_);
+        tree_->SetBranchAddress("hadN", &hadN_);
+        tree_->SetBranchAddress("hadOther", &hadOther_);
         // leptop momentum to rotate towards
         tree_->SetBranchAddress("p3lep", p3lep_, &b_p3lep);
     if (TreeName_=="anatree" ){
