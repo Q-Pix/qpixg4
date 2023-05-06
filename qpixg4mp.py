@@ -57,9 +57,9 @@ def run_chain(input_files, dest_file, delete=False):
 
 def run_sort(input_file, dest_file, delete=True):
     """
-    once the files are combined, we need to perform the following:
+    once the geant files are created, we need to perform the following:
     sort geant ttree data
-    move the sort_event_tree into a new tfile
+    move and rename the sort_event_tree and move metadata tree into a new tfile
     remove the old, unsorted tree
     """
 
@@ -258,15 +258,15 @@ def makeNeutrinoArgsOdyssey(args):
     path = inputPath
     fs = [os.path.join(path, f) for f in os.listdir(path)]
     fs = [good_file for good_file in fs if os.path.getsize(good_file) > 1e6 and "root" in good_file]
-    print(f"found input files: {fs}")
+    print(f"found {len(fs)} input files: {fs}")
     seed = args.seed
     if len(fs) == 0:
         return -1
     neutrino_args = []
     for z in args.zpos:
         for f in fs:
-            for t in ['6']:
-                for nEvt in range(300):
+            for t in ['1', '2', '3', '4', '5']:
+                for nEvt in range(100):
                     for nEng in range(250, 10000, 250):
                         if 'aelectron' in f:
                             pdg = -12
@@ -328,7 +328,7 @@ def makeNeutrinos(args):
     r = pool.map(run_neutrino, neutrino_args)
 
     # read in macro files and make files in source dir
-    g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
+    g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros/") if ".mac" in f]
     msg = f"found a total of {len(g4_args)} geant4 files to make enter to continue.."
     print(msg)
 
@@ -350,9 +350,12 @@ def makeNeutrinos(args):
     msg = f"found {len(dest_files)} dest files."
     print(msg)
     pool = mp.Pool(50)
-    r = pool.starmap(run_sort, zip(sort_files, dest_files, [False]*len(dest_files)))
+    r = pool.starmap(run_sort, zip(sort_files, dest_files))
+    # if you don't want to delete the inbetween data files use line below
+    # r = pool.starmap(run_sort, zip(sort_files, dest_files, [False]*len(dest_files)))
 
     msg = f"len dest files for rtd: {len(dest_files)}, {dest_files[0]}"
+    print(msg)
     createRTD(dest_files, output_path=args.outDir+"/neutrinos_rtd/")
 
 def main(args):
@@ -420,9 +423,9 @@ def get_subParsers(parser):
     nu.add_argument("-o", "--outDir", required=True, type=str, help="output ROOT file location for hit generation")
     nu.add_argument("-c", "--cores", default=50, type=int, help="number of cores to help produce")
     nu.add_argument("-s", "--seed", default=420, type=int, help="random seed")
-    nu.add_argument("-z", "--zpos", nargs="+", default=[180], help="list of z position values")
-    nu.add_argument("-x", "--xpos", default=288, type=int, help="x position within APA, default near center")
-    nu.add_argument("-y", "--ypos", default=120, type=int, help="y position within APA, default near center")
+    nu.add_argument("-z", "--zpos", nargs="+", default=[10, 80, 180, 280, 350], help="list of z position values")
+    nu.add_argument("-x", "--xpos", default=120, type=int, help="x position within APA, default near center")
+    nu.add_argument("-y", "--ypos", default=320, type=int, help="y position within APA, default near center")
     nu.add_argument("-e", "--nEvts", default=-1, type=int, help="construct event to read from a source file")
 
     return subParsers

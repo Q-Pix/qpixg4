@@ -152,9 +152,10 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     // we reached the end of the file, so there was no good evt, and should close
     if(i >= tree->GetEntries())
     {
-      std::cout << "ERROR: was unable to find a good event. closing.\n";
+      G4cerr << "End of File ERROR: was unable to find a good event. closing.\n";
       exit(-1);
     }
+
     // which odyssey file and event is the source of this particle
     rootManager->fsEvt = rootManager->Getevent_();
     rootManager->fsFileno = rootManager->Getfileno_();
@@ -168,21 +169,10 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
 
     // build input momentum for this direction, which uses only the first listed primary
     ROOT::Math::SVector< double, 3 > net_p;
-    for(int np=0;np<1;np++){
-        G4ParticleDefinition *pdef=0;
-        if (rootManager->GetPDG_(np) > 1000000000 && rootManager->GetPDG_(np)<2000000000)
-        {
-            if (!pdef)
-            {
-                int const Z = (rootManager->GetPDG_(np) % 10000000) / 10000; // atomic number
-                int const A = (rootManager->GetPDG_(np) % 10000) / 10; // mass number
-                pdef = particle_table_->GetIonTable()->GetIon(Z, A, 0.);
-            }
-        } else pdef = particle_table_->FindParticle(rootManager->GetPDG_(np));
-        G4PrimaryParticle RootParticle = G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::MeV,rootManager->GetPy_(np)*CLHEP::MeV,rootManager->GetPz_(np)*CLHEP::MeV,rootManager->GetE_(np)*CLHEP::MeV);
-        net_p[0] += RootParticle.GetPx();
-        net_p[1] += RootParticle.GetPy();
-        net_p[2] += RootParticle.GetPz();
+    for(int np=0;np<rootManager->GetNParticles_();np++){
+        net_p[0] += rootManager->GetPx_(np);
+        net_p[1] += rootManager->GetPy_(np);
+        net_p[2] += rootManager->GetPz_(np);
     }
     net_p = net_p.Unit();
     G4ThreeVector v1(rs[0], rs[1], rs[2]), v2(net_p[0], net_p[1], net_p[2]);
