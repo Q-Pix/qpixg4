@@ -96,6 +96,15 @@ class AnalysisManager {
         Int_t nFS_ = -1;
         Float_t lepKE_ = -1;
 
+        // hadronic information for energy recon
+        Float_t hadTot_;
+        Float_t hadPip_;
+        Float_t hadPim_;
+        Float_t hadPi0_;
+        Float_t hadP_;
+        Float_t hadN_;
+        Float_t hadOther_;
+
         // variables that will go into the event trees
         int run_;
         int event_;
