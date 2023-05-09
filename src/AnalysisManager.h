@@ -39,6 +39,7 @@ class AnalysisManager {
         void EventFill();
         void EventReset();
 
+        double GetEnergy() const {return energy_deposit_;};
         void SetRun(int const);
         void SetEvent(int const);
         void SetParticleID(int const id){m_particle_id = id;};
@@ -46,7 +47,7 @@ class AnalysisManager {
         void FillMetadata(double const &, double const &, double const &);
         void FillROOTMeta(Float_t, Float_t, Float_t, Float_t, Float_t, Float_t,
                           Int_t, Int_t, Float_t, Int_t, Int_t, Int_t, Int_t, Int_t, Float_t,
-                          Float_t, Float_t, Float_t, Float_t, Float_t, Float_t, Float_t);
+                          Float_t, Float_t, Float_t, Float_t, Float_t, Float_t, Float_t, double);
 
         void AddInitialGeneratorParticle(GeneratorParticle const *);
         void AddFinalGeneratorParticle(GeneratorParticle const *);

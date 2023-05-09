@@ -176,7 +176,9 @@ void RunAction::EndOfRunAction(const G4Run*)
         rootManager->hadPi0_,
         rootManager->hadP_,
         rootManager->hadN_,
-        rootManager->hadOther_
+        rootManager->hadOther_,
+        // all of the other variables tracked in the GENIE file
+        analysis_manager->GetEnergy()
         );
     }
     rootManager->Close();
