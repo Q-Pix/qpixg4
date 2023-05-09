@@ -221,7 +221,7 @@ void AnalysisManager::SetEvent(int const value)
 //-----------------------------------------------------------------------------
 void AnalysisManager::FillROOTMeta(Float_t axis_x, Float_t axis_y, Float_t axis_z, Float_t xpos, Float_t ypos, Float_t zpos,
             Int_t nEvt, Int_t fsPdg, Float_t fsEnergy, Int_t fsEvt, Int_t fsFileNo, Int_t fsFHC, Int_t fsRun, Int_t nFS, Float_t lepKE,
-            Float_t hadTot, Float_t hadPip, Float_t hadPim, Float_t hadPi0, Float_t hadP, Float_t hadN, Float_t hadOther)
+            Float_t hadTot, Float_t hadPip, Float_t hadPim, Float_t hadPi0, Float_t hadP, Float_t hadN, Float_t hadOther, double energy_deposit)
 {
     metadata_->Branch("axis_x", &axis_x_, "axis_x/F");
     metadata_->Branch("axis_y", &axis_y_, "axis_y/F");
@@ -246,6 +246,9 @@ void AnalysisManager::FillROOTMeta(Float_t axis_x, Float_t axis_y, Float_t axis_
     metadata_->Branch("hadP", &hadP_, "hadP/F");
     metadata_->Branch("hadN", &hadN_, "hadN/F");
     metadata_->Branch("hadOther", &hadOther_, "hadOther/F");
+    metadata_->Branch("hadOther", &hadOther_, "hadOther/F");
+    // keep track of the work that geant4 did
+    metadata_->Branch("energy_deposit", &energy_deposit_, "energy_deposit/D");
     // assign values
     axis_x_ =  axis_x;
     axis_y_ =  axis_y;
@@ -269,6 +272,7 @@ void AnalysisManager::FillROOTMeta(Float_t axis_x, Float_t axis_y, Float_t axis_
     hadP_ = hadP;
     hadN_ = hadN;
     hadOther_ = hadOther;
+    energy_deposit_ = energy_deposit;
 }
 
 
