@@ -28,6 +28,7 @@
 #include "G4IonTable.hh"
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
+#include "G4RotationMatrix.hh"
 #include "G4Event.hh"
 
 #include "G4Electron.hh"
@@ -259,25 +260,40 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
       continue;
     }
 
+    // Print out info about the GENIE particle
+    //G4cout << "..........oooooOOO000OOOooooo.........." << G4endl
+    //       << "GENIE Particle Info:" << G4endl
+    //       << "  PDG Code:       " << genieManager->GetPDG_(np) << G4endl
+    //       << "  Energy:         " << genieManager->GetE_(np) << G4endl
+    //       << "  Px:             " << genieManager->GetPx_(np) << G4endl
+    //       << "  Py:             " << genieManager->GetPy_(np) << G4endl
+    //       << "  Pz:             " << genieManager->GetPz_(np) << G4endl
+    //       << "G4ParticleDefinition Info:" << G4endl
+    //       << "  Mass:           " << pdef->GetPDGMass() << G4endl
+    //       << "  Charge:         " << pdef->GetPDGCharge() << G4endl
+    //       << "User defined Info:" << G4endl
+    //       << "  Vertex:         " << vertex3d << G4endl
+    //       << "..........oooooOOO000OOOooooo.........." << G4endl;
+
+
     // filter the particles less than 1 eV
     // if(genieManager->GetE_(np)<(1 *CLHEP::eV)) continue;
-    G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,genieManager->GetPx_(np),genieManager->GetPy_(np),genieManager->GetPz_(np),genieManager->GetE_(np));
 
-    G4cout << "RootParticle:" << G4endl;
-    RootParticle->Print();
-
-    // create a generator particle
+    // create a generator particle and set initial values
     GeneratorParticle * generatorParticle = new GeneratorParticle();
-    generatorParticle->SetPDGCode (RootParticle->GetPDGcode());
-    generatorParticle->SetMass    (RootParticle->GetMass());
-    generatorParticle->SetCharge  (RootParticle->GetCharge());
+    generatorParticle->SetPDGCode (genieManager->GetPDG_(np));
+    generatorParticle->SetMass    (pdef->GetPDGMass());
+    generatorParticle->SetCharge  (pdef->GetPDGCharge());
     generatorParticle->SetX       (vertex3d[0]);
     generatorParticle->SetY       (vertex3d[1]);
     generatorParticle->SetZ       (vertex3d[2]);
     generatorParticle->SetT       (0*CLHEP::ns);
+    generatorParticle->SetEnergy  (genieManager->GetE_(np));
+    generatorParticle->SetPx      (genieManager->GetPx_(np));
+    generatorParticle->SetPy      (genieManager->GetPy_(np));
+    generatorParticle->SetPz      (genieManager->GetPz_(np));
     
-    //G4cout << "GeneratorParticle:" << G4endl;
-    //generatorParticle->Print();
+    
 
     // rotate momentum about x axis, so initial momentum is in desired direction. Energy remains the same
     double identity_array[9] = { 1, 0, 0,
@@ -292,34 +308,35 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
 	  G4ThreeVector p_i(0, 0, 1);
       
       R =this->Rotation_Matrix(p_i, momentumDirection_);
-
-
     } else if (particleType == "atmosphere" || particleType == "atmospheric")
     {
       G4ThreeVector p_i(0, 0, 1);
-      
       R = this->Rotation_Matrix(p_i, momentumDirection_);
-
     } else
     {
       G4cerr << "Need to add '/inputs/momentum_direction <G4ThreeVector>' to your macro" << G4endl;
     }
     
-    ROOT::Math::SVector< double, 3 > a(RootParticle->GetPx(), RootParticle->GetPy(), RootParticle->GetPz());
-    a = R*a;
 
-    generatorParticle->SetEnergy  (RootParticle->GetTotalEnergy());
+    // Rotate momentum to desired momentum using calculated rotation matrix
+    ROOT::Math::SVector< double, 3 > a(generatorParticle->Px(), generatorParticle->Py(), generatorParticle->Pz());
+    a = R*a;
+ 
+    
+    // set rotated generatorParticle values
+    generatorParticle->SetEnergy  (genieManager->GetE_(np));
     generatorParticle->SetPx      (a(0));
     generatorParticle->SetPy      (a(1));
     generatorParticle->SetPz      (a(2));
 
+
     // add ROOT particle to MCTruthManager
-    if (genieManager->GetStatus_(np)==0 )
+    if (genieManager->GetStatus_(np)==0 ) // if marked as an initial particle
     {
       mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
       continue;
     }
-    else if (genieManager->GetStatus_(np)==1)
+    else if (genieManager->GetStatus_(np)==1) // if marked as a stable final state particle
     {
       mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
     }
@@ -328,6 +345,13 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
       mc_truth_manager->AddIntermediateGeneratorParticle(generatorParticle);
       continue;
     }
+
+    // Only completed for stable final state GENIE particles:
+    // Create a G4PrimaryParticle to be passed to Geant4 as a generator particle
+    G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,generatorParticle->Px(),generatorParticle->Py(),generatorParticle->Pz(),generatorParticle->Energy());
+
+    G4cout << "RootParticle:" << G4endl;
+    RootParticle->Print();
 
     if(printParticleInfo_){
       G4cout<<"Event -> "<<event->GetEventID()<<" "<<genieManager->Getevent_()<<G4endl;
@@ -680,4 +704,3 @@ ROOT::Math::SMatrix< double, 3 > PrimaryGeneration::Rotation_Matrix(G4ThreeVecto
 
   return r;
 }
-
