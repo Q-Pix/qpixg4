@@ -18,12 +18,16 @@
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
 
-
-DetectorConstruction::DetectorConstruction(): G4VUserDetectorConstruction()
-{}
+DetectorConstruction::DetectorConstruction(): G4VUserDetectorConstruction(), detectorConfiguration(true)
+{
+  fMessenger = new G4GenericMessenger(this, "/Geometry/", "Geometry configuration");
+  fMessenger->DeclareProperty("DetectorConfiguration", detectorConfiguration, "True if HD, false if VD");
+}
 
 DetectorConstruction::~DetectorConstruction()
-{}
+{
+  delete fMessenger;
+}
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
@@ -42,12 +46,31 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4VPhysicalVolume* world_phys_vol =
     new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
                       world_logic_vol, "world.physical", 0, false, 0, true);
+                      
 
-  // DETECTOR //////////////////////////////////////////////
+  G4double detector_width ;
+  G4double detector_height;
+  G4double detector_length;
+  
+  std::cout << " Detector configuration is: " << detectorConfiguration << std::endl;
+
+  if(detectorConfiguration)
+  {
+  // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
   // resemble an APA size
-  G4double detector_width   = 2.3*m;
-  G4double detector_height  = 6.0*m;
-  G4double detector_length  = 3.6*m;
+    detector_width   = 2.3*m;
+    detector_height  = 6.0*m;
+    detector_length  = 3.6*m;
+  //////////////////////////////////////////////////////////
+  }
+  else
+  {
+  // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
+    detector_height = 13.0*m;
+    detector_length = 6.5*m;
+    detector_width = 20.0*m;
+  }
+
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
 
   G4Box* detector_solid_vol =
@@ -60,7 +83,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   new G4PVPlacement(0, offset,
                     detector_logic_vol, "detector.physical", world_logic_vol, false, 0, true);
-
   //////////////////////////////////////////////////////////
 
   return world_phys_vol;

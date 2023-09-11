@@ -41,7 +41,7 @@ class AnalysisManager {
         void SetRun(int const);
         void SetEvent(int const);
 
-        void FillMetadata(double const &, double const &, double const &);
+        void FillMetadata(bool const &, double const &, double const &, double const &);
 
         void AddInitialGeneratorParticle(GeneratorParticle const *);
         void AddFinalGeneratorParticle(GeneratorParticle const *);
@@ -70,6 +70,7 @@ class AnalysisManager {
         double detector_length_x_;
         double detector_length_y_;
         double detector_length_z_;
+        bool detectorConfiguration_;
 
         // variables that will go into the event trees
         int run_;

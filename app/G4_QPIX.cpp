@@ -49,9 +49,7 @@ int main(int argc, char** argv)
   G4VModularPhysicsList* physics_list = new FTFP_BERT_HP();
   physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
   run_manager->SetUserInitialization(physics_list);
-
   run_manager->SetUserInitialization(new DetectorConstruction());
-
   run_manager->SetUserAction(new PrimaryGeneration());
   run_manager->SetUserAction(new RunAction());
   run_manager->SetUserAction(new EventAction());
