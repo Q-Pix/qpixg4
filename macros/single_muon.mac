@@ -3,8 +3,8 @@
 /run/verbose 1
 /tracking/verbose 0
 
-
-/Geometry/DetectorConfiguration false (Uncomment for a VD configuration)
+# The detector configuration (false  VD or true HD)
+#/Geometry/DetectorConfiguration true
 
 # output path
 /Inputs/root_output ./output/single_muon.root
