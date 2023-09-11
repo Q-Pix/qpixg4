@@ -31,12 +31,11 @@
 
 # point source
 /gps/pos/type Point
+#Central position for a HD geometry
+/gps/pos/centre 115 475 150 cm
 
 #Central position for a VD geometry
 #/gps/pos/centre 1000 650 325 cm
-
-#Central position for a HD geometry
-#/gps/pos/centre 115 475 150 cm
 
 # angular distribution
 # initial momentum in the -y direction (HD configuration)
