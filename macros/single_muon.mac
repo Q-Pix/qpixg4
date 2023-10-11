@@ -3,6 +3,9 @@
 /run/verbose 1
 /tracking/verbose 0
 
+# The detector configuration (false  VD or true HD)
+/Geometry/DetectorConfiguration false
+
 # output path
 /Inputs/root_output ./output/single_muon.root
 
@@ -18,21 +21,39 @@
 # gamma, opticalphoton, ...
 /gps/particle mu-
 
-# point source
-/gps/pos/type Point
-/gps/pos/centre 115 475 150 cm
-
 # angular distribution
 # initial momentum in the -y direction
+#/gps/ang/type iso
+#/gps/ang/rot1 -1 0 0
+#/gps/ang/rot2 0 0 1
+#/gps/ang/mintheta 0 deg
+#/gps/ang/maxtheta 360 deg  # opening angle of cone
+
+# point source
+/gps/pos/type Point
+#Central position for a HD geometry
+#/gps/pos/centre 115 475 150 cm
+
+#Central position for a VD geometry
+/gps/pos/centre 1000 650 325 cm
+
+# angular distribution
+#/gps/ang/type iso
+#/gps/ang/rot1 -1 0 0
+#/gps/ang/rot2 0 0 1
+#/gps/ang/mintheta 0 deg
+#/gps/ang/maxtheta 0 deg  # opening angle of cone
+
+# initial momentum in the -x direction (VD configuration)
 /gps/ang/type iso
-/gps/ang/rot1 -1 0 0
-/gps/ang/rot2 0 0 1
+/gps/ang/rot1 0 0 -1
+/gps/ang/rot2 0 1 0
 /gps/ang/mintheta 0 deg
 /gps/ang/maxtheta 0 deg  # opening angle of cone
 
 # energy distribution
 /gps/ene/type Mono
-/gps/ene/mono 2 MeV
+/gps/ene/mono 2000 MeV
 
 # run
-/run/beamOn 100
+/run/beamOn 1

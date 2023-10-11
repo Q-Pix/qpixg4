@@ -43,6 +43,8 @@ void AnalysisManager::Book(std::string const file_path)
     metadata_->Branch("detector_length_x", &detector_length_x_, "detector_length_x/D");
     metadata_->Branch("detector_length_y", &detector_length_y_, "detector_length_y/D");
     metadata_->Branch("detector_length_z", &detector_length_z_, "detector_length_z/D");
+    metadata_->Branch("detector_configuration", &detectorConfiguration_);
+
 
     // event tree
     event_tree_ = new TTree("event_tree", "event tree");
@@ -215,13 +217,14 @@ void AnalysisManager::SetEvent(int const value)
 }
 
 //-----------------------------------------------------------------------------
-void AnalysisManager::FillMetadata(double const & detector_length_x,
+void AnalysisManager::FillMetadata(bool const & detectorConfiguration, double const & detector_length_x,
                                    double const & detector_length_y,
                                    double const & detector_length_z)
 {
     detector_length_x_ = detector_length_x;
     detector_length_y_ = detector_length_y;
     detector_length_z_ = detector_length_z;
+    detectorConfiguration_ = detectorConfiguration;
     metadata_->Fill();
 }
 
