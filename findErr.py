@@ -3,6 +3,8 @@ import sys
 import multiprocessing as mp
 import subprocess
 
+from qpixg4mp import find_prog
+
 def countIn(t, fileList):
     l = [f for f in fileList if t in f]
     return len(l)
@@ -18,6 +20,25 @@ def move_meta(file_pair):
     if n%100 ==0:
         print("moved sort file!", n)
 
+
+def run_rtdfriend(input_file):
+    prog_path = '../qpixrtd/build'
+    prog = find_prog(prog_path, 'rtdfriend')
+    subprocess.run([prog, input_file])
+
+def update_branches():
+    input_path = '/media/argon/NVME2/Kevin/qpix/output/neutrinos/bad_rot/neutrinos_rtd/'
+    prog_path = '../qpixrtd/build'
+    found = find_prog(prog_path, 'rtdfriend')
+    f = os.listdir(input_path)
+    f = [i for i in f if ".root" in i]
+    f = [os.path.join(input_path, i) for i in f]
+    print("running on n files:" , len(f))
+    input("enter to continue.")
+
+    pool = mp.Pool()
+    r = pool.map_async(run_rtdfriend, f)
+    r.wait()
 
 def main():
 
@@ -54,44 +75,46 @@ def main():
     # test energies
     energies = range(250,10001,250)
     energies = ['E-'+str(en)+'_' for en in energies]
-    # checkTyp(energies, f, rtdf)
+    checkTyp(energies, f, rtdf)
 
     # test evts
     evts = range(100)
     evts = ['_evt-'+str(en)+'_' for en in evts]
-    # checkTyp(evts, f, rtdf)
+    checkTyp(evts, f, rtdf)
 
     # test FHC type
     isFHC = ['FHC-1', 'FHC-0']
-    # checkTyp(isFHC, f, rtdf)
+    checkTyp(isFHC, f, rtdf)
 
     # test z pos
     zpos = ['z-10', 'z-80', 'z-180', 'z-280', 'z-350']
-    # checkTyp(zpos, f, rtdf)
+    checkTyp(zpos, f, rtdf)
 
     # test angle
     angles = ['t-1_sorted', 't-2_sorted', 't-3_sorted', 't-4_sorted', 't-5_sorted']
-    # checkTyp(angles, f, rtdf)
+    checkTyp(angles, f, rtdf)
 
+    # combine the files
     # build the list we want to move
-    combFiles = []
-    for i, rtd in enumerate(rtdf):
-        typs = rtd[:-9]
-        for src in f:
-            if typs == src[:-5]:
-                srcf = src
-                f.remove(src)
-                break
-        pair = [os.path.join(sort_dir, srcf), os.path.join(rtd_dir, rtd), i]
-        combFiles.append(pair)
-        if i%1000==0:
-            print("finding pair:", i, "out of total:", len(rtdf))
-    
-    print("making the scp move!")
-    pool = mp.Pool()
-    r = pool.map_async(move_meta, combFiles)
-    r.wait()
-    print("fin.")
+    # combFiles = []
+    # for i, rtd in enumerate(rtdf):
+    #     typs = rtd[:-9]
+    #     for src in f:
+    #         if typs == src[:-5]:
+    #             srcf = src
+    #             f.remove(src)
+    #             break
+    #     pair = [os.path.join(sort_dir, srcf), os.path.join(rtd_dir, rtd), i]
+    #     combFiles.append(pair)
+    #     if i%1000==0:
+    #         print("finding pair:", i, "out of total:", len(rtdf))
+    # 
+    # print("making the scp move!")
+    # pool = mp.Pool()
+    # r = pool.map_async(move_meta, combFiles)
+    # r.wait()
+    # print("fin.")
 
 if __name__ == "__main__":
-    main()
+    update_branches()
+    # main()
