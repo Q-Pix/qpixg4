@@ -91,15 +91,15 @@ class AnalysisManager {
         std::vector< int >                particle_number_daughters_;
         std::vector< std::vector< int > > particle_daughter_track_ids_;
 
-        std::vector< double > particle_initial_x_;
-        std::vector< double > particle_initial_y_;
-        std::vector< double > particle_initial_z_;
-        std::vector< double > particle_initial_t_;
+        // std::vector< double > particle_initial_x_;
+        // std::vector< double > particle_initial_y_;
+        // std::vector< double > particle_initial_z_;
+        // std::vector< double > particle_initial_t_;
 
-        std::vector< double > particle_initial_px_;
-        std::vector< double > particle_initial_py_;
-        std::vector< double > particle_initial_pz_;
-        std::vector< double > particle_initial_energy_;
+        // std::vector< double > particle_initial_px_;
+        // std::vector< double > particle_initial_py_;
+        // std::vector< double > particle_initial_pz_;
+        // std::vector< double > particle_initial_energy_;
 
         std::vector< int >    hit_track_id_;
         std::vector< double > hit_start_x_;
@@ -115,34 +115,34 @@ class AnalysisManager {
         std::vector< int >    hit_process_key_;
 
         // number of generator particles
-        int generator_initial_number_particles_;
-        int generator_final_number_particles_;
+        // int generator_initial_number_particles_;
+        // int generator_final_number_particles_;
 
         // vectors for initial generator particles
-        std::vector< double > generator_initial_particle_x_;
-        std::vector< double > generator_initial_particle_y_;
-        std::vector< double > generator_initial_particle_z_;
-        std::vector< double > generator_initial_particle_t_;
-        std::vector< double > generator_initial_particle_px_;
-        std::vector< double > generator_initial_particle_py_;
-        std::vector< double > generator_initial_particle_pz_;
-        std::vector< double > generator_initial_particle_energy_;
-        std::vector< int >    generator_initial_particle_pdg_code_;
-        std::vector< double > generator_initial_particle_mass_;
-        std::vector< double > generator_initial_particle_charge_;
+        // std::vector< double > generator_initial_particle_x_;
+        // std::vector< double > generator_initial_particle_y_;
+        // std::vector< double > generator_initial_particle_z_;
+        // std::vector< double > generator_initial_particle_t_;
+        // std::vector< double > generator_initial_particle_px_;
+        // std::vector< double > generator_initial_particle_py_;
+        // std::vector< double > generator_initial_particle_pz_;
+        // std::vector< double > generator_initial_particle_energy_;
+        // std::vector< int >    generator_initial_particle_pdg_code_;
+        // std::vector< double > generator_initial_particle_mass_;
+        // std::vector< double > generator_initial_particle_charge_;
 
         // vectors for final generator particles
-        std::vector< double > generator_final_particle_x_;
-        std::vector< double > generator_final_particle_y_;
-        std::vector< double > generator_final_particle_z_;
-        std::vector< double > generator_final_particle_t_;
-        std::vector< double > generator_final_particle_px_;
-        std::vector< double > generator_final_particle_py_;
-        std::vector< double > generator_final_particle_pz_;
-        std::vector< double > generator_final_particle_energy_;
-        std::vector< int >    generator_final_particle_pdg_code_;
-        std::vector< double > generator_final_particle_mass_;
-        std::vector< double > generator_final_particle_charge_;
+        // std::vector< double > generator_final_particle_x_;
+        // std::vector< double > generator_final_particle_y_;
+        // std::vector< double > generator_final_particle_z_;
+        // std::vector< double > generator_final_particle_t_;
+        // std::vector< double > generator_final_particle_px_;
+        // std::vector< double > generator_final_particle_py_;
+        // std::vector< double > generator_final_particle_pz_;
+        // std::vector< double > generator_final_particle_energy_;
+        // std::vector< int >    generator_final_particle_pdg_code_;
+        // std::vector< double > generator_final_particle_mass_;
+        // std::vector< double > generator_final_particle_charge_;
 
 };
 
