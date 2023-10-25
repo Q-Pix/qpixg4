@@ -26,7 +26,9 @@ def run_g4(input_file):
     """
     prog = find_prog("./build/app", "G4_QPIX")
     if prog is not None:
-        subprocess.run([prog, input_file])
+        ret = subprocess.run([prog, input_file], stdout=subprocess.DEVNULL)
+        if ret.returncode != 0:
+            print(f"geant4 {input_file} process exited with:", ret.returncode)
     else:
         return -1 
 
@@ -74,7 +76,7 @@ def run_sort(input_file, dest_file, delete=True):
     if delete:
         prog = "rm"
         subprocess.run([prog, input_file])
-        print("file moved.. ")
+        # print("file moved.. ")
 
 def createGeantData(time, cores, seed, outputPath):
     """
@@ -95,7 +97,7 @@ def createGeantData(time, cores, seed, outputPath):
 
     mac_files = os.listdir("./macros/long_macros/")
     mac_files = ["./macros/long_macros/"+f for f in mac_files]
-    pool = mp.Pool()
+    pool = mp.Pool(30)
     r = pool.map_async(run_g4, mac_files)
     r.wait()
     print("Geant4 Files created.")
@@ -221,7 +223,9 @@ def chainCombineData(cores, input_path="/media/argon/NVME1/Kevin/qpix/output/sor
 
 def run_neutrino(inp):
     inp = [str(arg) for arg in inp]
-    subprocess.run(["bash", "./NeutrinoMac.sh", *inp])
+    ret = subprocess.run(["bash", "./NeutrinoMac.sh", *inp], stdout=subprocess.DEVNULL)
+    if ret.returncode != 0:
+        print("neutrino process exited with:", ret.returncode)
 
 def makeNeutrinoArgsOdyssey(args):
     """
@@ -256,10 +260,10 @@ def makeNeutrinoArgsOdyssey(args):
     neutrino_args = []
     for z in args.zpos:
         for f in fs:
-            for t in ['1']:
-            # for t in ['1', '2', '3', '4', '5']:
+            # for t in ['1']:
+            for t in ['1', '2', '3', '4', '5']:
                 for nEvt in range(100):
-                    for nEng in range(250, 501, 250):
+                    for nEng in range(250, 10000, 250):
                         if 'aelectron' in f:
                             pdg = -12
                         elif 'electron' in f:
@@ -272,8 +276,6 @@ def makeNeutrinoArgsOdyssey(args):
                         f = os.path.abspath(f)
                         neutrino_args.append([xpos,ypos,z,seed,f,outputPath,t,nEvt,pdg,nEng,isFHC])
 
-    print("args[0]", neutrino_args[0])
-    msg = f"made {len(neutrino_args)} args"
     return neutrino_args
 
 def makeNeutrinoArgsSrc(args):
@@ -314,20 +316,21 @@ def makeNeutrinos(args):
 
     Controlled via argparse nu subparser.
     """
-    neutrino_args = makeNeutrinoArgsOdyssey(args)
-    msg = f"making {len(neutrino_args)} neutrino macro files. enter to continue"
+    # neutrino_args = makeNeutrinoArgsOdyssey(args)
+    # msg = f"making {len(neutrino_args)} neutrino macro files. enter to continue"
+    # input(msg)
 
-    pool = mp.Pool()
-    r = pool.map_async(run_neutrino, neutrino_args)
-    r.wait()
+    # pool = mp.Pool()
+    # r = pool.map(run_neutrino, neutrino_args)
 
     # read in macro files and make files in source dir
     g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
-    msg = f"found a total of {len(g4_args)} geant4 files to make"
+    msg = f"found a total of {len(g4_args)} geant4 files to make enter to continue.."
+    input(msg)
 
     # do the total number of neutrino files in batches..
-    r = pool.map_async(run_g4, g4_args)
-    r.wait()
+    pool = mp.Pool(50)
+    r = pool.map(run_g4, g4_args)
 
     inputPath = args.outDir
     sort_path = inputPath+"/neutrinos_sort"
@@ -342,8 +345,8 @@ def makeNeutrinos(args):
     assert len(dest_files) == len(sort_files), "mismatch between dest sort files"
 
     # sort and move files to sorted output directory
-    pool = mp.Pool()
-    r = pool.starmap_async(run_sort, zip(sort_files, dest_files))
+    pool = mp.Pool(50)
+    r = pool.map(run_sort, zip(sort_files, dest_files))
     r.wait()
 
     createRTD(dest_files, output_path=sort_path+"/")
@@ -413,7 +416,7 @@ def get_subParsers(parser):
     nu.add_argument("-o", "--outDir", required=True, type=str, help="output ROOT file location for hit generation")
     nu.add_argument("-c", "--cores", default=50, type=int, help="number of cores to help produce")
     nu.add_argument("-s", "--seed", default=420, type=int, help="random seed")
-    nu.add_argument("-z", "--zpos", nargs="+", default=[80], help="list of z position values")
+    nu.add_argument("-z", "--zpos", nargs="+", default=[10, 80, 180, 280, 350], help="list of z position values")
     nu.add_argument("-x", "--xpos", default=120, type=int, help="x position within APA, default near center")
     nu.add_argument("-y", "--ypos", default=320, type=int, help="y position within APA, default near center")
     nu.add_argument("-e", "--nEvts", default=-1, type=int, help="construct event to read from a source file")

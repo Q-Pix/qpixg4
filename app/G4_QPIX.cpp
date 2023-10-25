@@ -81,7 +81,16 @@ int main(int argc, char** argv)
     // batch mode
     G4String command = "/control/execute ";
     G4String fileName = argv[1];
-    uimgr->ApplyCommand(command+fileName);
+    try {
+        uimgr->ApplyCommand(command+fileName);
+    }
+    catch (std::exception& e) {
+        std::ofstream ofile;
+        ofile.open("/home/argon/Projects/Kevin/err/g4_err.txt", std::ios_base::app);
+        ofile << fileName << std::endl;
+        ofile << "G4 Exception caught : " << e.what() << std::endl;
+        return -1;
+    }
   }
   else {
     // interactive mode
