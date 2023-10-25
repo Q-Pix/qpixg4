@@ -59,8 +59,6 @@ int main(int argc, char** argv)
     in_tt->SetBranchAddress("hit_length",         &m_hit_length_);
     in_tt->SetBranchAddress("hit_process_key",    &m_hit_process_key_);
     in_tt->SetBranchAddress("particle_id",        &m_particle_id);
-    in_tt->LoadBaskets(60000000000LL); // 60 GB
-    // in_tt->LoadBaskets(60e9);
 
     std::cout << "building entries..\n";
     std::vector<size_t> indices;
@@ -103,6 +101,7 @@ int main(int argc, char** argv)
     tt.Branch("particle_id",        &v_particle_id);
 
     int j = 0;
+    in_tt->LoadBaskets(50000000000LL); // 50 GB
     std::cout << "Building tree..\n";
     for(auto i : sorted){
         in_tt->GetEntry(i);
