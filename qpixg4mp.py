@@ -240,7 +240,7 @@ def chainCombineData(cores):
         rtd_files.append(os.path.join(path, f"core_{core}_rtd_input.root"))
 
     # attempt chaining on every core
-    pool = mp.Pool(4)
+    pool = mp.Pool(3)
     r = pool.starmap_async(run_chain, zip(chain_files, rtd_files))
     r.wait()
 

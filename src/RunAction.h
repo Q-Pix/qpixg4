@@ -12,7 +12,7 @@
 #include <G4UserRunAction.hh>
 #include "G4GenericMessenger.hh"
 
-
+class G4RunManager;
 class RunAction: public G4UserRunAction
 {
     public:
@@ -27,8 +27,11 @@ class RunAction: public G4UserRunAction
         G4GenericMessenger * messenger_;
         G4String root_output_path_;
         G4String marley_json_;
-        int particle_type_=-1;
+        G4String ReadFrom_Root_;
+        std::string TreeName_;
         bool multirun_;
+        int particle_type_=-1;
+        G4RunManager * runManager;
 };
 
 #endif
