@@ -26,7 +26,7 @@ int ROOTManager::Initialize(std::string FilePath,std::string TreeName) {
         FilePath_=FilePath;
         TreeName_=TreeName;
         isInitialized=0;
-        std::cout << "Configuring to Read From Root File..." << std::endl;
+        // std::cout << "Configuring to Read From Root File..." << std::endl;
         // Reading the root file to extract the info
         if (tree_ == 0) {
             f_ = (TFile*)gROOT->GetListOfFiles()->FindObject(FilePath_.c_str());
@@ -61,6 +61,8 @@ void ROOTManager::SetBranches() {
         tree_->SetBranchAddress("fsPx", px_, &b_px);
         tree_->SetBranchAddress("fsPy", py_, &b_py);
         tree_->SetBranchAddress("fsPz", pz_, &b_pz);
+        // leptop momentum to rotate towards
+        tree_->SetBranchAddress("p3lep", p3lep_, &b_p3lep);
     if (TreeName_=="anatree" ){
         tree_->SetBranchAddress("idx",                  idx,	    &bridx   );
         tree_->SetBranchAddress("status",               Status,	        &brStatus   );

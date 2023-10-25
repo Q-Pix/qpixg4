@@ -222,7 +222,6 @@ void AnalysisManager::SetEvent(int const value)
 void AnalysisManager::FillROOTMeta(Float_t axis_x, Float_t axis_y, Float_t axis_z, Float_t xpos, Float_t ypos, Float_t zpos,
             Int_t nEvt, Int_t fsPdg, Float_t fsEnergy, Int_t fsEvt, Int_t fsFileNo, Int_t fsFHC, Int_t fsRun, Int_t nFS, Float_t lepKE)
 {
-    std::cout << "filling root meta branches!\n";
     metadata_->Branch("axis_x", &axis_x_, "axis_x/F");
     metadata_->Branch("axis_y", &axis_y_, "axis_y/F");
     metadata_->Branch("axis_z", &axis_z_, "axis_z/F");
