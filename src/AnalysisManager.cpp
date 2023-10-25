@@ -339,6 +339,7 @@ int AnalysisManager::ProcessToKey(std::string const & process)
     else if (process.compare("dInelastic")           == 0) key = 19;
     else if (process.compare("Decay")                == 0) key = 20;
     else if (process.compare("RadioactiveDecay")     == 0) key = 21;
+    else if (process.compare("alphaInelastic")       == 0) key = 22;
     else { std::cout << "Uncategorized process: " << process << std::endl; }
 
     return key;
