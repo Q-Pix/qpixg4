@@ -24,7 +24,7 @@ class ROOTManager {
 
         static ROOTManager * Instance();
         int Initialize(std::string FilePath,std::string TreeName);
-        static const Int_t   Size_=51;
+        static const Int_t   Size_=100;
 
         Int_t Getevent_ () const{return event_; };
         Int_t Getfileno_ () const{return ifileno_; };

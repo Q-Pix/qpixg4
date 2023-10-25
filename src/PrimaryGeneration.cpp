@@ -170,9 +170,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     G4PrimaryVertex* vertex = new G4PrimaryVertex(vertex3d,0);
     for(int np=0;np<rootManager->GetNParticles_();np++){
         // Get Particle definitition
-        //Filtering Particles not to simulate
-        if (!((rootManager->GetIdx_(np)>=0) && (rootManager->GetFirstMother_(np)<2))) {std::cout<<"Skipping this particle PDGCode-> "<< rootManager->GetPDG_(np)<< " Idx-> "<<rootManager->GetIdx_(np)<<" Mother= "<<rootManager->GetFirstMother_(np)<<std::endl; continue;}
-
         // if the particle is a nucleus
         G4ParticleDefinition *pdef=0;
 
@@ -195,7 +192,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
         }
 
         // filter the particles less than 1 eV
-        //if(rootManager->GetE_(np)<(1 *CLHEP::eV)) continue;
+        if(rootManager->GetE_(np)<(1 *CLHEP::eV)) continue;
         G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::MeV,rootManager->GetPy_(np)*CLHEP::MeV,rootManager->GetPz_(np)*CLHEP::MeV,rootManager->GetE_(np)*CLHEP::MeV);
 
         // rotate particle, move only the momentum directions
