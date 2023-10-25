@@ -110,12 +110,13 @@ void EventAction::EndOfEventAction(const G4Event* event)
     {
         auto const& particle = p.second;
 
-        analysis_manager->AddMCParticle(particle);
+        // fill on every hit
+        analysis_manager->FillMCParticle(particle);
     }
 
     // write event to ROOT file and reset event variables
-    analysis_manager->EventFill();
-    analysis_manager->EventReset();
+    // analysis_manager->EventFill();
+    // analysis_manager->EventReset();
 
     // reset event in MC truth manager
     mc_truth_manager->EventReset();

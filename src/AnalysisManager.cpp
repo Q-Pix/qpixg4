@@ -50,6 +50,10 @@ void AnalysisManager::Book(std::string const file_path)
     event_tree_->Branch("run",   &run_,   "run/I");
     event_tree_->Branch("event", &event_, "event/I");
 
+    // toggled from RunActionInput to know what kind of particle is generating these hits
+    if(m_particle_id > 0)
+        event_tree_->Branch("particle_id", &m_particle_id, "RadioParticleID/I");
+
     // event_tree_->Branch("generator_initial_number_particles",  &generator_initial_number_particles_, "generator_initial_number_particles/I");
     // event_tree_->Branch("generator_initial_particle_x",        &generator_initial_particle_x_);
     // event_tree_->Branch("generator_initial_particle_y",        &generator_initial_particle_y_);
@@ -100,18 +104,32 @@ void AnalysisManager::Book(std::string const file_path)
     // event_tree_->Branch("particle_number_daughters",  &particle_number_daughters_);
     // event_tree_->Branch("particle_daughter_track_id", &particle_daughter_track_ids_);
 
-    event_tree_->Branch("hit_track_id",       &hit_track_id_);
-    event_tree_->Branch("hit_start_x",        &hit_start_x_);
-    event_tree_->Branch("hit_start_y",        &hit_start_y_);
-    event_tree_->Branch("hit_start_z",        &hit_start_z_);
-    event_tree_->Branch("hit_start_t",        &hit_start_t_);
-    event_tree_->Branch("hit_end_x",          &hit_end_x_);
-    event_tree_->Branch("hit_end_y",          &hit_end_y_);
-    event_tree_->Branch("hit_end_z",          &hit_end_z_);
-    event_tree_->Branch("hit_end_t",          &hit_end_t_);
-    event_tree_->Branch("hit_energy_deposit", &hit_energy_deposit_);
-    event_tree_->Branch("hit_length",         &hit_length_);
-    event_tree_->Branch("hit_process_key",    &hit_process_key_);
+    // event_tree_->Branch("hit_track_id",       &hit_track_id_);
+    // event_tree_->Branch("hit_start_x",        &hit_start_x_);
+    // event_tree_->Branch("hit_start_y",        &hit_start_y_);
+    // event_tree_->Branch("hit_start_z",        &hit_start_z_);
+    // event_tree_->Branch("hit_start_t",        &hit_start_t_);
+    // event_tree_->Branch("hit_end_x",          &hit_end_x_);
+    // event_tree_->Branch("hit_end_y",          &hit_end_y_);
+    // event_tree_->Branch("hit_end_z",          &hit_end_z_);
+    // event_tree_->Branch("hit_end_t",          &hit_end_t_);
+    // event_tree_->Branch("hit_energy_deposit", &hit_energy_deposit_);
+    // event_tree_->Branch("hit_length",         &hit_length_);
+    // event_tree_->Branch("hit_process_key",    &hit_process_key_);
+
+    // if using fill mcparticle use these methods instead
+    event_tree_->Branch("hit_track_id",       &m_hit_track_id_);
+    event_tree_->Branch("hit_start_x",        &m_hit_start_x_);
+    event_tree_->Branch("hit_start_y",        &m_hit_start_y_);
+    event_tree_->Branch("hit_start_z",        &m_hit_start_z_);
+    event_tree_->Branch("hit_start_t",        &m_hit_start_t_);
+    event_tree_->Branch("hit_end_x",          &m_hit_end_x_);
+    event_tree_->Branch("hit_end_y",          &m_hit_end_y_);
+    event_tree_->Branch("hit_end_z",          &m_hit_end_z_);
+    event_tree_->Branch("hit_end_t",          &m_hit_end_t_);
+    event_tree_->Branch("hit_energy_deposit", &m_hit_energy_deposit_);
+    event_tree_->Branch("hit_length",         &m_hit_length_);
+    event_tree_->Branch("hit_process_key",    &m_hit_process_key_);
 }
 
 //-----------------------------------------------------------------------------
@@ -160,16 +178,16 @@ void AnalysisManager::EventReset()
     number_hits_ = 0;
     energy_deposit_ = 0;
 
-    particle_track_id_.clear();
-    particle_parent_track_id_.clear();
-    particle_pdg_code_.clear();
-    particle_mass_.clear();
-    particle_charge_.clear();
-    particle_process_key_.clear();
-    particle_total_occupancy_.clear();
+    // particle_track_id_.clear();
+    // particle_parent_track_id_.clear();
+    // particle_pdg_code_.clear();
+    // particle_mass_.clear();
+    // particle_charge_.clear();
+    // particle_process_key_.clear();
+    // particle_total_occupancy_.clear();
 
-    particle_number_daughters_.clear();
-    particle_daughter_track_ids_.clear();
+    // particle_number_daughters_.clear();
+    // particle_daughter_track_ids_.clear();
 
     // particle_initial_x_.clear();
     // particle_initial_y_.clear();
@@ -181,18 +199,18 @@ void AnalysisManager::EventReset()
     // particle_initial_pz_.clear();
     // particle_initial_energy_.clear();
 
-    hit_track_id_.clear();
-    hit_start_x_.clear();
-    hit_start_y_.clear();
-    hit_start_z_.clear();
-    hit_start_t_.clear();
-    hit_end_x_.clear();
-    hit_end_y_.clear();
-    hit_end_z_.clear();
-    hit_end_t_.clear();
-    hit_energy_deposit_.clear();
-    hit_length_.clear();
-    hit_process_key_.clear();
+    // hit_track_id_.clear();
+    // hit_start_x_.clear();
+    // hit_start_y_.clear();
+    // hit_start_z_.clear();
+    // hit_start_t_.clear();
+    // hit_end_x_.clear();
+    // hit_end_y_.clear();
+    // hit_end_z_.clear();
+    // hit_end_t_.clear();
+    // hit_energy_deposit_.clear();
+    // hit_length_.clear();
+    // hit_process_key_.clear();
 }
 
 //-----------------------------------------------------------------------------
@@ -287,29 +305,63 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
 
     std::vector< TrajectoryHit > const hits = particle->Hits();
 
+// // not used for FillMCParticle
+//     for (auto const & hit : hits)
+//     {
+//         energy_deposit_ += hit.Energy();
+
+//         hit_track_id_.push_back(hit.TrackID());
+
+//         hit_start_x_.push_back(hit.StartPoint().X());
+//         hit_start_y_.push_back(hit.StartPoint().Y());
+//         hit_start_z_.push_back(hit.StartPoint().Z());
+//         hit_start_t_.push_back(hit.StartTime());
+
+//         hit_end_x_.push_back(hit.EndPoint().X());
+//         hit_end_y_.push_back(hit.EndPoint().Y());
+//         hit_end_z_.push_back(hit.EndPoint().Z());
+//         hit_end_t_.push_back(hit.EndTime());
+
+//         hit_length_.push_back(hit.Length());
+//         hit_energy_deposit_.push_back(hit.Energy());
+
+//         hit_process_key_.push_back(this->ProcessToKey(hit.Process()));
+//         number_hits_ += 1;
+//     }
+}
+
+void AnalysisManager::FillMCParticle(MCParticle const * particle)
+{
+    number_particles_ += 1;
+    std::vector< TrajectoryHit > const hits = particle->Hits();
+    number_hits_ = hits.size();
+
     for (auto const & hit : hits)
     {
         energy_deposit_ += hit.Energy();
 
-        hit_track_id_.push_back(hit.TrackID());
+        m_hit_track_id_ = hit.TrackID();
 
-        hit_start_x_.push_back(hit.StartPoint().X());
-        hit_start_y_.push_back(hit.StartPoint().Y());
-        hit_start_z_.push_back(hit.StartPoint().Z());
-        hit_start_t_.push_back(hit.StartTime());
+        m_hit_start_x_ = hit.StartPoint().X();
+        m_hit_start_y_ = hit.StartPoint().Y();
+        m_hit_start_z_ = hit.StartPoint().Z();
+        m_hit_start_t_ = hit.StartTime();
 
-        hit_end_x_.push_back(hit.EndPoint().X());
-        hit_end_y_.push_back(hit.EndPoint().Y());
-        hit_end_z_.push_back(hit.EndPoint().Z());
-        hit_end_t_.push_back(hit.EndTime());
+        m_hit_end_x_ = hit.EndPoint().X();
+        m_hit_end_y_ = hit.EndPoint().Y();
+        m_hit_end_z_ = hit.EndPoint().Z();
+        m_hit_end_t_ = hit.EndTime();
 
-        hit_length_.push_back(hit.Length());
-        hit_energy_deposit_.push_back(hit.Energy());
+        m_hit_length_ = hit.Length();
+        m_hit_energy_deposit_ = hit.Energy();
 
-        hit_process_key_.push_back(this->ProcessToKey(hit.Process()));
-        number_hits_ += 1;
+        m_hit_process_key_ = this->ProcessToKey(hit.Process());
+
+        // fill on every hit
+        event_tree_->Fill();
     }
 }
+
 
 //-----------------------------------------------------------------------------
 int AnalysisManager::ProcessToKey(std::string const & process)
