@@ -82,7 +82,6 @@ void AnalysisManager::Book(std::string const file_path)
 
     event_tree_->Branch("number_particles", &number_particles_, "number_particles/I");
     event_tree_->Branch("number_hits",      &number_hits_,      "number_hits/I");
-
     event_tree_->Branch("energy_deposit",   &energy_deposit_,   "energy_deposit/D");
 
     // event_tree_->Branch("particle_track_id",        &particle_track_id_);
@@ -103,19 +102,6 @@ void AnalysisManager::Book(std::string const file_path)
 
     // event_tree_->Branch("particle_number_daughters",  &particle_number_daughters_);
     // event_tree_->Branch("particle_daughter_track_id", &particle_daughter_track_ids_);
-
-    // event_tree_->Branch("hit_track_id",       &hit_track_id_);
-    // event_tree_->Branch("hit_start_x",        &hit_start_x_);
-    // event_tree_->Branch("hit_start_y",        &hit_start_y_);
-    // event_tree_->Branch("hit_start_z",        &hit_start_z_);
-    // event_tree_->Branch("hit_start_t",        &hit_start_t_);
-    // event_tree_->Branch("hit_end_x",          &hit_end_x_);
-    // event_tree_->Branch("hit_end_y",          &hit_end_y_);
-    // event_tree_->Branch("hit_end_z",          &hit_end_z_);
-    // event_tree_->Branch("hit_end_t",          &hit_end_t_);
-    // event_tree_->Branch("hit_energy_deposit", &hit_energy_deposit_);
-    // event_tree_->Branch("hit_length",         &hit_length_);
-    // event_tree_->Branch("hit_process_key",    &hit_process_key_);
 
     // if using fill mcparticle use these methods instead
     event_tree_->Branch("hit_track_id",       &m_hit_track_id_);
@@ -340,7 +326,6 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
     // particle_daughter_track_ids_.push_back(particle->Daughters());
 
     number_particles_ += 1;
-
     std::vector< TrajectoryHit > const hits = particle->Hits();
 
 // // not used for FillMCParticle

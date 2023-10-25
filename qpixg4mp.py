@@ -258,7 +258,7 @@ def makeNeutrinoArgsOdyssey(args):
         for f in fs:
             for t in ['1', '2', '3', '4', '5']:
                 for nEvt in range(100):
-                    for nEng in range(250, 10000, 250):
+                    for nEng in range(250, 10001, 250):
                         if 'aelectron' in f:
                             pdg = -12
                         elif 'electron' in f:
@@ -313,24 +313,21 @@ def makeNeutrinos(args):
 
     Controlled via argparse nu subparser.
     """
-    ## folders for odyssey are 0..29
-
     neutrino_args = makeNeutrinoArgsOdyssey(args)
+    msg = f"making {len(neutrino_args)} neutrino macro files. enter to continue"
+    input(msg)
 
     pool = mp.Pool()
     r = pool.map_async(run_neutrino, neutrino_args)
     r.wait()
 
-    sys.exit(-1)
-
     g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
     print(f"found {len(g4_args)} files")
-    sys.exit(-1)
     r = pool.map_async(run_g4, g4_args)
     r.wait()
 
-    inputPath = outputPath
-    sort_path = outputPath+"/neutrinos_sort"
+    inputPath = args.outDir
+    sort_path = inputPath+"/neutrinos_sort"
     sort_path = os.path.abspath(sort_path)
     sort_files = [os.path.join(inputPath, f) for f in os.listdir(inputPath) if ".root" in f and "_" in f]
     dest_files = []
@@ -413,7 +410,7 @@ def get_subParsers(parser):
     nu.add_argument("-o", "--outDir", required=True, type=str, help="output ROOT file location for hit generation")
     nu.add_argument("-c", "--cores", default=50, type=int, help="number of cores to help produce")
     nu.add_argument("-s", "--seed", default=420, type=int, help="random seed")
-    nu.add_argument("-z", "--zpos", nargs="+", default=[10, 80, 320], help="list of z position values")
+    nu.add_argument("-z", "--zpos", nargs="+", default=[10, 80, 180, 280, 350], help="list of z position values")
     nu.add_argument("-x", "--xpos", default=120, type=int, help="x position within APA, default near center")
     nu.add_argument("-y", "--ypos", default=320, type=int, help="y position within APA, default near center")
     nu.add_argument("-e", "--nEvts", default=-1, type=int, help="construct event to read from a source file")

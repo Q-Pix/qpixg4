@@ -52,7 +52,6 @@ if [ -z $6 ]
     exit 1
   else
     outputdir=$6
-    echo "found: ""$outputdir"
 fi
 
 # options 1-5 select create the angle here
@@ -104,7 +103,6 @@ if [ -z $8 ]
     exit 1
   else
     nEvt=$8
-    echo "found nEvt:"" $nEvt"
 fi
 
 # pdg
@@ -134,8 +132,6 @@ if [ -z ${11} ]
     fsFHC=${11}
 fi
 
-# we only care about y and z positions, really
-xaxis=0
 function makeMacroFile {
 
   # make sure input file exists
@@ -166,9 +162,9 @@ function makeMacroFile {
   echo "/Inputs/vertex_x $xpos cm" >> $dest
   echo "/Inputs/vertex_y $ypos cm" >> $dest
   echo "/Inputs/vertex_z $zpos cm" >> $dest
-  echo "/Inputs/axis_x $xaxis cm" >> $dest
-  echo "/Inputs/axis_y $yaxis cm" >> $dest
-  echo "/Inputs/axis_z $zaxis cm" >> $dest
+  echo "/Inputs/axis_x $xaxis" >> $dest
+  echo "/Inputs/axis_y $yaxis" >> $dest
+  echo "/Inputs/axis_z $zaxis" >> $dest
   # new inputs
   echo "/Inputs/nEvt $nEvt" >> $dest
   echo "/Inputs/fsPdg $fsPdg" >> $dest
