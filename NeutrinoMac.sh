@@ -54,6 +54,18 @@ if [ -z $6 ]
     outputdir=$6
 fi
 
+# if present, then we're using the z axis
+if [ -z $7 ]
+  then
+    yaxis=0
+    zaxis=1
+  else
+    yaxis=1
+    zaxis=0
+fi
+
+# we only care about y and z positions, really
+xaxis=0
 function makeMacroFile {
 
   # make sure input file exists
@@ -64,7 +76,9 @@ function makeMacroFile {
 
   # make the output macro based on the input file
   dest=$(echo "$input_file" | cut -d '/' -f 7 | cut -d '.' -f 1 )
-  dest="$outputMacroDir""$dest""_x-$xpos""_y-$ypos""_z-$zpos""_seed-$seed""_input.mac"
+  name="$dest""_x-$xpos""_y-$ypos""_z-$zpos""_seed-$seed""_zaxis-$zaxis"
+  dest="$outputMacroDir""$name""_input.mac"
+  output_file="$outputdir""$name"".root"
 
 	echo "making file: $dest"
   if test -f "$dest"; then
@@ -79,9 +93,12 @@ function makeMacroFile {
   echo "/Inputs/Particle_Type ProtonDecay" >> $dest
   echo "/Inputs/TreeName tree" >> $dest
   echo "/Inputs/ReadFrom_Root_Path $input_file" >> $dest
-  echo "/Inputs/vertex_x $xpos" >> $dest
-  echo "/Inputs/vertex_y $ypos" >> $dest
-  echo "/Inputs/vertex_z $zpos" >> $dest
+  echo "/Inputs/vertex_x $xpos cm" >> $dest
+  echo "/Inputs/vertex_y $ypos cm" >> $dest
+  echo "/Inputs/vertex_z $zpos cm" >> $dest
+  echo "/Inputs/axis_x $xaxis cm" >> $dest
+  echo "/Inputs/axis_y $yaxis cm" >> $dest
+  echo "/Inputs/axis_z $zaxis cm" >> $dest
   echo "/Inputs/PrintParticleInfo false" >> $dest
   echo "/run/initialize" >> $dest
   echo "/random/setSeeds 0 $seed" >> $dest
@@ -89,4 +106,3 @@ function makeMacroFile {
 }
 
 makeMacroFile
-echo "All done"

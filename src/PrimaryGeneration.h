@@ -60,6 +60,10 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     double vertex_x_;
     double vertex_y_;
     double vertex_z_;
+    // rotation angle
+    double axis_x_;
+    double axis_y_;
+    double axis_z_;
 
     G4GeneralParticleSource * particle_gun_;
 
@@ -83,5 +87,7 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
 
     ROOT::Math::SMatrix< double, 3 > Rotation_Matrix(G4ThreeVector, G4ThreeVector);
 };
+
+void rotateParticle(const ROOT::Math::SMatrix< double, 3 >&, G4PrimaryParticle*);
 
 #endif

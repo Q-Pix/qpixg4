@@ -74,7 +74,7 @@ def run_sort(input_file, dest_file):
     subprocess.run([prog, input_file])
     print("file moved.. ")
 
-def createGeantData(time, cores, seed):
+def createGeantData(time, cores, seed, outputPath):
     """
     Wrapper function to make geant data from macros.
     function simply runs the script LongDecay.sh macro with arguments supplied
@@ -84,13 +84,12 @@ def createGeantData(time, cores, seed):
     decay_script =  "./LongDecay.sh"
     if not os.path.isfile(decay_script):
         print("WARNING unable to find decay script!")
-        return -1 
-    outputPath="/mnt/nvme1/Kevin/qpix/output/"
+        return None 
     subprocess.run(["bash", decay_script, str(time), str(cores), str(seed), str(outputPath)])
 
     if not os.path.isdir("./macros/long_macros/"):
         print("did not find macro directory!!")
-        return -1
+        return None
 
     mac_files = os.listdir("./macros/long_macros/")
     mac_files = ["./macros/long_macros/"+f for f in mac_files]
@@ -98,21 +97,20 @@ def createGeantData(time, cores, seed):
     r = pool.map_async(run_g4, mac_files)
     r.wait()
     print("Geant4 Files created.")
-    return 1
+    return outputPath
 
-def createSortData(time):
+def createSortData(time, input_path):
     """
     Wrapper function to run sort on set of files after geant4 build
     """
 
     # now combine everything in terms of core
-    path="/mnt/nvme1/Kevin/qpix/output/"
-    if not os.path.isdir(path+"sorted"):
+    sort_path = input_path+"/sorted/"
+    if not os.path.isdir(sort_path):
         print("could not find input file directory")
         return -1
 
-    sort_path = "/mnt/nvme1/Kevin/qpix/output/sorted/"
-    sort_files = [os.path.join(path, f) for f in os.listdir(path) if ".root" in f and "_" in f]
+    sort_files = [os.path.join(input_path, f) for f in os.listdir(input_path) if ".root" in f and "_" in f]
     dest_files = []
     for f in sort_files:
         outf = f.split("/")[-1] 
@@ -125,6 +123,8 @@ def createSortData(time):
     pool = mp.Pool() 
     r = pool.starmap_async(run_sort, zip(sort_files, dest_files))
     r.wait()
+
+    return sort_path
 
 def run_rtd(sorted_file, rtd_file):
     """
@@ -160,21 +160,21 @@ def createRTD(sorted_files):
     r = pool.starmap_async(run_rtd, zip(sorted_files, rtd_files))
     r.wait()
 
-def chainCombineData(cores):
+def chainCombineData(cores, input_path="/mnt/nvme1/Kevin/qpix/output/sorted/"):
     """
     Read from input_files from /mnt/nvme1/Kevin/qpix/output/sorted/ to group all of the 
     cores together in long tchains
     """
-    path = "/mnt/nvme1/Kevin/qpix/output/sorted/"
-    if not os.path.isdir(path):
+    if not os.path.isdir(input_path):
         print("unable to find input sorted path!")
         return -1
 
     # build input and output files
     chain_files, rtd_files = [], []
     for core in range(cores):
-        chain_files.append([os.path.join(path, f) for f in os.listdir(path) if f"core-{core}" in f and ".root" in f])
-        rtd_files.append(os.path.join(path, f"core_{core}_rtd_input.root"))
+        chain_files.append([os.path.join(input_path, f) for f in
+            os.listdir(input_path) if f"core-{core}" in f and ".root" in f])
+        rtd_files.append(os.path.join(input_path, f"core_{core}_rtd_input.root"))
 
     # attempt chaining on every core
     pool = mp.Pool(3)
@@ -182,6 +182,11 @@ def chainCombineData(cores):
     r.wait()
 
     return rtd_files
+
+def run_neutrino(*inp):
+    inp = [str(arg) for arg in inp]
+    print("making inp: ", inp)
+    subprocess.run(["bash", "./NeutrinoMac.sh", *inp])
 
 
 def makeNeutrinos(args):
@@ -193,40 +198,44 @@ def makeNeutrinos(args):
     Controlled via argparse nu subparser.
     """
     ## folders for odyssey are 0..29
-    folders = range(30)
+    
+    assert args.nFiles < 30 and args.nFiles >= 0, f"incorrect in files arg: {args.nFiles}"
+    folders = [f"{i:02x}/" for i in range(args.nFiles)]
 
     outputPath = args.outDir
+    outputPath = os.path.abspath(outputPath) + "/"
     inputPath = args.srcDir
     xpos = args.xpos
     ypos = args.ypos
     ncores = args.cores
-    assert xpos > 5 and xpos < 575, f"x position outside of APA: {x}"
-    assert ypos > 5 and ypos < 1500, f"y position outside of APA: {y}"
+    assert xpos > 5 and xpos < 575, f"x position outside of APA: {xpos}"
+    assert ypos > 5 and ypos < 1500, f"y position outside of APA: {ypos}"
 
-    # outputPath="/mnt/nvme1/Kevin/qpix/output/"
-    # inputPath="/home/argon/DUNE_FLUX_FILES/Odyssey/00/"
-
-    def run_neutrino(inp):
-        inp = [str(arg) for arg in inp]
-        print("making inp: ", inp)
-        subprocess.run(["bash", "./NeutrinoMac.sh", *inp])
-
-    fs = [f for f in os.listdir(inputPath) if ".root" in f]
-    fs = [os.path.join(inputPath, f) for f in fs]
+    fs = []
+    for f in folders:
+        path = inputPath + f
+        f = [os.path.join(path, f) for f in os.listdir(path) if ".root" in f]
+        fs.extend(f)
     seed = args.seed
+    if len(fs) == 0:
+        return -1
+    neutrino_args = []
     for z in args.zpos:
         for f in fs:
-            print("running args:", args.xpos, args.ypos, z, seed, f, outputPath)
-            # args.append([x,y,z,seed,f,outputPath])
+            neutrino_args.append([xpos,ypos,z,seed,f,outputPath])
+            neutrino_args.append([xpos,ypos,z,seed,f,outputPath,1])
 
-    # pool = mp.Pool(ncores)
-    # r = pool.starmap_async(run_neutrino, args)
-    # r.wait()
-    # print("fin.")
-    # for arg in args:
-    #     run_neutrino(arg)
+    pool = mp.Pool()
+    r = pool.starmap_async(run_neutrino, neutrino_args)
+    r.wait()
 
-def main(time, cores, seed):
+    g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
+    r = pool.map_async(run_g4, g4_args)
+    r.wait()
+    print("Geant4 Files created.")
+
+def main(time, cores, seed, geant4_data_path="/mnt/nvme1/Kevin/qpix/output/"):
+# def main(time, cores, seed, geant4_data_path="./output/"):
     """
     Look for the macro files in ./macros/long_macros and create the output
     files for each of them.
@@ -238,19 +247,22 @@ def main(time, cores, seed):
     """
 
     # Run the Macro to create all of the base output files in ./output/
-    val = createGeantData(time, cores, seed)
-    if val < 0:
-        return val
+    # output_path = createGeantData(time, cores, seed, geant4_data_path)
+    # if output_path is None:
+    #     return -1
 
     # sort and combine all of the output files
-    createSortData(time)
+    # sort_path = createSortData(time, input_path=output_path)
 
     # all sorted data is now in /mnt/nvme1/Kevin/qpix/output/sorted/ we can now create a tchain
     # to combine them all
-    chain_files = chainCombineData(cores)
-    if len(chain_files) == 0:
-        return -1
+    # chain_files = chainCombineData(cores, input_path=sort_path)
+    # if len(chain_files) == 0:
+    #     return -1
 
+    input_path = "/mnt/nvme1/Kevin/qpix/output/sorted/1ks/"
+    chain_files = os.listdir(input_path)
+    chain_files = [os.path.join(input_path, f) for f in chain_files]
     createRTD(chain_files)
     print("qpix rtd creation complete..\n")
 
@@ -282,12 +294,12 @@ def get_subParsers(parser):
     # make neutrino files
     nu = subParsers.add_parser("nu", description="create geant4 data")
     nu.set_defaults(func=makeNeutrinos)
-    nu.add_argument("-i", "--srcDir", required=True, type=str, help="source file where FHC and RHC files are found")
+    nu.add_argument("-i", "--srcDir", default="/home/argon/DUNE_FLUX_FILES/Odyssey/", type=str, help="source file where FHC and RHC files are found")
     nu.add_argument("-o", "--outDir", required=True, type=str, help="output ROOT file location for hit generation")
     nu.add_argument("-c", "--cores", default=50, type=int, help="number of cores to help produce")
     nu.add_argument("-s", "--seed", default=420, type=int, help="random seed")
-    nu.add_argument("-n", "--nFiles", default=1000, type=int, help="number of RHC and FHC files to read first event from")
-    nu.add_argument("-z", "--zpos", nargs="+", default=[5, 10, 20, 40, 80, 160, 320], help="list of z position values")
+    nu.add_argument("-n", "--nFiles", default=1, type=int, help="number of RHC and FHC files to read first event from")
+    nu.add_argument("-z", "--zpos", nargs="+", default=[10, 80, 320], help="list of z position values")
     nu.add_argument("-x", "--xpos", default=120, type=int, help="x position within APA, default near center")
     nu.add_argument("-y", "--ypos", default=320, type=int, help="y position within APA, default near center")
 

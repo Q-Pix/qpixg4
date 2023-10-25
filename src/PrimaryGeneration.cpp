@@ -72,6 +72,10 @@ PrimaryGeneration::PrimaryGeneration()
   msg_->DeclareProperty("vertex_x", vertex_x_, "vertex x").SetUnit("mm");
   msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("mm");
   msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("mm");
+  // axis of rotation
+  msg_->DeclareProperty("axis_x", axis_x_, "axis x").SetUnit("mm");
+  msg_->DeclareProperty("axis_y", axis_y_, "axis y").SetUnit("mm");
+  msg_->DeclareProperty("axis_z", axis_z_, "axis z").SetUnit("mm");
 
   particle_gun_ = new G4GeneralParticleSource();
 
@@ -108,8 +112,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
 
     TTree *tree=rootManager->GetTTree_();
 
-
-
     //Getting the event from the root file
     Long64_t  ientry=tree->LoadTree(event->GetEventID());
 
@@ -120,8 +122,36 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
 
     if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
     tree->GetEntry(event->GetEventID());
-   // G4ThreeVector vertex3d= G4ThreeVector (G4UniformRand()*vertex_x_,G4UniformRand()*vertex_y_,G4UniformRand()*vertex_z_);
-   G4ThreeVector vertex3d= G4ThreeVector (vertex_x_,vertex_y_,vertex_z_);
+    G4ThreeVector vertex3d= G4ThreeVector (vertex_x_,vertex_y_,vertex_z_);
+
+    // rotation direction
+    double r_array[3] = { axis_x_,
+                          axis_y_,
+                          axis_z_  };
+    ROOT::Math::SVector< double, 3 > rs(r_array, 3);
+    rs = rs.Unit();
+
+    // build input momentum for this direction
+    ROOT::Math::SVector< double, 3 > net_p;
+    for(int np=0;np<rootManager->GetNParticles_();np++){
+        G4ParticleDefinition *pdef=0;
+        if (rootManager->GetPDG_(np) > 1000000000 && rootManager->GetPDG_(np)<2000000000)
+        {
+            if (!pdef)
+            {
+                int const Z = (rootManager->GetPDG_(np) % 10000000) / 10000; // atomic number
+                int const A = (rootManager->GetPDG_(np) % 10000) / 10; // mass number
+                pdef = particle_table_->GetIonTable()->GetIon(Z, A, 0.);
+            }
+        } else pdef = particle_table_->FindParticle(rootManager->GetPDG_(np));
+        G4PrimaryParticle RootParticle = G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::MeV,rootManager->GetPy_(np)*CLHEP::MeV,rootManager->GetPz_(np)*CLHEP::MeV,rootManager->GetE_(np)*CLHEP::MeV);
+        net_p[0] += RootParticle.GetPx();
+        net_p[1] += RootParticle.GetPy();
+        net_p[2] += RootParticle.GetPz();
+    }
+    net_p = net_p.Unit();
+    G4ThreeVector v1(rs[0], rs[1], rs[2]), v2(net_p[0], net_p[1], net_p[2]);
+    ROOT::Math::SMatrix< double, 3 > rot_matrix = Rotation_Matrix(v2, v1); // rotate momentum onto rs
 
     G4PrimaryVertex* vertex = new G4PrimaryVertex(vertex3d,0);
     for(int np=0;np<rootManager->GetNParticles_();np++){
@@ -144,19 +174,18 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
 
         else pdef = particle_table_->FindParticle(rootManager->GetPDG_(np));
 
-
-
         if (pdef==0){
             G4String str1="Couldnt find the particle table for " + std::to_string(rootManager->GetPDG_(np));
             G4Exception("[PrimaryGeneration]","GENIEGeneratePrimaries",G4ExceptionSeverity::JustWarning,str1.c_str());
             continue;
         }
 
-
-
         // filter the particles less than 1 eV
         //if(rootManager->GetE_(np)<(1 *CLHEP::eV)) continue;
         G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,rootManager->GetPx_(np)*CLHEP::MeV,rootManager->GetPy_(np)*CLHEP::MeV,rootManager->GetPz_(np)*CLHEP::MeV,rootManager->GetE_(np)*CLHEP::MeV);
+
+        // rotate particle, move only the momentum directions
+        rotateParticle(rot_matrix, RootParticle);
 
         // create generator particle
         GeneratorParticle * generatorParticle = new GeneratorParticle();
@@ -186,8 +215,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
             std::cout<<"Mother -> "<<rootManager->GetFirstMother_(np)<<std::endl;
         }
         vertex->SetPrimary(RootParticle);
-
-
     }
 
     event->AddPrimaryVertex( vertex );
@@ -657,53 +684,66 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     mc_truth_manager->AddFinalGeneratorParticle(particle);
   }
 
-  ROOT::Math::SMatrix< double, 3 > PrimaryGeneration::Rotation_Matrix(G4ThreeVector vec1, G4ThreeVector vec2)
-  {
-    // --------------------------------------------------------------------------
-    // Rotation matrix r that rotates vector vec1 onto vector vec2
-    // https://math.stackexchange.com/a/476311
-    // --------------------------------------------------------------------------
-    
-    double identity_array[9] = { 1, 0, 0,
-                                0, 1, 0,
-                                0, 0, 1  };
+}
 
-    ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
-    ROOT::Math::SMatrix< double, 3 > r = I;
-
-    double b_array[3] = { vec2[0],
-                          vec2[1],
-                          vec2[2]  };
-    ROOT::Math::SVector< double, 3 > b(b_array, 3);
-    b = b.Unit();
-
-    double a_array[3] = { vec1[0],
-                          vec1[1],
-                          vec1[2] };
-
-    ROOT::Math::SVector< double, 3 > a(a_array, 3);
-    a = a.Unit();
-
-    double cosine = ROOT::Math::Dot(a, b);
-
-    // cross product between a and b
-    ROOT::Math::SVector< double, 3 > v = ROOT::Math::Cross(a, b);
+ROOT::Math::SMatrix< double, 3 > PrimaryGeneration::Rotation_Matrix(G4ThreeVector vec1, G4ThreeVector vec2)
+{
+  // --------------------------------------------------------------------------
+  // Rotation matrix r that rotates vector vec1 onto vector vec2
+  // https://math.stackexchange.com/a/476311
+  // --------------------------------------------------------------------------
   
-    // sine between a and b
-    double sine = ROOT::Math::Mag(v);
+  double identity_array[9] = { 1, 0, 0,
+                              0, 1, 0,
+                              0, 0, 1  };
+
+  ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
+  ROOT::Math::SMatrix< double, 3 > r = I;
+
+  double b_array[3] = { vec2[0],
+                        vec2[1],
+                        vec2[2]  };
+  ROOT::Math::SVector< double, 3 > b(b_array, 3);
+  b = b.Unit();
+
+  double a_array[3] = { vec1[0],
+                        vec1[1],
+                        vec1[2] };
+
+  ROOT::Math::SVector< double, 3 > a(a_array, 3);
+  a = a.Unit();
+
+  double cosine = ROOT::Math::Dot(a, b);
+
+  // cross product between a and b
+  ROOT::Math::SVector< double, 3 > v = ROOT::Math::Cross(a, b);
+
+  // sine between a and b
+  double sine = ROOT::Math::Mag(v);
+
+  // skew-symmetric cross-product matrix of v
+  double V_array[9] = {     0, -v(2),  v(1),
+                        v(2),     0, -v(0),
+                        -v(1),  v(0),     0  };
+  ROOT::Math::SMatrix< double, 3 > V(V_array, 9);
   
-    // skew-symmetric cross-product matrix of v
-    double V_array[9] = {     0, -v(2),  v(1),
-                          v(2),     0, -v(0),
-                          -v(1),  v(0),     0  };
-    ROOT::Math::SMatrix< double, 3 > V(V_array, 9);
-    
-    // rotation matrix
-    r = I + V + V*V*(1-cosine)/sine/sine;
+  // rotation matrix
+  r = I + V + V*V*(1-cosine)/sine/sine;
 
 
-    return r;
-  }
+  return r;
+}
 
+// helper function to rotate the particle with a given rotation matrix
+void rotateParticle(const ROOT::Math::SMatrix< double, 3 >& rot_matrix, G4PrimaryParticle* p)
+{
 
+  // setup
+  ROOT::Math::SVector<double, 3> init_p(p->GetPx(), p->GetPy(), p->GetPz());
+
+  // rotation happens here
+  ROOT::Math::SVector<double, 3> final_p = rot_matrix * init_p;
+
+  // set new values
+  p->SetMomentum(final_p[0], final_p[1], final_p[2]);
 }
