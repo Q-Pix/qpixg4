@@ -137,7 +137,7 @@ def run_rtd(sorted_file, rtd_file):
     else:
         return -1 
 
-def createRTD(sorted_files):
+def createRTD(sorted_files, output_path="/mnt/nvme1/Kevin/qpix/output/rtd/"):
     """
     finally, run the RTD code on each sorted file
 
@@ -145,7 +145,7 @@ def createRTD(sorted_files):
     
     but change the postfix to _rtd.root.
     """
-    path = "/mnt/nvme1/Kevin/qpix/output/rtd/"
+    path = output_path
     if not os.path.isdir(path):
         print("unable to find output RTD path!")
         return -1
@@ -214,9 +214,11 @@ def makeNeutrinos(args):
     fs = []
     for f in folders:
         path = inputPath + f
-        f = [os.path.join(path, f) for f in os.listdir(path) if ".root" in f]
+        f = [os.path.join(path, f) for f in os.listdir(path) if ".root" in f ]
+        f = [ good_file for good_file in f if os.path.getsize(good_file) > 1e6]
         fs.extend(f)
     seed = args.seed
+    print(f"{len(fs)} root files passed size check")
     if len(fs) == 0:
         return -1
     neutrino_args = []
@@ -229,10 +231,29 @@ def makeNeutrinos(args):
     r = pool.starmap_async(run_neutrino, neutrino_args)
     r.wait()
 
+    pool = mp.Pool()
     g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
     r = pool.map_async(run_g4, g4_args)
     r.wait()
-    print("Geant4 Files created.")
+
+    sort_path = "./output/neutrinos_sort"
+    sort_path = os.path.abspath(sort_path)
+    inputPath = "./output/neutrinos/"
+    sort_files = [os.path.join(inputPath, f) for f in os.listdir(inputPath) if ".root" in f and "_" in f]
+    dest_files = []
+    for f in sort_files:
+        outf = f.split("/")[-1] 
+        assert ".root" == outf[-5:], "sort input code should only read .root files"
+        outf = outf[:-5]
+        dest_files.append(sort_path+f"/{outf}_sorted.root")
+
+    # # sort and move files to sorted output directory
+    pool = mp.Pool()
+    print("sorting files:", sort_files)
+    r = pool.starmap_async(run_sort, zip(sort_files, dest_files))
+    r.wait()
+
+    createRTD(dest_files, output_path=sort_path+"/")
 
 def main(time, cores, seed, geant4_data_path="/mnt/nvme1/Kevin/qpix/output/"):
 # def main(time, cores, seed, geant4_data_path="./output/"):

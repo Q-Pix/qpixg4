@@ -10,3 +10,6 @@ build/*
 build
 
 macros/long_macros
+macros/neutrino_macros
+output/*
+macros/*
