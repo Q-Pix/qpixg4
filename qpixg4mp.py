@@ -138,7 +138,7 @@ def run_rtd(sorted_file, rtd_file):
     else:
         return -1 
 
-def createRTD(sorted_files, output_path="/media/argon/NVME1/Kevin/qpix/output/rtd/"):
+def createRTD(sorted_files, output_path):
     """
     finally, run the RTD code on each sorted file
 
@@ -182,7 +182,7 @@ def chainCombineData(cores, input_path="/media/argon/NVME1/Kevin/qpix/output/sor
         rtd_files.append(os.path.join(input_path, f"core_{core}_rtd_input.root"))
 
     # attempt chaining on every core
-    pool = mp.Pool(3)
+    pool = mp.Pool(2)
     r = pool.starmap_async(run_chain, zip(chain_files, rtd_files))
     r.wait()
 
@@ -193,17 +193,7 @@ def run_neutrino(*inp):
     print("making inp: ", inp)
     subprocess.run(["bash", "./NeutrinoMac.sh", *inp])
 
-
-def makeNeutrinos(args):
-    """
-    Wrapper function to control the creation->RTD sequence for
-    generating RTD data from the FHC/RHC data. Use the nvme2 dir
-    for the output directory.
-
-    Controlled via argparse nu subparser.
-    """
-    ## folders for odyssey are 0..29
-    
+def makeNeutrinoArgsOdyssey(args):
     assert args.nFiles < 30 and args.nFiles >= 0, f"incorrect in files arg: {args.nFiles}"
     folders = [f"{i:02d}/" for i in range(args.nFiles)]
 
@@ -223,7 +213,6 @@ def makeNeutrinos(args):
         f = [ good_file for good_file in f if os.path.getsize(good_file) > 1e6]
         fs.extend(f)
     seed = args.seed
-    print(f"{len(fs)} root files passed size check")
     if len(fs) == 0:
         return -1
     neutrino_args = []
@@ -232,11 +221,59 @@ def makeNeutrinos(args):
             neutrino_args.append([xpos,ypos,z,seed,f,outputPath])
             neutrino_args.append([xpos,ypos,z,seed,f,outputPath,1])
 
+    return neutrino_args
+
+def makeNeutrinoArgsSrc(args):
+    """
+    Make neutrino args from the source files based on nEvents
+    """
+    outputPath = args.outDir
+    outputPath = os.path.abspath(outputPath) + "/"
+    inputPath = args.srcDir
+    xpos = args.xpos
+    ypos = args.ypos
+    ncores = args.cores
+    assert xpos > 5 and xpos < 575, f"x position outside of APA: {xpos}"
+    assert ypos > 5 and ypos < 1500, f"y position outside of APA: {ypos}"
+
+    fs = []
+    path = inputPath
+    f = [os.path.join(path, f) for f in os.listdir(path) if ".root" in f ]
+    f = [good_file for good_file in f if os.path.getsize(good_file) > 1e6]
+    fs.extend(f)
+    seed = args.seed
+    if len(fs) == 0:
+        return -1
+    neutrino_args = []
+    for evt in range(args.nEvts):
+        for z in args.zpos:
+            for f in fs:
+                neutrino_args.append([xpos,ypos,z,seed,f,outputPath,0,evt])
+                neutrino_args.append([xpos,ypos,z,seed,f,outputPath,1,evt])
+
+    return neutrino_args
+
+def makeNeutrinos(args):
+    """
+    Wrapper function to control the creation->RTD sequence for
+    generating RTD data from the FHC/RHC data. Use the nvme2 dir
+    for the output directory.
+
+    Controlled via argparse nu subparser.
+    """
+    ## folders for odyssey are 0..29
+
+    if args.nEvts > 0:
+        neutrino_args = makeNeutrinoArgsSrc(args)
+    else:
+        neutrino_args = makeNeutrinoArgsOdyssey(args)
+
     print(f"making {len(neutrino_args)} files.")
-    input()
     pool = mp.Pool()
     r = pool.starmap_async(run_neutrino, neutrino_args)
     r.wait()
+
+    input()
 
     pool = mp.Pool()
     g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
@@ -278,23 +315,23 @@ def main(args):
     input()
 
     # Run the Macro to create all of the base output files in ./output/
-    output_path = createGeantData(time, cores, seed, geant4_data_path)
-    if output_path is None:
-        return -1
+    # output_path = createGeantData(time, cores, seed, geant4_data_path)
+    # if output_path is None:
+    #     return -1
 
     # sort and combine all of the output files
-    sort_path = createSortData(time, input_path=output_path)
+    # sort_path = createSortData(time, input_path=output_path)
 
     # all sorted data is now in /media/argon/NVME1/Kevin/qpix/output/sorted/ we can now create a tchain
     # to combine them all
-    chain_files = chainCombineData(cores, input_path=sort_path)
+    chain_files = chainCombineData(cores, input_path="/media/argon/NVME1/Kevin/qpix/output/sorted/")
     if len(chain_files) == 0:
         return -1
 
     # input_path = "/media/argon/NVME1/Kevin/qpix/output/sorted/1ks/"
     # chain_files = os.listdir(input_path)
     # chain_files = [os.path.join(input_path, f) for f in chain_files]
-    createRTD(chain_files)
+    createRTD(chain_files, output_path=output_path)
     print("qpix rtd creation complete..\n")
 
 ## ArgParse Config ##
@@ -334,6 +371,7 @@ def get_subParsers(parser):
     nu.add_argument("-z", "--zpos", nargs="+", default=[10, 80, 320], help="list of z position values")
     nu.add_argument("-x", "--xpos", default=120, type=int, help="x position within APA, default near center")
     nu.add_argument("-y", "--ypos", default=320, type=int, help="y position within APA, default near center")
+    nu.add_argument("-e", "--nEvts", default=-1, type=int, help="construct event to read from a source file")
 
     return subParsers
 
