@@ -48,7 +48,7 @@ def run_chain(input_files, dest_file):
     else:
         return -1 
 
-def run_sort(input_file, dest_file):
+def run_sort(input_file, dest_file, delete=True):
     """
     once the files are combined, we need to perform the following:
     sort geant ttree data
@@ -70,9 +70,10 @@ def run_sort(input_file, dest_file):
     subprocess.run([prog, input_file+":metadata", dest_file])
 
     # remove
-    prog = "rm"
-    subprocess.run([prog, input_file])
-    print("file moved.. ")
+    if delete:
+        prog = "rm"
+        subprocess.run([prog, input_file])
+        print("file moved.. ")
 
 def createGeantData(time, cores, seed, outputPath):
     """
@@ -137,7 +138,7 @@ def run_rtd(sorted_file, rtd_file):
     else:
         return -1 
 
-def createRTD(sorted_files, output_path="/mnt/nvme1/Kevin/qpix/output/rtd/"):
+def createRTD(sorted_files, output_path="/media/argon/NVME1/Kevin/qpix/output/rtd/"):
     """
     finally, run the RTD code on each sorted file
 
@@ -156,13 +157,17 @@ def createRTD(sorted_files, output_path="/mnt/nvme1/Kevin/qpix/output/rtd/"):
         outf = f.split("/")[-1] 
         assert ".root" == outf[-5:], "rtd code should read sorted .root files"
         rtd_files.append(path+outf[:-5] + "_rtd.root")
-    pool = mp.Pool(len(sorted_files))
+    nCores = len(sorted_files)
+    if nCores > 50: # don't go too hard
+        pool = mp.Pool()
+    else:
+        pool = mp.Pool(nCores)
     r = pool.starmap_async(run_rtd, zip(sorted_files, rtd_files))
     r.wait()
 
-def chainCombineData(cores, input_path="/mnt/nvme1/Kevin/qpix/output/sorted/"):
+def chainCombineData(cores, input_path="/media/argon/NVME1/Kevin/qpix/output/sorted/"):
     """
-    Read from input_files from /mnt/nvme1/Kevin/qpix/output/sorted/ to group all of the 
+    Read from input_files from /media/argon/NVME1/Kevin/qpix/output/sorted/ to group all of the 
     cores together in long tchains
     """
     if not os.path.isdir(input_path):
@@ -200,7 +205,7 @@ def makeNeutrinos(args):
     ## folders for odyssey are 0..29
     
     assert args.nFiles < 30 and args.nFiles >= 0, f"incorrect in files arg: {args.nFiles}"
-    folders = [f"{i:02x}/" for i in range(args.nFiles)]
+    folders = [f"{i:02d}/" for i in range(args.nFiles)]
 
     outputPath = args.outDir
     outputPath = os.path.abspath(outputPath) + "/"
@@ -227,6 +232,8 @@ def makeNeutrinos(args):
             neutrino_args.append([xpos,ypos,z,seed,f,outputPath])
             neutrino_args.append([xpos,ypos,z,seed,f,outputPath,1])
 
+    print(f"making {len(neutrino_args)} files.")
+    input()
     pool = mp.Pool()
     r = pool.starmap_async(run_neutrino, neutrino_args)
     r.wait()
@@ -236,9 +243,9 @@ def makeNeutrinos(args):
     r = pool.map_async(run_g4, g4_args)
     r.wait()
 
-    sort_path = "./output/neutrinos_sort"
+    inputPath = outputPath
+    sort_path = outputPath+"/neutrinos_sort"
     sort_path = os.path.abspath(sort_path)
-    inputPath = "./output/neutrinos/"
     sort_files = [os.path.join(inputPath, f) for f in os.listdir(inputPath) if ".root" in f and "_" in f]
     dest_files = []
     for f in sort_files:
@@ -247,16 +254,15 @@ def makeNeutrinos(args):
         outf = outf[:-5]
         dest_files.append(sort_path+f"/{outf}_sorted.root")
 
-    # # sort and move files to sorted output directory
+    # sort and move files to sorted output directory
     pool = mp.Pool()
-    print("sorting files:", sort_files)
-    r = pool.starmap_async(run_sort, zip(sort_files, dest_files))
+    d = [False]*len(dest_files)
+    r = pool.starmap_async(run_sort, zip(sort_files, dest_files, d))
     r.wait()
 
     createRTD(dest_files, output_path=sort_path+"/")
 
-def main(time, cores, seed, geant4_data_path="/mnt/nvme1/Kevin/qpix/output/"):
-# def main(time, cores, seed, geant4_data_path="./output/"):
+def main(args):
     """
     Look for the macro files in ./macros/long_macros and create the output
     files for each of them.
@@ -266,24 +272,28 @@ def main(time, cores, seed, geant4_data_path="/mnt/nvme1/Kevin/qpix/output/"):
 
     The output directory should itself contain only there directories.
     """
+    # "/media/argon/NVME1/Kevin/qpix/output/"
+    time, cores, seed, geant4_data_path = args.time, args.cores, args.seed, args.outDir
+    print(f"running: time={time}, cores={cores}, seed={seed}")
+    input()
 
     # Run the Macro to create all of the base output files in ./output/
-    # output_path = createGeantData(time, cores, seed, geant4_data_path)
-    # if output_path is None:
-    #     return -1
+    output_path = createGeantData(time, cores, seed, geant4_data_path)
+    if output_path is None:
+        return -1
 
     # sort and combine all of the output files
-    # sort_path = createSortData(time, input_path=output_path)
+    sort_path = createSortData(time, input_path=output_path)
 
-    # all sorted data is now in /mnt/nvme1/Kevin/qpix/output/sorted/ we can now create a tchain
+    # all sorted data is now in /media/argon/NVME1/Kevin/qpix/output/sorted/ we can now create a tchain
     # to combine them all
-    # chain_files = chainCombineData(cores, input_path=sort_path)
-    # if len(chain_files) == 0:
-    #     return -1
+    chain_files = chainCombineData(cores, input_path=sort_path)
+    if len(chain_files) == 0:
+        return -1
 
-    input_path = "/mnt/nvme1/Kevin/qpix/output/sorted/1ks/"
-    chain_files = os.listdir(input_path)
-    chain_files = [os.path.join(input_path, f) for f in chain_files]
+    # input_path = "/media/argon/NVME1/Kevin/qpix/output/sorted/1ks/"
+    # chain_files = os.listdir(input_path)
+    # chain_files = [os.path.join(input_path, f) for f in chain_files]
     createRTD(chain_files)
     print("qpix rtd creation complete..\n")
 
@@ -311,6 +321,7 @@ def get_subParsers(parser):
     g4.add_argument("-t", "--time", default=10, type=int, help="time in s to run g4 simulation for")
     g4.add_argument("-c", "--cores", default=1, type=int, help="number of cores to produce")
     g4.add_argument("-s", "--seed", default=420, type=int, help="random seed")
+    g4.add_argument("-o", "--outDir", required=True, type=str, help="output ROOT file location for radiogenic generation")
 
     # make neutrino files
     nu = subParsers.add_parser("nu", description="create geant4 data")
