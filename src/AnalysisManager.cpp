@@ -392,6 +392,11 @@ int AnalysisManager::ProcessToKey(std::string const & process)
     else if (process.compare("Decay")                == 0) key = 20;
     else if (process.compare("RadioactiveDecay")     == 0) key = 21;
     else if (process.compare("alphaInelastic")       == 0) key = 22;
+    else if (process.compare("muIoni")               == 0) key = 23;
+    else if (process.compare("pi+Inelastic")         == 0) key = 24;
+    else if (process.compare("pi-Inelastic")         == 0) key = 25;
+    else if (process.compare("kaon+Inelastic")       == 0) key = 26;
+    else if (process.compare("kaon-Inelastic")       == 0) key = 27;
     else { std::cout << "Uncategorized process: " << process << std::endl; }
 
     return key;
