@@ -60,12 +60,18 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     double vertex_x_;
     double vertex_y_;
     double vertex_z_;
+
     // rotation angle
     double axis_x_;
     double axis_y_;
     double axis_z_;
-    // get a specific event
+
+    // get a specific neutrino event
     int nEvt_ = -1;
+    int fsPdg_ = 0;
+    int fsEnergy_ = -1;
+    int fsFHC_ = -1;
+    int fsRun_ = -1;
 
     G4GeneralParticleSource * particle_gun_;
 

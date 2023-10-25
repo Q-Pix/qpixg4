@@ -76,8 +76,12 @@ PrimaryGeneration::PrimaryGeneration()
   msg_->DeclareProperty("axis_x", axis_x_, "axis x").SetUnit("mm");
   msg_->DeclareProperty("axis_y", axis_y_, "axis y").SetUnit("mm");
   msg_->DeclareProperty("axis_z", axis_z_, "axis z").SetUnit("mm");
-  // get a certain event within the file
   msg_->DeclareProperty("nEvt", nEvt_, "nEvt");
+  // get a certain event within the file
+  msg_->DeclareProperty("fsPdg", fsPdg_, "fsPdg");
+  msg_->DeclareProperty("fsEnergy", fsEnergy_, "fsEnergy");
+  msg_->DeclareProperty("fsFHC", fsFHC_, "fsFHC");
+  msg_->DeclareProperty("fsRun", fsRun_, "fsRun");
 
   particle_gun_ = new G4GeneralParticleSource();
 
@@ -123,17 +127,41 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
     }
 
     if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
-    if(nEvt_ <= 0){
-      tree->GetEntry(event->GetEventID());
-    }else{
-      tree->GetEntry(nEvt_);
-    }
     G4ThreeVector vertex3d= G4ThreeVector (vertex_x_,vertex_y_,vertex_z_);
 
+    tree->GetEntry(event->GetEventID());
+    if(nEvt_ < 0){
+      tree->GetEntry(event->GetEventID());
+    }else{
+      // update the ROOTManager 
+      rootManager->axis_x_ = axis_x_;
+      rootManager->axis_y_ = axis_y_;
+      rootManager->axis_z_ = axis_z_;
+      rootManager->xpos = vertex_x_;
+      rootManager->ypos = vertex_y_;
+      rootManager->zpos = vertex_z_;
+      rootManager->fsPdg = fsPdg_;
+      rootManager->fsFHC = fsFHC_;
+      rootManager->fsRun = fsRun_;
+      rootManager->fsEnergy = fsEnergy_; // use to select an event
+      rootManager->nEvt = nEvt_;
+      int i = 0, j = -1;
+      while(i < tree->GetEntries() && j < nEvt_){
+        // get the next entry and check if this entry matches the conditions we want
+        tree->GetEntry(i); 
+        if(rootManager->GoodEvt()){ // good event
+          ++j;
+        }else ++i;
+      }
+      // event->SetEventID(j);
+    }
+    rootManager->fsEvt = rootManager->Getevent_(); // Nth event of this energy type to select
+
+
     // rotation direction
-    double r_array[3] = { axis_x_,
-                          axis_y_,
-                          axis_z_  };
+    double r_array[3] = {axis_x_, 
+                         axis_y_,
+                         axis_z_};
     ROOT::Math::SVector< double, 3 > rs(r_array, 3);
     rs = rs.Unit();
 

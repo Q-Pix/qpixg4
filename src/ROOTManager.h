@@ -34,7 +34,7 @@ class ROOTManager {
         Int_t  GetIdx_(Int_t ev) const {return idx[ev];};
         Int_t  GetFirstMother_(Int_t ev) const {return FirstMother[ev];};
         Int_t  IsROOTManagerInitialized_() const {return isInitialized;};
-
+        bool GoodEvt() const;
 
         Float_t  GetE_(Int_t ev) const {return E_[ev];};
         Float_t  GetPx_(Int_t ev) const {return px_[ev];};
@@ -42,6 +42,25 @@ class ROOTManager {
         Float_t  GetPz_(Int_t ev) const {return pz_[ev];};
         std::string GetInPutRootFilePath()const {return FilePath_;};
         std::string  GetInPutRootTreeName()const{return TreeName_;};
+
+        // meta information which is pulled in from generate primaries, janky configmanager
+        // should merge these metadata elsewhere
+        Float_t axis_x_ = -1;
+        Float_t axis_y_ = -1;
+        Float_t axis_z_ = -1;
+        Float_t xpos = -1;
+        Float_t ypos = -1;
+        Float_t zpos = -1;
+        Int_t nEvt = 0;
+        Int_t fsPdg = 0;
+        Float_t fsEnergy = -1;
+        Int_t fsEvt = -1;
+        Int_t fsFHC = -1;
+        Int_t fsRun = -1;
+
+        // bool checks to make sure we found the right event
+        Int_t lepPdg_;
+        Float_t lepKE_;
 
 
     void SetBranches();

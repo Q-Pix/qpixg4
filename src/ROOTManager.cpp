@@ -54,6 +54,8 @@ void ROOTManager::SetBranches() {
     // Creating Root Branches
         tree_->SetBranchAddress("ievt", &event_, &b_event);
         tree_->SetBranchAddress("nFS", &NParticles_, &b_NParticles);
+        tree_->SetBranchAddress("lepPdg", &lepPdg_);
+        tree_->SetBranchAddress("lepKE", &lepKE_);
         tree_->SetBranchAddress("fsPdg", pdg_, &b_pdg);
         tree_->SetBranchAddress("fsE", E_, &b_E);
         tree_->SetBranchAddress("fsPx", px_, &b_px);
@@ -83,4 +85,13 @@ void ROOTManager::Close(){
         f_->Close();
     }
 
+}
+
+// has the tree loaded the event that the ROOTManager is looking for
+bool ROOTManager::GoodEvt() const {
+    bool goodParticle = lepPdg_ == fsPdg;
+    bool goodEnergy = false; 
+    if(lepKE_ > fsEnergy && lepKE_ < fsEnergy + 250) // 250 MeV bins
+        goodEnergy = true;
+    return goodParticle && goodEnergy;
 }
