@@ -186,7 +186,6 @@ def chainCombineData(cores, input_path="/media/argon/NVME1/Kevin/qpix/output/sor
         for f in chain:
             seed = f.split('_')[-3]
             steps.add(int(seed))
-    print("found nsteps:", len(steps), steps)
 
     # build input and output files for final chain
     int_files, step_files = [], []
@@ -220,39 +219,60 @@ def chainCombineData(cores, input_path="/media/argon/NVME1/Kevin/qpix/output/sor
 
     return rtd_files
 
-def run_neutrino(*inp):
+def run_neutrino(inp):
     inp = [str(arg) for arg in inp]
-    print("making inp: ", inp)
     subprocess.run(["bash", "./NeutrinoMac.sh", *inp])
 
 def makeNeutrinoArgsOdyssey(args):
-    assert args.nFiles < 30 and args.nFiles >= 0, f"incorrect in files arg: {args.nFiles}"
-    folders = [f"{i:02d}/" for i in range(args.nFiles)]
+    """
+    List of neutrino script arguments
+    1 - xpos
+    2 - ypos
+    3 - zpos
+    4 - seed
+    5 - input file
+    6 - output directory
+    7 - angle select [1,2,3,4,5]
+    8 - nEvt, number within event file
+    9 - fsPdg
+    10 - fsEnergy
+    11 - isFHC
+    """
 
     outputPath = args.outDir
     outputPath = os.path.abspath(outputPath) + "/"
     inputPath = args.srcDir
     xpos = args.xpos
     ypos = args.ypos
-    ncores = args.cores
     assert xpos > 5 and xpos < 575, f"x position outside of APA: {xpos}"
     assert ypos > 5 and ypos < 1500, f"y position outside of APA: {ypos}"
 
-    fs = []
-    for f in folders:
-        path = inputPath + f
-        f = [os.path.join(path, f) for f in os.listdir(path) if ".root" in f ]
-        f = [ good_file for good_file in f if os.path.getsize(good_file) > 1e6]
-        fs.extend(f)
+    path = inputPath
+    fs = [os.path.join(path, f) for f in os.listdir(path)]
+    fs = [ good_file for good_file in fs if os.path.getsize(good_file) > 1e6]
     seed = args.seed
     if len(fs) == 0:
         return -1
     neutrino_args = []
     for z in args.zpos:
         for f in fs:
-            neutrino_args.append([xpos,ypos,z,seed,f,outputPath])
-            neutrino_args.append([xpos,ypos,z,seed,f,outputPath,1])
+            for t in ['1', '2', '3', '4', '5']:
+                for nEvt in range(100):
+                    for nEng in range(250, 10000, 250):
+                        if 'aelectron' in f:
+                            pdg = -12
+                        elif 'electron' in f:
+                            pdg = 12
+                        elif 'amuon' in f:
+                            pdg = -14
+                        elif 'muon' in f:
+                            pdg = 14
+                        isFHC = int("fhc" in f)
+                        f = os.path.abspath(f)
+                        neutrino_args.append([xpos,ypos,z,seed,f,outputPath,t,nEvt,pdg,nEng,isFHC])
 
+    print("args[0]", neutrino_args[0])
+    msg = f"made {len(neutrino_args)} args"
     return neutrino_args
 
 def makeNeutrinoArgsSrc(args):
@@ -295,17 +315,17 @@ def makeNeutrinos(args):
     """
     ## folders for odyssey are 0..29
 
-    if args.nEvts > 0:
-        neutrino_args = makeNeutrinoArgsSrc(args)
-    else:
-        neutrino_args = makeNeutrinoArgsOdyssey(args)
+    neutrino_args = makeNeutrinoArgsOdyssey(args)
 
-    print(f"making {len(neutrino_args)} files.")
     pool = mp.Pool()
-    r = pool.starmap_async(run_neutrino, neutrino_args)
+    r = pool.map_async(run_neutrino, neutrino_args)
     r.wait()
 
+    sys.exit(-1)
+
     g4_args = [os.path.join("./macros/neutrino_macros", f) for f in os.listdir("./macros/neutrino_macros")]
+    print(f"found {len(g4_args)} files")
+    sys.exit(-1)
     r = pool.map_async(run_g4, g4_args)
     r.wait()
 
@@ -341,7 +361,6 @@ def main(args):
     # "/media/argon/NVME1/Kevin/qpix/output/"
     time, cores, seed, geant4_data_path = args.time, args.cores, args.seed, args.outDir
     print(f"running: time={time}, cores={cores}, seed={seed}")
-    input()
 
     # Run the Macro to create all of the base output files in ./output/
     # output_path = createGeantData(time, cores, seed, geant4_data_path)
@@ -394,7 +413,6 @@ def get_subParsers(parser):
     nu.add_argument("-o", "--outDir", required=True, type=str, help="output ROOT file location for hit generation")
     nu.add_argument("-c", "--cores", default=50, type=int, help="number of cores to help produce")
     nu.add_argument("-s", "--seed", default=420, type=int, help="random seed")
-    nu.add_argument("-n", "--nFiles", default=1, type=int, help="number of RHC and FHC files to read first event from")
     nu.add_argument("-z", "--zpos", nargs="+", default=[10, 80, 320], help="list of z position values")
     nu.add_argument("-x", "--xpos", default=120, type=int, help="x position within APA, default near center")
     nu.add_argument("-y", "--ypos", default=320, type=int, help="y position within APA, default near center")

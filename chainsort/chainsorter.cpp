@@ -152,7 +152,8 @@ int main(int argc, char** argv)
 {
     std::vector<std::string> input_files;
     if(argc < 3){
-        std::cout << "not enough input files!\n";
+        std::cout << "chainsort error: not enough input files!\n";
+        return -1;
     }
     std::cout << "received number args:" << argc << "\n";
     for(int i=0; i<argc; ++i)
