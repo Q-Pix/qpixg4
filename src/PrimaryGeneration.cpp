@@ -125,7 +125,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
 
     if (particle_table_ == 0) particle_table_ = G4ParticleTable::GetParticleTable();
 
-    int i = 0, j = 0;
+    int i = 0, j = -1;
     if(nEvt_ < 0){
       tree->GetEntry(event->GetEventID());
     }else{
