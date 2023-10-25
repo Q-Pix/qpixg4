@@ -234,7 +234,7 @@ void AnalysisManager::SetEvent(int const value)
 
 //-----------------------------------------------------------------------------
 void AnalysisManager::FillROOTMeta(Float_t axis_x, Float_t axis_y, Float_t axis_z, Float_t xpos, Float_t ypos, Float_t zpos,
-            Int_t nEvt, Int_t fsPdg, Float_t fsEnergy, Int_t fsEvt, Int_t fsFHC, Int_t fsRun)
+            Int_t nEvt, Int_t fsPdg, Float_t fsEnergy, Int_t fsEvt, Int_t fsFileNo, Int_t fsFHC, Int_t fsRun, Int_t nFS, Float_t lepKE)
 {
     std::cout << "filling root meta branches!\n";
     metadata_->Branch("axis_x", &axis_x_, "axis_x/F");
@@ -243,24 +243,30 @@ void AnalysisManager::FillROOTMeta(Float_t axis_x, Float_t axis_y, Float_t axis_
     metadata_->Branch("xpos", &xpos_, "xpos/F");
     metadata_->Branch("ypos", &ypos_, "ypos/F");
     metadata_->Branch("zpos", &zpos_, "zpos/F");
-    metadata_->Branch("nEvt", &nEvt, "nEvt/I");
+    metadata_->Branch("nEvt", &nEvt_, "nEvt/I");
     metadata_->Branch("fsPdg", &fsPdg_, "fsPdg/I");
     metadata_->Branch("fsEnergy", &fsEnergy_, "fsEnergy/F");
     metadata_->Branch("fsEvt", &fsEvt_, "fsEvt/I");
+    metadata_->Branch("fsFileNo", &fsFileNo_, "fsFileNo/I");
     metadata_->Branch("fsFHC", &fsFHC_, "fsFHC/I");
     metadata_->Branch("fsRun", &fsRun_, "fsRun/I");
+    metadata_->Branch("nFS", &nFS_, "nFS/I");
+    metadata_->Branch("lepKE", &lepKE_, "lepKE/F");
     axis_x_ =  axis_x;
     axis_y_ =  axis_y;
     axis_z_ =  axis_z;
     xpos_ = xpos;
     ypos_ = ypos;
     zpos_ = zpos;
-    nEvt = nEvt;
+    nEvt_ = nEvt;
     fsPdg_ = fsPdg;
     fsEnergy_ = fsEnergy;
     fsEvt_ = fsEvt;
+    fsFileNo_ = fsFileNo;
     fsFHC_ = fsFHC;
     fsRun_ = fsRun;
+    nFS_ = nFS;
+    lepKE_ = lepKE;
 }
 
 

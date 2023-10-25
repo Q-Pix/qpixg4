@@ -62,9 +62,9 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     double vertex_z_;
 
     // rotation angle
-    double axis_x_;
-    double axis_y_;
-    double axis_z_;
+    double axis_x_ = 1;
+    double axis_y_ = 0;
+    double axis_z_ = 0;
 
     // get a specific neutrino event
     int nEvt_ = -1;

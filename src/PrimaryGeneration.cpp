@@ -50,8 +50,8 @@
 
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
-    decay_at_time_zero_(false),
     PrintParticleInfo_(false),
+    decay_at_time_zero_(false),
     isotropic_(false),
     override_vertex_position_(false),
     vertex_x_(2.3/2),
@@ -73,9 +73,9 @@ PrimaryGeneration::PrimaryGeneration()
   msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("mm");
   msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("mm");
   // axis of rotation
-  msg_->DeclareProperty("axis_x", axis_x_, "axis x").SetUnit("mm");
-  msg_->DeclareProperty("axis_y", axis_y_, "axis y").SetUnit("mm");
-  msg_->DeclareProperty("axis_z", axis_z_, "axis z").SetUnit("mm");
+  msg_->DeclareProperty("axis_x", axis_x_, "axis x");
+  msg_->DeclareProperty("axis_y", axis_y_, "axis y");
+  msg_->DeclareProperty("axis_z", axis_z_, "axis z");
   msg_->DeclareProperty("nEvt", nEvt_, "nEvt");
   // get a certain event within the file
   msg_->DeclareProperty("fsPdg", fsPdg_, "fsPdg");
@@ -145,18 +145,20 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event * event) {
       rootManager->fsRun = fsRun_;
       rootManager->fsEnergy = fsEnergy_; // use to select an event
       rootManager->nEvt = nEvt_;
-      int i = 0, j = -1;
+      int i = 0, j = 0;
       while(i < tree->GetEntries() && j < nEvt_){
         // get the next entry and check if this entry matches the conditions we want
-        tree->GetEntry(i); 
-        if(rootManager->GoodEvt()){ // good event
+        tree->GetEntry(i++); 
+        if(rootManager->GoodEvt()){
           ++j;
-        }else ++i;
+        }
       }
-      // event->SetEventID(j);
     }
-    rootManager->fsEvt = rootManager->Getevent_(); // Nth event of this energy type to select
-
+    // which odyssey file and event is the source of this particle
+    rootManager->fsEvt = rootManager->Getevent_();
+    rootManager->fsFileno = rootManager->Getfileno_();
+    rootManager->fsLepKE = rootManager->GetlepKE_();
+    rootManager->nFS = rootManager->GetNParticles_();
 
     // rotation direction
     double r_array[3] = {axis_x_, 

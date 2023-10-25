@@ -53,6 +53,7 @@ int ROOTManager::Initialize(std::string FilePath,std::string TreeName) {
 void ROOTManager::SetBranches() {
     // Creating Root Branches
         tree_->SetBranchAddress("ievt", &event_, &b_event);
+        tree_->SetBranchAddress("ifileNo", &ifileno_, &b_fileno);
         tree_->SetBranchAddress("nFS", &NParticles_, &b_NParticles);
         tree_->SetBranchAddress("lepPdg", &lepPdg_);
         tree_->SetBranchAddress("lepKE", &lepKE_);

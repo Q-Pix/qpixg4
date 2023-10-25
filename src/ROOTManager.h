@@ -27,6 +27,9 @@ class ROOTManager {
         static const Int_t   Size_=51;
 
         Int_t Getevent_ () const{return event_; };
+        Int_t Getfileno_ () const{return ifileno_; };
+        Float_t GetlepKE_ () const{return lepKE_;};
+        Int_t GetnFS_ () const{return NParticles_;};
         Int_t GetNParticles_ () const{return NParticles_; };
         TFile* GetFile_ () const{return f_; };
         TTree* GetTTree_ () const{return tree_; };
@@ -54,9 +57,12 @@ class ROOTManager {
         Int_t nEvt = 0;
         Int_t fsPdg = 0;
         Float_t fsEnergy = -1;
+        Float_t fsLepKE = -1;
         Int_t fsEvt = -1;
+        Int_t fsFileno = -1;
         Int_t fsFHC = -1;
         Int_t fsRun = -1;
+        Int_t nFS = -1;
 
         // bool checks to make sure we found the right event
         Int_t lepPdg_;
@@ -72,6 +78,7 @@ class ROOTManager {
     protected:
 
         Int_t           event_;
+        Int_t           ifileno_;
         Int_t           NParticles_;
         TFile *         f_=0;
         TTree *         tree_=0;
@@ -87,6 +94,7 @@ class ROOTManager {
         Int_t           FirstDaughter[Size_];
         Int_t           LastDaughter[Size_];
         TBranch        *b_event;   //!
+        TBranch        *b_fileno;   //!
         TBranch        *b_NParticles;   //!
         TBranch        *b_pdg;   //!
         TBranch        *b_E;   //!
