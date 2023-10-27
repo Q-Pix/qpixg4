@@ -12,11 +12,14 @@
 #include "AnalysisManager.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
+#include "DetectorConstruction.h"
 
 // GEANT4 includes
 #include "G4Box.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4Run.hh"
+#include "G4RunManager.hh"
+#include "G4VUserDetectorConstruction.hh"
 
 // C++ includes
 #include <filesystem>
@@ -124,8 +127,13 @@ void RunAction::EndOfRunAction(const G4Run*)
       //                         << detector_length_z << " cm"
       //        << G4endl;
 
+      G4RunManager* rm = G4RunManager::GetRunManager(); // Get the run manager to access the detector construction
+      const G4VUserDetectorConstruction* baseDetCons = rm->GetUserDetectorConstruction();
+      const DetectorConstruction* detCons = dynamic_cast<const DetectorConstruction*>(baseDetCons); // Get our user-defined detector construction
+      const bool detectorConfiguration = detCons->GetDetectorConfiguration(); // Retrieve the detector configuration
+
       // save detector dimensions as metadata
-      analysis_manager->FillMetadata(detector_length_x,
+      analysis_manager->FillMetadata(detectorConfiguration, detector_length_x,
                                      detector_length_y,
                                      detector_length_z);
     }
