@@ -22,6 +22,10 @@
 #include "Supernova.h"
 #include "SupernovaTiming.h"
 
+// ROOT includes
+#include "Math/SVector.h"
+#include "Math/SMatrix.h" 
+
 // C++ includes
 #include <random>
 
@@ -48,12 +52,13 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     G4String Particle_Type_;
     //double Particle_Energy_;
 
-    bool decay_at_time_zero_;
-    bool isotropic_;
-    bool override_vertex_position_;
-    double vertex_x_;
-    double vertex_y_;
-    double vertex_z_;
+    //bool decay_at_time_zero_;
+    //bool isotropic_;
+    //bool override_vertex_position_;
+    //G4bool printParticleInfo_;
+    //double vertex_x_;
+    //double vertex_y_;
+    //double vertex_z_;
 
     G4GeneralParticleSource * particle_gun_;
 
@@ -68,10 +73,12 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     G4Box* detector_solid_vol_;
 
     void MARLEYGeneratePrimaries(G4Event*);
+    void GENIEGeneratePrimaries(G4Event*);
 
     std::default_random_engine generator_;
     std::normal_distribution< double > distribution_;
 
+    ROOT::Math::SMatrix< double, 3 > Rotation_Matrix(G4ThreeVector, G4ThreeVector);
 };
 
 #endif

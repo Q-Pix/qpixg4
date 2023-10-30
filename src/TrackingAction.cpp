@@ -59,6 +59,12 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
         )
     );
 
+    //G4cout << "Track info: " << G4endl
+    //       << "  Track ID:       " << track->GetTrackID() << G4endl
+    //       << "  Track PDG:      " << track->GetDefinition()->GetPDGEncoding() << G4endl
+    //       << "  Track Momentum: " << track->GetMomentum().x() << ", " << track->GetMomentum().y() << ", " << track->GetMomentum().z() << G4endl
+    //       << "  Track Energy:   " << track->GetTotalEnergy() << G4endl; 
+
     // add track ID to parent MC particle
     // we might need to deal with cases where some particles aren't tracked (?)
     // we can use a try block for that if need be
@@ -71,6 +77,7 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
 
     // add MC particle to MC truth manager
     mc_truth_manager->AddMCParticle(particle);
+    //G4cout << "Added MCParticle" << G4endl;
 }
 
 void TrackingAction::PostUserTrackingAction(const G4Track* track)
@@ -82,6 +89,10 @@ void TrackingAction::PostUserTrackingAction(const G4Track* track)
     MCParticle * particle = mc_truth_manager->GetMCParticle(track->GetTrackID());
 
     // set process
-    particle->SetProcess(track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
+    if (track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep() != 0) {
+      particle->SetProcess(track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
+    } else {
+      particle->SetProcess("User Limit");
+    }
 }
 

@@ -1,0 +1,30 @@
+# set verbosity
+/control/verbose 1
+/run/verbose 1
+/tracking/verbose 1
+
+# configure
+/inputs/input_file /scratch/user/dave.elofson/data/GENIE_DATA/test0/test0.gtrac.root
+/inputs/particle_type Beam                  # choose from Beam, Atmospheric, Marley, Supernova
+/inputs/generator GENIE                     # choose from GENIE or MARLEY (entering NONE or removing this command will signal for GPS) 
+/inputs/genie_format gRooTracker            # only option currently available for GENIE
+/inputs/override_vertex_position false      # do not override vertex position
+/inputs/vertex_x 1.15 m                     # vertex x component
+/inputs/vertex_y 0.05 m                     # vertex y component
+/inputs/vertex_z 1.8 m                      # vertex z component
+/inputs/momentum_direction 0 1 0            # specifies the initial momentum of particles in detector frame
+
+# output path
+/inputs/output_file /scratch/user/dave.elofson/software/qpixg4/test0-qpixg4.root
+
+# initialize run
+/run/numberOfThreads 1                     # limit number of threads
+/run/printProgress 1
+/run/initialize
+/random/setSeeds 0 31
+
+# limit radioactive decays 
+#/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+
+# run
+/run/beamOn 1

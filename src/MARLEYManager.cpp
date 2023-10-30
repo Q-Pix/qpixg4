@@ -6,7 +6,11 @@
 //   * Creation date: 7 August 2020
 // -----------------------------------------------------------------------------
 
+// Class includes
 #include "MARLEYManager.h"
+
+// Qpix includes
+#include "ConfigManager.h"
 
 // MARLEY includes
 #include "marley/JSONConfig.hh"
@@ -15,6 +19,7 @@ MARLEYManager * MARLEYManager::instance_ = 0;
 
 //-----------------------------------------------------------------------------
 MARLEYManager::MARLEYManager()
+  : marley_json_(ConfigManager::GetMarleyJson())
 {
 }
 
@@ -37,12 +42,12 @@ marley::Generator & MARLEYManager::Generator()
 }
 
 //-----------------------------------------------------------------------------
-void MARLEYManager::Initialize(std::string marley_json)
+void MARLEYManager::Initialize()
 {
-    if (!marley_json.empty())
+    if (!marley_json_.empty())
     {
         std::cout << "Configuring MARLEY..." << std::endl;
-        marley::JSONConfig marley_config(marley_json);
+        marley::JSONConfig marley_config(marley_json_);
         marley_generator_ = marley_config.create_generator();
     }
     else

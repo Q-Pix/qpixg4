@@ -4,10 +4,10 @@
 /tracking/verbose 0
 
 # The detector configuration (false  VD or true HD)
-#/Geometry/DetectorConfiguration false
+/geometry/detector_configuration true
 
 # output path
-/Inputs/root_output ./output/single_muon.root
+/inputs/output_file ./output/single_muon.root
 
 # initialize run
 /run/initialize
