@@ -18,7 +18,7 @@
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
 
-DetectorConstruction::DetectorConstruction(const bool& useHorizontalDrift/*=True*/): G4VUserDetectorConstruction(), detectorConfiguration(useHorizontalDrift)
+DetectorConstruction::DetectorConstruction(): G4VUserDetectorConstruction(), detectorConfiguration(true)
 {
   fMessenger = new G4GenericMessenger(this, "/Geometry/", "Geometry configuration");
   fMessenger->DeclareProperty("DetectorConfiguration", detectorConfiguration, "True if HD, false if VD");
