@@ -17,7 +17,7 @@ class G4Material;
 class DetectorConstruction: public G4VUserDetectorConstruction
 {
 public:
-  DetectorConstruction();
+  DetectorConstruction(const bool& useHorizontalDrift=True);
   virtual ~DetectorConstruction();
   bool GetDetectorConfiguration() const { return detectorConfiguration;}
 
