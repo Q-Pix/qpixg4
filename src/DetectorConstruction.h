@@ -19,13 +19,11 @@ class DetectorConstruction: public G4VUserDetectorConstruction
 public:
   DetectorConstruction();
   virtual ~DetectorConstruction();
-  bool GetDetectorConfiguration() const { return detectorConfiguration;}
 
 private:
   virtual G4VPhysicalVolume* Construct();
   virtual void ConstructSDandField();
-  G4GenericMessenger *fMessenger;
-  bool detectorConfiguration;
+
 };
 
 #endif

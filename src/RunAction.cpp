@@ -179,14 +179,14 @@ void RunAction::EndOfRunAction(const G4Run*)
       //        << G4endl;
 
       G4RunManager* rm = G4RunManager::GetRunManager(); // Get the run manager to access the detector construction
-      const G4VUserDetectorConstruction* baseDetCons = rm->GetUserDetectorConstruction();
-      const DetectorConstruction* detCons = dynamic_cast<const DetectorConstruction*>(baseDetCons); // Get our user-defined detector construction
-      const bool detectorConfiguration = detCons->GetDetectorConfiguration(); // Retrieve the detector configuration
 
       // save detector dimensions as metadata
-      analysis_manager->FillMetadata(detectorConfiguration, detector_length_x,
+      if (G4Threading::IsMasterThread()){
+        analysis_manager->FillMetadata(ConfigManager::GetDetectorConfiguration(),
+                                     detector_length_x,
                                      detector_length_y,
                                      detector_length_z);
+      }
     }
 
     // save run to ROOT file

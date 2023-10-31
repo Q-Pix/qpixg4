@@ -56,7 +56,9 @@ ConfigManager::ConfigManager()
   nK42Decays_(0), nBi214Decays_(0), nPb214Decays_(0), nPo210Decays_(0), nRn222Decays_(0), eventCutoff_(0),
   eventWindow_(0),
 
-  snTimingOn_(false), th2Name_("nusperbin2d_nue") 
+  snTimingOn_(false), th2Name_("nusperbin2d_nue"),
+
+  detectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0)
 {
   CreateCommands();
 }
@@ -83,7 +85,10 @@ ConfigManager::ConfigManager(const ConfigManager& master)
   nPo210Decays_(master.nPo210Decays_), nRn222Decays_(master.nRn222Decays_),
   eventCutoff_(master.eventCutoff_), eventWindow_(master.eventWindow_),
 
-  snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_)
+  snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_),
+
+  detectorConfiguration_(master.detectorConfiguration_), detectorLength_(master.detectorLength_),
+  detectorWidth_(master.detectorWidth_), detectorHeight_(master.detectorHeight_)
 {
   CreateCommands();
 }
@@ -95,6 +100,7 @@ ConfigManager::~ConfigManager()
   delete msgInputs_;
   delete msgSupernova_;
   delete msgSupernovaTiming_;
+  delete msgGeometry_;
 }
 
 //-----------------------------------------------------------------------------
@@ -105,11 +111,10 @@ void ConfigManager::CreateCommands()
   msgInputs_ = new G4GenericMessenger(this, "/inputs/", "Control commands of the ion primary generator.");
   msgSupernova_ = new G4GenericMessenger(this, "/supernova/", "Control commands of the supernova generator.");
   msgSupernovaTiming_ = new G4GenericMessenger(this, "/supernova/timing/", "control commands for SupernovaTiming");
-
+  msgGeometry_ = new G4GenericMessenger(this, "/geometry/", "control commands for DetectorConstruction");
 
   // Declare all properties for msgEvent
   msgEvent_->DeclareProperty("offset", eventIDOffset_, "Event ID offset.");
-
   msgEvent_->DeclarePropertyWithUnit("energy_threshold", "MeV", energyThreshold_, "Events that deposit less energy than this energy threshold will not be saved.");
 
 
@@ -149,10 +154,15 @@ void ConfigManager::CreateCommands()
   msgSupernova_->DeclarePropertyWithUnit("Event_Window", "ns", eventWindow_,  "window to simulate the times");
 
 
-  // Declare all properties for msg
+  // Declare all properties for msgSupernovaTiming
   msgSupernovaTiming_->DeclareProperty("on", snTimingOn_, "turn on SupernovaTiming");
   msgSupernovaTiming_->DeclareProperty("th2_name", th2Name_, "name of TH2");
 
+  // Declare all properties for msgGeometry
+  msgGeometry_->DeclareProperty("detector_configuration", detectorConfiguration_, "True if HD, false if VD");
+  msgGeometry_->DeclareProperty("detector_length", detectorLength_, "detector length");
+  msgGeometry_->DeclareProperty("detector_width", detectorWidth_, "detector width");
+  msgGeometry_->DeclareProperty("detector_height", detectorHeight_, "detector height");
 }
 
 //-----------------------------------------------------------------------------
@@ -192,6 +202,11 @@ void ConfigManager::PrintConfig() const
      << G4endl
      << "SupernovaTiming -- Supernova_Timing_On: " << snTimingOn_ << G4endl
      << "SupernovaTiming -- TH2_Name:            " << th2Name_ << G4endl
+     << G4endl
+     << "Geometry -- Detector_Configuration: " << detectorConfiguration_ << G4endl
+     << "Geometry -- Detector_Length:        " << detectorLength_ << G4endl
+     << "Geometry -- Detector_Width:         " << detectorWidth_ << G4endl
+     << "Geometry -- Detector_Height:        " << detectorHeight_ << G4endl
      << G4endl;
 }
 

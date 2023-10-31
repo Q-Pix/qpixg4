@@ -6,6 +6,7 @@
 //   * Creation date: 14 Aug 2019
 // -----------------------------------------------------------------------------
 
+#include "ConfigManager.h"
 #include "DetectorConstruction.h"
 #include "TrackingSD.h"
 
@@ -18,15 +19,12 @@
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
 
-DetectorConstruction::DetectorConstruction(): G4VUserDetectorConstruction(), detectorConfiguration(true)
+DetectorConstruction::DetectorConstruction(): G4VUserDetectorConstruction()
 {
-  fMessenger = new G4GenericMessenger(this, "/Geometry/", "Geometry configuration");
-  fMessenger->DeclareProperty("DetectorConfiguration", detectorConfiguration, "True if HD, false if VD");
 }
 
 DetectorConstruction::~DetectorConstruction()
 {
-  delete fMessenger;
 }
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
@@ -48,37 +46,33 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                       world_logic_vol, "world.physical", 0, false, 0, true);
                       
 
-  G4double detector_width ;
-  G4double detector_height;
-  G4double detector_length;
-  
-  std::cout << " Detector configuration is: " << detectorConfiguration << std::endl;
+  std::cout << " Detector configuration is: " << ConfigManager::GetDetectorConfiguration() << std::endl;
 
-  if(detectorConfiguration)
+  if(ConfigManager::GetDetectorConfiguration())
   {
   // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
   // resemble an APA size
-    detector_width   = 2.3*m;
-    detector_height  = 6.0*m;
-    detector_length  = 3.6*m;
+    ConfigManager::SetDetectorWidth(2.3*m);
+    ConfigManager::SetDetectorHeight(6.0*m);
+    ConfigManager::SetDetectorLength(3.6*m);
   }
   else
   {
   // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
-    detector_height = 13.0*m;
-    detector_length = 6.5*m;
-    detector_width = 20.0*m;
+    ConfigManager::SetDetectorHeight(13.0*m);
+    ConfigManager::SetDetectorLength(6.5*m);
+    ConfigManager::SetDetectorWidth(20.0*m);
   }
 
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
 
   G4Box* detector_solid_vol =
-    new G4Box("detector.solid", detector_width/2., detector_height/2., detector_length/2.);
+    new G4Box("detector.solid", ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
 
   G4LogicalVolume* detector_logic_vol =
     new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
 
-  G4ThreeVector offset(detector_width/2., detector_height/2., detector_length/2.);
+  G4ThreeVector offset(ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
 
   new G4PVPlacement(0, offset,
                     detector_logic_vol, "detector.physical", world_logic_vol, false, 0, true);
