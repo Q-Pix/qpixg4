@@ -18,25 +18,21 @@
 # the case, you will need to change 
 
 
-initdir=$(pwd -P)
-echo The initial directory is $initdir 
-marleypath=${1:-"$initdir/../marley"}
-echo The marleypath is $marleypath
+# initdir=$(pwd -P)
+# marleypath=$1
 
-echo changing to $marleypath 
-cd $marleypath
-echo the new directory is $(pwd -P)
+#echo The initial directory is $initdir 
 
-echo sourcing setup_marley.sh
-source ./setup_marley.sh
+if [ -z "$MARLEY" -a -z "$1" ]; then
+	2>&1 echo "Marley not yet set up... Please specify path to Marley installation as an argument."
+	return 1
+fi
 
+[ -z "$MARLEY" ] && source $1/setup_marley.sh
 
 echo Making it possible to build against marley...
 export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${THIS_DIRECTORY}/include
 export LIBRARY_PATH=${LIBRARY_PATH}:${THIS_DIRECTORY}/build
 
-
-echo changing back to $initdir
-cd $initdir
 
 
