@@ -199,7 +199,7 @@ void AnalysisManager::FillMetadata(bool const & detectorConfiguration, double co
   detector_length_x_ = detector_length_x;
   detector_length_y_ = detector_length_y;
   detector_length_z_ = detector_length_z;
-  detectorConfiguration_ = ConfigManager::GetDetectorConfiguration();
+  detectorConfiguration_ = ConfigManager::Instance();
   metadata_->Fill();
 }
 
