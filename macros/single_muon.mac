@@ -21,14 +21,6 @@
 # gamma, opticalphoton, ...
 /gps/particle mu-
 
-# angular distribution
-# initial momentum in the -y direction
-#/gps/ang/type iso
-#/gps/ang/rot1 -1 0 0
-#/gps/ang/rot2 0 0 1
-#/gps/ang/mintheta 0 deg
-#/gps/ang/maxtheta 360 deg  # opening angle of cone
-
 # point source
 /gps/pos/type Point
 #Central position for a HD geometry
