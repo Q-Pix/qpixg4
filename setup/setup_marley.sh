@@ -24,10 +24,7 @@ if [ -z "$MARLEY" -a -z "$1" ]; then
 fi
 
 [ -z "$MARLEY" ] && source $1/setup_marley.sh
-
+echo The marley path is now $MARLEY
 echo Making it possible to build against marley...
 export CPLUS_INCLUDE_PATH=${CPLUS_INCLUDE_PATH}:${MARLEY}/include
 export LIBRARY_PATH=${LIBRARY_PATH}:${MARLEY}/build
-
-
-
