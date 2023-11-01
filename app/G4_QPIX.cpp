@@ -36,12 +36,10 @@
 #include <string>
 #include <typeinfo>
 
-
 int main(int argc, char** argv)
 {
 
   ConfigManager * configManager = ConfigManager::Instance();
-  ConfigManager::Print();
   //choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
   //set random seed with system time
@@ -49,9 +47,7 @@ int main(int argc, char** argv)
   //CLHEP::HepRandom::setTheSeed(seed);
   CLHEP::HepRandom::setTheSeed(1234567890); // For debuging purposes
 
-
   // Detect interactive mode (if no arguments) and define UI session
-  //
   G4UIExecutive* ui = 0;
   if ( argc == 1 ) {
     ui = new G4UIExecutive(argc, argv);
@@ -65,7 +61,6 @@ int main(int argc, char** argv)
   run_manager->SetUserInitialization(physics_list);
 
   run_manager->SetUserInitialization(new DetectorConstruction());
-
   run_manager->SetUserInitialization(new ActionInitialization());
 
   // Initialize visualization
