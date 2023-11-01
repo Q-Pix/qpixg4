@@ -42,7 +42,7 @@ class AnalysisData {
 
     void AddMCParticle(MCParticle const *);
 
-    int ProcessToKey(std::string const &);
+    int ProcessToKey(const G4String &);
 
     inline void AddProcess(std::string const & process) { process_names_.insert(process); }
     inline std::set< std::string > GetProcessNames() const { return process_names_; }
