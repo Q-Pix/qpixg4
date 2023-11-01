@@ -105,7 +105,7 @@ G4int GENIEManager::Initialize() {
         this->SetBranches();
       } else {
         G4cerr << "tree_ is a null pointer" << G4endl;
-        abort;
+        abort();
       }
     }
     isInitialized=1;
@@ -147,7 +147,7 @@ void GENIEManager::SetBranches() {
   }
   else{
     G4cerr << "tree_ is a null pointer" << G4endl;
-    abort;
+    abort();
   }
 
 
