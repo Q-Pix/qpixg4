@@ -182,10 +182,7 @@ void RunAction::EndOfRunAction(const G4Run*)
 
       // save detector dimensions as metadata
       if (G4Threading::IsMasterThread()){
-        analysis_manager->FillMetadata(ConfigManager::GetDetectorConfiguration(),
-                                     detector_length_x,
-                                     detector_length_y,
-                                     detector_length_z);
+        analysis_manager->FillMetadata();
       }
     }
 

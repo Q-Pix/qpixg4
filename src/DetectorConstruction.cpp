@@ -52,16 +52,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   {
   // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
   // resemble an APA size
-    ConfigManager::SetDetectorWidth(2.3*m);
-    ConfigManager::SetDetectorHeight(6.0*m);
-    ConfigManager::SetDetectorLength(3.6*m);
+    ConfigManager::SetDetectorWidth(2.3*m);   // detector_x 
+    ConfigManager::SetDetectorHeight(6.0*m);  // detector_y
+    ConfigManager::SetDetectorLength(3.6*m);  // detector_z
   }
   else
   {
   // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
-    ConfigManager::SetDetectorHeight(13.0*m);
-    ConfigManager::SetDetectorLength(6.5*m);
-    ConfigManager::SetDetectorWidth(20.0*m);
+    ConfigManager::SetDetectorHeight(13.0*m); // detector_y
+    ConfigManager::SetDetectorLength(6.5*m);  // detector_z
+    ConfigManager::SetDetectorWidth(20.0*m);  // detector_x
   }
 
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");

@@ -191,14 +191,12 @@ void AnalysisManager::EventFill(const AnalysisData& rhs)
 }
 
 //-----------------------------------------------------------------------------
-void AnalysisManager::FillMetadata(bool const & detectorConfiguration, double const & detector_length_x,
-                                   double const & detector_length_y,
-                                   double const & detector_length_z)
+void AnalysisManager::FillMetadata()
 {
   G4AutoLock metaLock(&metaMutex);
-  detector_length_x_ = detector_length_x;
-  detector_length_y_ = detector_length_y;
-  detector_length_z_ = detector_length_z;
+  detector_length_x_ = ConfigManager::GetDetectorWidth();
+  detector_length_y_ = ConfigManager::GetDetectorHeight();
+  detector_length_z_ = ConfigManager::GetDetectorLength();
   detectorConfiguration_ = ConfigManager::GetDetectorConfiguration();
   metadata_->Fill();
 }
