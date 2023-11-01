@@ -25,7 +25,6 @@ class Supernova {
         void Get_Detector_Dimensions(double detector_x_, double detector_y_, double detector_z_);
 
     private:
-        G4GenericMessenger* msg_; // Messenger for configuration parameters
         double Event_Window_;
         int N_Ar39_Decays_;
         int N_Ar42_Decays_;
