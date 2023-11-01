@@ -50,15 +50,7 @@
 
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
-    particle_gun_(0)//,
-    //isotropic_(false),
-    //decay_at_time_zero_(false),
-    //override_vertex_position_(false),
-    //vertex_x_(0),
-    //vertex_y_(0),
-    //vertex_z_(0),
-    //printParticleInfo_(false),
-    //particleType_("")
+    particle_gun_(0)
 {
 
   particle_gun_ = new G4GeneralParticleSource();
@@ -72,7 +64,6 @@ PrimaryGeneration::PrimaryGeneration()
   super = new Supernova();
 
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  // std::default_random_engine generator(seed);
   generator_ = std::default_random_engine(seed);
   distribution_ = std::normal_distribution< double >(0, 1);
 }
