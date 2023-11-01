@@ -4,7 +4,7 @@
 /tracking/verbose 1
 
 # configure
-/inputs/input_file /scratch/user/dave.elofson/data/GENIE_DATA/test0/test0.gtrac.root
+/inputs/input_file /path/to/genie_file.gtrac.root
 /inputs/particle_type Beam                  # choose from Beam, Atmospheric, Marley, Supernova
 /inputs/generator GENIE                     # choose from GENIE or MARLEY (entering NONE or removing this command will signal for GPS) 
 /inputs/genie_format gRooTracker            # only option currently available for GENIE
