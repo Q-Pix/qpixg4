@@ -30,7 +30,7 @@ class EventAction: public G4UserEventAction
 
   private:
 
-    int event_id_offset_;
+    G4Int event_id_offset_;
     double energy_threshold_;
 };
 

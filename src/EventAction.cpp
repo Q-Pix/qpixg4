@@ -42,7 +42,7 @@ void EventAction::BeginOfEventAction(const G4Event*)
 
 void EventAction::EndOfEventAction(const G4Event* g4event)
 {
-    G4int event_id_offset_ = ConfigManager::GetEventIDOffset();
+    event_id_offset_ = ConfigManager::GetEventIDOffset();
     G4double energy_threshold_ = ConfigManager::GetEnergyThreshold();
 
     // get MC truth manager
