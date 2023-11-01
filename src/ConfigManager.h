@@ -123,44 +123,49 @@ class ConfigManager {
     G4GenericMessenger* msgSupernovaTiming_;
     G4GenericMessenger* msgGeometry_;
 
+
   private:
+    // msgEvent variables
+    G4int         eventIDOffset_;
+    G4double      energyThreshold_;
+
+    // msgInputs variables
+    G4String      particleType_;
     G4bool        decayAtTimeZero_;
     G4bool        isotropic_;
-    G4bool        multirun_;
     G4bool        overrideVertexPosition_;
     G4bool        printParticleInfo_;
-    G4bool        snTimingOn_;
-
-    G4double      energyThreshold_;
-    G4double      eventCutoff_;
-    G4double      eventWindow_;
+    G4String      inputFile_;
+    G4String      outputFile_;
+    G4String      marleyJson_;
+    G4String      generator_;
+    G4String      genieFormat_;
+    G4bool        multirun_;
+    G4ThreeVector momentumDirection_;
     G4double      vertexX_;
     G4double      vertexY_;
     G4double      vertexZ_;
 
-    G4int         eventIDOffset_;
+    // msgSupernova variables
     G4int         nAr39Decays_;
     G4int         nAr42Decays_;
-    G4int         nBi214Decays_;
+    G4int         nKr85Decays_;
     G4int         nCo60Decays_;
     G4int         nK40Decays_;
     G4int         nK42Decays_;
-    G4int         nKr85Decays_;
+    G4int         nBi214Decays_;
     G4int         nPb214Decays_;
     G4int         nPo210Decays_;
     G4int         nRn222Decays_;
+    G4double      eventCutoff_;
+    G4double      eventWindow_;
 
-    G4String      generator_;
-    G4String      genieFormat_;
-    G4String      inputFile_;    
-    G4String      marleyJson_;
-    G4String      outputFile_;
-    G4String      particleType_;
+    // msgSupernovaTiming variables
+    G4bool        snTimingOn_;
     G4String      th2Name_;
 
+    // msgGeometry variables
     G4bool        detectorConfiguration_;
-
-    G4ThreeVector momentumDirection_;
     G4double      detectorLength_;
     G4double      detectorWidth_;
     G4double      detectorHeight_;
