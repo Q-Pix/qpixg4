@@ -18,11 +18,6 @@
 # the case, you will need to change 
 
 
-# initdir=$(pwd -P)
-# marleypath=$1
-
-#echo The initial directory is $initdir 
-
 if [ -z "$MARLEY" -a -z "$1" ]; then
 	2>&1 echo "Marley not yet set up... Please specify path to Marley installation as an argument."
 	return 1
