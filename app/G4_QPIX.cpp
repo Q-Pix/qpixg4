@@ -6,6 +6,7 @@
 //   * Creation date: 14 Aug 2019
 // -----------------------------------------------------------------------------
 
+// QPix includes
 #include "ActionInitialization.h"
 #include "ConfigManager.h"
 #include "DetectorConstruction.h"
@@ -16,20 +17,22 @@
 #include "SteppingAction.h"
 #include "TrackingAction.h"
 
-
+// Geant4 includes
 #include "G4RunManagerFactory.hh"
-#include <G4RunManager.hh>
-#include <G4UImanager.hh>
+#include "G4RunManager.hh"
+#include "G4UImanager.hh"
 #include "G4VisExecutive.hh"
-#include <G4UIExecutive.hh>
-#include <FTFP_BERT_HP.hh>
-#include <G4EmStandardPhysics_option4.hh>
-#include <G4OpticalPhysics.hh>
+#include "G4UIExecutive.hh"
+#include "FTFP_BERT_HP.hh"
+#include "G4EmStandardPhysics_option4.hh"
+#include "G4OpticalPhysics.hh"
 
+// ROOT includes
 #include "TROOT.h"
 
-#include "Randomize.hh"
-#include "time.h"
+// system includes
+#include <Randomize.hh>
+#include <time.h>
 #include <string>
 #include <typeinfo>
 
