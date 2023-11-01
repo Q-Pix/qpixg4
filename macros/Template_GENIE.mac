@@ -15,7 +15,7 @@
 /inputs/momentum_direction 0 1 0            # specifies the initial momentum of particles in detector frame
 
 # output path
-/inputs/output_file /scratch/user/dave.elofson/software/qpixg4/test0-qpixg4.root
+/inputs/output_file /path/to/output_file.root
 
 # initialize run
 /run/numberOfThreads 1                     # limit number of threads
