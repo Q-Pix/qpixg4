@@ -201,7 +201,7 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         if (case_number == 1)
         {
             Ran_X = 0.0 *CLHEP::m  + G4UniformRand() * 0.10 *CLHEP::m;
-            Ran_Y = 0.15 CLHEP::*m + G4UniformRand() * (6 *CLHEP::m - 0.15*2 *CLHEP::m);
+            Ran_Y = 0.15 *CLHEP::m + G4UniformRand() * (6 *CLHEP::m - 0.15*2 *CLHEP::m);
         }
         else if (case_number == 2 )
         {
@@ -226,7 +226,7 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         else if (case_number == 2 )
         {
             Ran_X = G4UniformRand() * 2.3 *CLHEP::m;
-            Ran_Y = 6 *m - G4UniformRand() * 0.15 *CLHEP::m;
+            Ran_Y = 6 *CLHEP::m - G4UniformRand() * 0.15 *CLHEP::m;
         }
     }
     else if (case_weight >= 0.8)
@@ -246,7 +246,7 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         else if (case_number == 3 )
         {
             Ran_X = 0.10 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
-            Ran_Y = 0.15 *CLHEP::m + 1.115*3 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP:::m);
+            Ran_Y = 0.15 *CLHEP::m + 1.115*3 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 4 )
         {
