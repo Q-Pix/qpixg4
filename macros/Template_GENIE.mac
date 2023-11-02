@@ -18,7 +18,7 @@
 /inputs/output_file /path/to/output_file.root
 
 # initialize run
-/run/numberOfThreads 1                     # limit number of threads
+/run/numberOfThreads 4                     # limit number of threads
 /run/printProgress 1
 /run/initialize
 /random/setSeeds 0 31
