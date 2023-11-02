@@ -210,21 +210,3 @@ void ConfigManager::PrintConfig() const
      << "Geometry -- Detector_Height:        " << detectorHeight_/CLHEP::m << " m" <<G4endl
      << G4endl;
 }
-
-//-----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
