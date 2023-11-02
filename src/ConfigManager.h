@@ -170,8 +170,4 @@ class ConfigManager {
     G4double      detectorWidth_;
     G4double      detectorHeight_;
 };
-
-     
-
-
 #endif
