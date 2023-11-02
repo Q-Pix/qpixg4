@@ -6,17 +6,17 @@
 //   * Creation date: 17 September 2020
 // -----------------------------------------------------------------------------
 
+#include "ConfigManager.h"
+#include "Supernova.h"
+
 #include "G4Event.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4IonTable.hh"
 #include "Randomize.hh"
 #include "G4LogicalVolumeStore.hh"
-
 #include "G4ParticleDefinition.hh"
 #include "G4GenericMessenger.hh"
 
-#include "ConfigManager.h"
-#include "Supernova.h"
+#include "CLHEP/Units/SystemOfUnits.h"
 
 #include <math.h> 
 

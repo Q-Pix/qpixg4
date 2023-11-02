@@ -14,10 +14,12 @@
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4NistManager.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4VisAttributes.hh"
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
+
+#include "CLHEP/Units/SystemOfUnits.h"
+
 
 DetectorConstruction::DetectorConstruction(): G4VUserDetectorConstruction()
 {
@@ -31,7 +33,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 {
   // WORLD /////////////////////////////////////////////////
 
-  G4double world_size = 30.*m;
+  G4double world_size = 30.*CLHEP::m;
   G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
 
   G4Box* world_solid_vol =
@@ -52,16 +54,16 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   {
   // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
   // resemble an APA size
-    ConfigManager::SetDetectorWidth(2.3*m);   // detector_x 
-    ConfigManager::SetDetectorHeight(6.0*m);  // detector_y
-    ConfigManager::SetDetectorLength(3.6*m);  // detector_z
+    ConfigManager::SetDetectorWidth(2.3*CLHEP::m);   // detector_x 
+    ConfigManager::SetDetectorHeight(6.0*CLHEP::m);  // detector_y
+    ConfigManager::SetDetectorLength(3.6*CLHEP::m);  // detector_z
   }
   else
   {
   // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
-    ConfigManager::SetDetectorHeight(13.0*m); // detector_y
-    ConfigManager::SetDetectorLength(6.5*m);  // detector_z
-    ConfigManager::SetDetectorWidth(20.0*m);  // detector_x
+    ConfigManager::SetDetectorHeight(13.0*CLHEP::m); // detector_y
+    ConfigManager::SetDetectorLength(6.5*CLHEP::m);  // detector_z
+    ConfigManager::SetDetectorWidth(20.0*CLHEP::m);  // detector_x
   }
 
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");

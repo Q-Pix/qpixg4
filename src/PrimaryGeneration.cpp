@@ -24,7 +24,7 @@
 #include "G4LogicalVolumeStore.hh"
 
 #include "G4ParticleDefinition.hh"
-#include "G4SystemOfUnits.hh"
+#include "CLHEP/Units/SystemOfUnits.h"
 #include "G4IonTable.hh"
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"

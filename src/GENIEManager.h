@@ -22,7 +22,8 @@
 #include "G4ParticleTable.hh"
 #include "G4Types.hh"
 #include "G4String.hh"
-#include "G4SystemOfUnits.hh"
+
+#include "CLHEP/Units/SystemOfUnits.h"
 
 
 // C++ includes
