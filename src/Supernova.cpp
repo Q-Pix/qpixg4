@@ -137,13 +137,13 @@ void Supernova::Generate_Radioisotope(G4Event* event, int Atomic_Number, int Ato
     if (!pdef)G4Exception("SetParticleDefinition()", "[IonGun]",FatalException, " can not create ion ");
 
     // pdef->SetPDGLifeTime(1.*CLHEP::ps);
-    pdef->SetPDGLifeTime(1.*ps);
+    pdef->SetPDGLifeTime(1.*CLHEP::ps);
 
     G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
 
     Random_Direction(Px_hat, Py_hat, Pz_hat, 1);
     particle->SetMomentumDirection(G4ThreeVector(Px_hat, Py_hat, Pz_hat));
-    particle->SetKineticEnergy(1.*eV); // just an ion sitting
+    particle->SetKineticEnergy(1.*CLHEP::eV); // just an ion sitting
 
     if (Region == "Vol")
     {

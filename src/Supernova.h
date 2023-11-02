@@ -9,9 +9,11 @@
 #ifndef Supernova_h
 #define Supernova_h 1
 
-// #include "G4Box.hh"
-// #include "G4String.hh"
+#include "G4Box.hh"
+#include "G4String.hh"
 
+
+class G4Event;
 class G4GenericMessenger;
 
 class Supernova {
