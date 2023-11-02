@@ -82,11 +82,6 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
   // Set variables from ConfigManager
   G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
-  G4bool isotropic_ = ConfigManager::GetIsotropic();
-  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
-  G4double vertex_x_ = ConfigManager::GetVertexX();
-  G4double vertex_y_ = ConfigManager::GetVertexY();
-  G4double vertex_z_ = ConfigManager::GetVertexZ();
   G4String particleType_ = ConfigManager::GetParticleType();
 
   particleType_.toLower();
@@ -193,11 +188,6 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
 void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
 {
-
-
-  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
-  G4bool isotropic_ = ConfigManager::GetIsotropic();
-  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
   G4bool printParticleInfo_ = ConfigManager::GetPrintParticleInfo();
   G4double vertex_x_ = ConfigManager::GetVertexX();
   G4double vertex_y_ = ConfigManager::GetVertexY();
@@ -206,7 +196,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
   G4ThreeVector momentumDirection_ = ConfigManager::GetMomentumDirection();
 
   particleType.toLower();
-
 
   // Get MCTruthManager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
@@ -346,7 +335,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
 void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
 {
 
-  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  //G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
   G4bool isotropic_ = ConfigManager::GetIsotropic();
   G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
   G4double vertex_x_ = ConfigManager::GetVertexX();
