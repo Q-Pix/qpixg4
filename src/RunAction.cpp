@@ -143,22 +143,11 @@ void RunAction::EndOfRunAction(const G4Run*)
     multirun_ = ConfigManager::GetMultirun();
     particleType_ = ConfigManager::GetParticleType();
 
-    // get detector dimensions
-    G4LogicalVolume* detector_logic_vol
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
-    if (detector_logic_vol)
-    {
-      G4Box * detector_solid_vol
-        = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
-
-
-      G4RunManager * rm = G4RunManager::GetRunManager(); // Get the run manager to access the detector construction
-
-      // save detector dimensions as metadata
-      if (G4Threading::IsMasterThread()){
-        analysis_manager->FillMetadata();
-      }
+    // save detector dimensions as metadata
+    if (G4Threading::IsMasterThread()){
+      analysis_manager->FillMetadata();
     }
+   
 
     // save run to ROOT file
     analysis_manager->Save();
