@@ -44,13 +44,13 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
     ConfigManager * configManager = ConfigManager::Instance();
     //ConfigManager::Print();
 
-    G4String inputFile_ = ConfigManager::GetInputFile();
-    G4String outputFile_ = ConfigManager::GetOutputFile();
-    G4String marleyJson_ = ConfigManager::GetMarleyJson();
-    G4String generator_ = ConfigManager::GetGenerator();
-    G4String genieFormat_ = ConfigManager::GetGenieFormat();
-    G4bool multirun_ = ConfigManager::GetMultirun();
-    G4String particleType_ = ConfigManager::GetParticleType();
+    inputFile_ = ConfigManager::GetInputFile();
+    outputFile_ = ConfigManager::GetOutputFile();
+    marleyJson_ = ConfigManager::GetMarleyJson();
+    generator_ = ConfigManager::GetGenerator();
+    genieFormat_ = ConfigManager::GetGenieFormat();
+    multirun_ = ConfigManager::GetMultirun();
+    particleType_ = ConfigManager::GetParticleType();
 
 
 
