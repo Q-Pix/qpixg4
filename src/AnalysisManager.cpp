@@ -57,11 +57,7 @@ AnalysisManager * AnalysisManager::Instance()
 void AnalysisManager::Book(const std::string& file_path)
 {
 
-  if (!G4Threading::IsMasterThread()) 
-  //G4AutoLock bookLock(&bookMutex);
-  {
-    return;
-  }  // only run Book() for the master thread
+  if (!G4Threading::IsMasterThread()) return; // only run Book() for the master thread
 
   // Check if tfile_ is a null pointer, if so, create ROOT output file
   if (tfile_ == 0) {
