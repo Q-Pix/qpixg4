@@ -251,25 +251,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
       continue;
     }
 
-    // Print out info about the GENIE particle
-    //G4cout << "..........oooooOOO000OOOooooo.........." << G4endl
-    //       << "GENIE Particle Info:" << G4endl
-    //       << "  PDG Code:       " << genieManager->GetPDG_(np) << G4endl
-    //       << "  Energy:         " << genieManager->GetE_(np) << G4endl
-    //       << "  Px:             " << genieManager->GetPx_(np) << G4endl
-    //       << "  Py:             " << genieManager->GetPy_(np) << G4endl
-    //       << "  Pz:             " << genieManager->GetPz_(np) << G4endl
-    //       << "G4ParticleDefinition Info:" << G4endl
-    //       << "  Mass:           " << pdef->GetPDGMass() << G4endl
-    //       << "  Charge:         " << pdef->GetPDGCharge() << G4endl
-    //       << "User defined Info:" << G4endl
-    //       << "  Vertex:         " << vertex3d << G4endl
-    //       << "..........oooooOOO000OOOooooo.........." << G4endl;
-
-
-    // filter the particles less than 1 eV
-    // if(genieManager->GetE_(np)<(1 *CLHEP::eV)) continue;
-
     // create a generator particle and set initial values
     GeneratorParticle * generatorParticle = new GeneratorParticle();
     generatorParticle->SetPDGCode (genieManager->GetPDG_(np));
