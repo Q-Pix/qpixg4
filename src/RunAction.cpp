@@ -30,7 +30,7 @@
 RunAction::RunAction()
   : G4UserRunAction()
 {
-  ConfigManager * configManager = ConfigManager::Instance();
+  ConfigManager::Instance();
 }
 
 
@@ -41,7 +41,7 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
-    ConfigManager * configManager = ConfigManager::Instance();
+    ConfigManager::Instance();
     //ConfigManager::Print();
 
     inputFile_ = ConfigManager::GetInputFile();
@@ -150,13 +150,13 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
 void RunAction::EndOfRunAction(const G4Run*)
 {
-    G4String inputFile_ = ConfigManager::GetInputFile();
-    G4String outputFile_ = ConfigManager::GetOutputFile();
-    G4String marleyJson_ = ConfigManager::GetMarleyJson();
-    G4String generator_ = ConfigManager::GetGenerator();
-    G4String genieFormat_ = ConfigManager::GetGenieFormat();
-    G4bool multirun_ = ConfigManager::GetMultirun();
-    G4String particleType_ = ConfigManager::GetParticleType();
+    inputFile_ = ConfigManager::GetInputFile();
+    outputFile_ = ConfigManager::GetOutputFile();
+    marleyJson_ = ConfigManager::GetMarleyJson();
+    generator_ = ConfigManager::GetGenerator();
+    genieFormat_ = ConfigManager::GetGenieFormat();
+    multirun_ = ConfigManager::GetMultirun();
+    particleType_ = ConfigManager::GetParticleType();
 
     // get analysis manager
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
@@ -169,14 +169,6 @@ void RunAction::EndOfRunAction(const G4Run*)
       G4Box * detector_solid_vol
         = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
 
-      double const detector_length_x = detector_solid_vol->GetXHalfLength() * 2. / CLHEP::cm;
-      double const detector_length_y = detector_solid_vol->GetYHalfLength() * 2. / CLHEP::cm;
-      double const detector_length_z = detector_solid_vol->GetZHalfLength() * 2. / CLHEP::cm;
-
-      // G4cout << "det. dim.: " << detector_length_x << " cm × "
-      //                         << detector_length_y << " cm × "
-      //                         << detector_length_z << " cm"
-      //        << G4endl;
 
       G4RunManager* rm = G4RunManager::GetRunManager(); // Get the run manager to access the detector construction
 
