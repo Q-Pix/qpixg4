@@ -32,11 +32,6 @@ EventAction::~EventAction()
 
 void EventAction::BeginOfEventAction(const G4Event*)
 {
-    // int mod = event->GetEventID() % 1000;
-    // if (mod == 0)
-    // {
-    //     G4cout << "Starting event" << event->GetEventID() << "..." << G4endl;
-    // }
 }
 
 
@@ -62,15 +57,6 @@ void EventAction::EndOfEventAction(const G4Event* g4event)
         // std::cout << "Energy deposited by particle PDG (" << particle->PDGCode() << "): " << particle->EnergyDeposited() << std::endl;
     }
 
-    //Replace the following lines with "/run/printProgress 1000" in the macro file
-    //int mod = g4event->GetEventID() % 1;
-    //if (mod == 0)
-    //{
-    //    G4cout << "Event " << g4event->GetEventID() << "..." << G4endl;
-        // G4cout << "Energy threshold: " << energy_threshold_ << G4endl;
-        // G4cout << "Total energy deposited: " << energy_deposited << G4endl;
-    //}
-
     // don't save event if total energy deposited is below the energy threshold
     if (energy_deposited < energy_threshold_)
     {
@@ -85,8 +71,6 @@ void EventAction::EndOfEventAction(const G4Event* g4event)
 
 
     // set event number
-    // event->SetEventID(event->GetEventID() + event_id_offset_);
-    // analysis_manager->SetEvent(event->GetEventID());
     event.SetEvent(g4event->GetEventID() + event_id_offset_);
 
     // add initial generator particles to analysis manager
@@ -106,9 +90,6 @@ void EventAction::EndOfEventAction(const G4Event* g4event)
     {
         event.AddFinalGeneratorParticle(particle);
     }
-
-    // get map of particles from MC truth manager
-    // auto const MCParticleMap = mc_truth_manager->GetMCParticleMap();
 
     // add particle to analysis manager
     for (auto const& p : particleMap)
