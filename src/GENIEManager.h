@@ -114,11 +114,6 @@ class GENIEManager {
     G4String        treeName_;
     G4int           isInitialized;
 
-
-
-
-
-
   private:
 
     GENIEManager();
@@ -129,8 +124,6 @@ class GENIEManager {
 
     // GEANT4 dictionary of particles
     G4ParticleTable* particle_table_;
-
-
 };
 
 

@@ -159,8 +159,7 @@ Int_t GENIEManager::GetNEntries() {
 
 
 void GENIEManager::Cd(){
-  if(f_)
-    f_->cd();
+  if (f_) f_->cd();
 }
 
 
