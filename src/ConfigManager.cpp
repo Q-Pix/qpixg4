@@ -59,7 +59,7 @@ ConfigManager::ConfigManager()
 
   snTimingOn_(false), th2Name_("nusperbin2d_nue"),
 
-  detectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0)
+  useHDDetectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0)
 {
   CreateCommands();
 }
@@ -88,7 +88,7 @@ ConfigManager::ConfigManager(const ConfigManager& master)
 
   snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_),
 
-  detectorConfiguration_(master.detectorConfiguration_), detectorLength_(master.detectorLength_),
+  useHDDetectorConfiguration_(master.useHDDetectorConfiguration_), detectorLength_(master.detectorLength_),
   detectorWidth_(master.detectorWidth_), detectorHeight_(master.detectorHeight_)
 {
   CreateCommands();
@@ -160,7 +160,7 @@ void ConfigManager::CreateCommands()
   msgSupernovaTiming_->DeclareProperty("th2_name", th2Name_, "name of TH2");
 
   // Declare all properties for msgGeometry
-  msgGeometry_->DeclareProperty("detector_configuration", detectorConfiguration_, "True if HD, false if VD");
+  msgGeometry_->DeclareProperty("use_hd_detector_configuration", useHDDetectorConfiguration_, "True if HD, false if VD");
   msgGeometry_->DeclareProperty("detector_length", detectorLength_, "detector length");
   msgGeometry_->DeclareProperty("detector_width", detectorWidth_, "detector width");
   msgGeometry_->DeclareProperty("detector_height", detectorHeight_, "detector height");
@@ -204,9 +204,9 @@ void ConfigManager::PrintConfig() const
      << "SupernovaTiming -- Supernova_Timing_On: " << snTimingOn_ << G4endl
      << "SupernovaTiming -- TH2_Name:            " << th2Name_ << G4endl
      << G4endl
-     << "Geometry -- Detector_Configuration: " << detectorConfiguration_ << G4endl
-     << "Geometry -- Detector_Length:        " << detectorLength_/CLHEP::m << " m" << G4endl
-     << "Geometry -- Detector_Width:         " << detectorWidth_/CLHEP::m << " m" << G4endl
-     << "Geometry -- Detector_Height:        " << detectorHeight_/CLHEP::m << " m" <<G4endl
+     << "Geometry -- Use_HD_Detector_Configuration: " << useHDDetectorConfiguration_ << G4endl
+     << "Geometry -- Detector_Length:               " << detectorLength_/CLHEP::m << " m" << G4endl
+     << "Geometry -- Detector_Width:                " << detectorWidth_/CLHEP::m << " m" << G4endl
+     << "Geometry -- Detector_Height:               " << detectorHeight_/CLHEP::m << " m" <<G4endl
      << G4endl;
 }

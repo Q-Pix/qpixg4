@@ -69,47 +69,47 @@ class ConfigManager {
     static G4double      GetEventWindow()                   { return Instance()->eventWindow_; }
     static G4bool        GetSNTimingOn()                    { return Instance()->snTimingOn_; }
     static G4String      GetTh2Name()                       { return Instance()->th2Name_; }
-    static G4bool        GetDetectorConfiguration()         { return Instance()->detectorConfiguration_; }
+    static G4bool        GetUseHDDetectorConfiguration()    { return Instance()->useHDDetectorConfiguration_; }
     static G4double      GetDetectorLength()                { return Instance()->detectorLength_; }
     static G4double      GetDetectorWidth()                 { return Instance()->detectorWidth_; }
     static G4double      GetDetectorHeight()                { return Instance()->detectorHeight_; }
 
     // Change values (e.g. via Messenger) -- pass strings by value for toLower()
-    static void SetEventIDOffset(G4int value)             { Instance()->eventIDOffset_ = value; }
-    static void SetEnergyThreshold(G4double value)        { Instance()->energyThreshold_ = value; }
-    static void SetParticleType(G4String value)           { Instance()->particleType_ = value; }
-    static void SetDecayAtTimeZero(G4bool value)          { Instance()->decayAtTimeZero_ = value; }
-    static void SetIsotropic(G4bool value)                { Instance()->isotropic_ = value; }
-    static void SetOverrideVertexPosition(G4bool value)   { Instance()->overrideVertexPosition_ = value; }
-    static void SetPrintParticleInfo(G4bool value)        { Instance()->printParticleInfo_ = value; }
-    static void SetInputFile(G4String value)              { Instance()->inputFile_ = value; }
-    static void SetOutputFile(G4String value)             { Instance()->outputFile_= value; }
-    static void SetMarleyJson(G4String value)             { Instance()->marleyJson_= value; }
-    static void SetGenerator(G4String value)              { Instance()->generator_ = value; }
-    static void SetGenieFormat(G4String value)            { Instance()->genieFormat_ = value; }
-    static void SetMultirun(G4bool value)                 { Instance()->multirun_ = value; }
-    static void SetMomentumDirection(G4ThreeVector value) { Instance()->momentumDirection_ = value; }
-    static void SetVertexX(G4double value)                { Instance()->vertexX_ = value; }
-    static void SetVertexY(G4double value)                { Instance()->vertexY_ = value; }
-    static void SetVertexZ(G4double value)                { Instance()->vertexZ_ = value; }
-    static void SetNAr39Decays(G4int value)               { Instance()->nAr39Decays_ = value; }
-    static void SetNAr42Decays(G4int value)               { Instance()->nAr42Decays_ = value; }
-    static void SetNKr85Decays(G4int value)               { Instance()->nKr85Decays_ = value; }
-    static void SetNCo60Decays(G4int value)               { Instance()->nCo60Decays_ = value; }
-    static void SetNK40Decays(G4int value)                { Instance()->nK40Decays_ = value; }
-    static void SetNK42Decays(G4int value)                { Instance()->nK42Decays_ = value; }
-    static void SetNBi214Decays(G4int value)              { Instance()->nBi214Decays_ = value; }
-    static void SetNPb214Decays(G4int value)              { Instance()->nPb214Decays_ = value; }
-    static void SetNPo210Decays(G4int value)              { Instance()->nPo210Decays_ = value; }
-    static void SetNRn222Decays(G4int value)              { Instance()->nRn222Decays_ = value; }
-    static void SetEventCutoff(G4double value)            { Instance()->eventCutoff_ = value; }
-    static void SetEventWindow(G4double value)            { Instance()->eventWindow_ = value; }
-    static void SetSNTimingOn(G4bool value)               { Instance()->snTimingOn_ = value; }
-    static void SetTh2Name(G4String value)                { Instance()->th2Name_ = value; }            
-    static void SetDetectorConfiguration(G4bool value)    { Instance()->detectorConfiguration_ = value; }
-    static void SetDetectorLength(G4double value)         { Instance()->detectorLength_ = value; }
-    static void SetDetectorWidth(G4double value)          { Instance()->detectorWidth_ = value; }
-    static void SetDetectorHeight(G4double value)         { Instance()->detectorHeight_ = value; }
+    static void SetEventIDOffset(G4int value)               { Instance()->eventIDOffset_ = value; }
+    static void SetEnergyThreshold(G4double value)          { Instance()->energyThreshold_ = value; }
+    static void SetParticleType(G4String value)             { Instance()->particleType_ = value; }
+    static void SetDecayAtTimeZero(G4bool value)            { Instance()->decayAtTimeZero_ = value; }
+    static void SetIsotropic(G4bool value)                  { Instance()->isotropic_ = value; }
+    static void SetOverrideVertexPosition(G4bool value)     { Instance()->overrideVertexPosition_ = value; }
+    static void SetPrintParticleInfo(G4bool value)          { Instance()->printParticleInfo_ = value; }
+    static void SetInputFile(G4String value)                { Instance()->inputFile_ = value; }
+    static void SetOutputFile(G4String value)               { Instance()->outputFile_= value; }
+    static void SetMarleyJson(G4String value)               { Instance()->marleyJson_= value; }
+    static void SetGenerator(G4String value)                { Instance()->generator_ = value; }
+    static void SetGenieFormat(G4String value)              { Instance()->genieFormat_ = value; }
+    static void SetMultirun(G4bool value)                   { Instance()->multirun_ = value; }
+    static void SetMomentumDirection(G4ThreeVector value)   { Instance()->momentumDirection_ = value; }
+    static void SetVertexX(G4double value)                  { Instance()->vertexX_ = value; }
+    static void SetVertexY(G4double value)                  { Instance()->vertexY_ = value; }
+    static void SetVertexZ(G4double value)                  { Instance()->vertexZ_ = value; }
+    static void SetNAr39Decays(G4int value)                 { Instance()->nAr39Decays_ = value; }
+    static void SetNAr42Decays(G4int value)                 { Instance()->nAr42Decays_ = value; }
+    static void SetNKr85Decays(G4int value)                 { Instance()->nKr85Decays_ = value; }
+    static void SetNCo60Decays(G4int value)                 { Instance()->nCo60Decays_ = value; }
+    static void SetNK40Decays(G4int value)                  { Instance()->nK40Decays_ = value; }
+    static void SetNK42Decays(G4int value)                  { Instance()->nK42Decays_ = value; }
+    static void SetNBi214Decays(G4int value)                { Instance()->nBi214Decays_ = value; }
+    static void SetNPb214Decays(G4int value)                { Instance()->nPb214Decays_ = value; }
+    static void SetNPo210Decays(G4int value)                { Instance()->nPo210Decays_ = value; }
+    static void SetNRn222Decays(G4int value)                { Instance()->nRn222Decays_ = value; }
+    static void SetEventCutoff(G4double value)              { Instance()->eventCutoff_ = value; }
+    static void SetEventWindow(G4double value)              { Instance()->eventWindow_ = value; }
+    static void SetSNTimingOn(G4bool value)                 { Instance()->snTimingOn_ = value; }
+    static void SetTh2Name(G4String value)                  { Instance()->th2Name_ = value; }            
+    static void SetUseHDDetectorConfiguration(G4bool value) { Instance()->useHDDetectorConfiguration_ = value; }
+    static void SetDetectorLength(G4double value)           { Instance()->detectorLength_ = value; }
+    static void SetDetectorWidth(G4double value)            { Instance()->detectorWidth_ = value; }
+    static void SetDetectorHeight(G4double value)           { Instance()->detectorHeight_ = value; }
 
     // Print out all configuration settings
     static void Print() { Instance()->PrintConfig(); }
@@ -165,7 +165,7 @@ class ConfigManager {
     G4String      th2Name_;
 
     // msgGeometry variables
-    G4bool        detectorConfiguration_;
+    G4bool        useHDDetectorConfiguration_;
     G4double      detectorLength_;
     G4double      detectorWidth_;
     G4double      detectorHeight_;
