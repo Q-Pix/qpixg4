@@ -38,7 +38,6 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
     particle->SetMass(track->GetDynamicParticle()->GetMass());
     particle->SetCharge(track->GetDynamicParticle()->GetCharge());
     particle->SetGlobalTime(track->GetGlobalTime() / CLHEP::ns);
-    // particle->SetProcess();
     particle->SetTotalOccupancy(track->GetDynamicParticle()->GetTotalOccupancy());
 
     particle->SetInitialPosition(
@@ -58,12 +57,6 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
             track->GetTotalEnergy()  / CLHEP::MeV
         )
     );
-
-    //G4cout << "Track info: " << G4endl
-    //       << "  Track ID:       " << track->GetTrackID() << G4endl
-    //       << "  Track PDG:      " << track->GetDefinition()->GetPDGEncoding() << G4endl
-    //       << "  Track Momentum: " << track->GetMomentum().x() << ", " << track->GetMomentum().y() << ", " << track->GetMomentum().z() << G4endl
-    //       << "  Track Energy:   " << track->GetTotalEnergy() << G4endl; 
 
     // add track ID to parent MC particle
     // we might need to deal with cases where some particles aren't tracked (?)
