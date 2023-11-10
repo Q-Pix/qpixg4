@@ -97,7 +97,7 @@ G4int GENIEManager::Initialize() {
       if (!f_ || !f_->IsOpen()) {
         f_ = new TFile(inputFile_);
       }
-      if(f_->IsZombie()){
+      if(f_->!IsGood()){
         return isInitialized ;
       }
       f_->GetObject(treeName_,tree_);
