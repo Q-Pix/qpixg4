@@ -22,7 +22,8 @@
 #include "G4ParticleTable.hh"
 #include "G4Types.hh"
 #include "G4String.hh"
-#include "G4SystemOfUnits.hh"
+
+#include "CLHEP/Units/SystemOfUnits.h"
 
 
 // C++ includes
@@ -113,11 +114,6 @@ class GENIEManager {
     G4String        treeName_;
     G4int           isInitialized;
 
-
-
-
-
-
   private:
 
     GENIEManager();
@@ -128,8 +124,6 @@ class GENIEManager {
 
     // GEANT4 dictionary of particles
     G4ParticleTable* particle_table_;
-
-
 };
 
 

@@ -14,9 +14,10 @@
 // Geant Includes
 #include "globals.hh"
 #include "G4GenericMessenger.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4Threading.hh"
 #include "G4ThreeVector.hh"
+
+#include "CLHEP/Units/SystemOfUnits.h"
 
 // System Includes
 #include <fstream>
@@ -50,7 +51,7 @@ ConfigManager::ConfigManager()
   
   particleType_(""), decayAtTimeZero_(false), isotropic_(true),
   overrideVertexPosition_(false), printParticleInfo_(false), inputFile_(""), outputFile_(""), marleyJson_(""), generator_(""),
-  genieFormat_(""), multirun_(false), momentumDirection_(0,0,0), vertexX_(2.3*m/2), vertexY_(6.0*m/2), vertexZ_(3.7*m/2),
+  genieFormat_(""), multirun_(false), momentumDirection_(0,0,0), vertexX_(2.3*CLHEP::m/2), vertexY_(6.0*CLHEP::m/2), vertexZ_(3.7*CLHEP::m/2),
   
   nAr39Decays_(0), nAr42Decays_(0), nKr85Decays_(0), nCo60Decays_(0), nK40Decays_(0),
   nK42Decays_(0), nBi214Decays_(0), nPb214Decays_(0), nPo210Decays_(0), nRn222Decays_(0), eventCutoff_(0),
@@ -58,7 +59,7 @@ ConfigManager::ConfigManager()
 
   snTimingOn_(false), th2Name_("nusperbin2d_nue"),
 
-  detectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0)
+  useHDDetectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0)
 {
   CreateCommands();
 }
@@ -87,7 +88,7 @@ ConfigManager::ConfigManager(const ConfigManager& master)
 
   snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_),
 
-  detectorConfiguration_(master.detectorConfiguration_), detectorLength_(master.detectorLength_),
+  useHDDetectorConfiguration_(master.useHDDetectorConfiguration_), detectorLength_(master.detectorLength_),
   detectorWidth_(master.detectorWidth_), detectorHeight_(master.detectorHeight_)
 {
   CreateCommands();
@@ -159,7 +160,7 @@ void ConfigManager::CreateCommands()
   msgSupernovaTiming_->DeclareProperty("th2_name", th2Name_, "name of TH2");
 
   // Declare all properties for msgGeometry
-  msgGeometry_->DeclareProperty("detector_configuration", detectorConfiguration_, "True if HD, false if VD");
+  msgGeometry_->DeclareProperty("use_hd_detector_configuration", useHDDetectorConfiguration_, "True if HD, false if VD");
   msgGeometry_->DeclareProperty("detector_length", detectorLength_, "detector length");
   msgGeometry_->DeclareProperty("detector_width", detectorWidth_, "detector width");
   msgGeometry_->DeclareProperty("detector_height", detectorHeight_, "detector height");
@@ -182,9 +183,9 @@ void ConfigManager::PrintConfig() const
      << "Input -- Output_File:              " << outputFile_ << G4endl
      << "Input -- MARLEY_json:              " << marleyJson_ << G4endl
      << "Input -- Momentum_Direction:       " << momentumDirection_ << G4endl
-     << "Input -- Vertex_X:                 " << vertexX_/mm << " mm" << G4endl
-     << "Input -- Vertex_Y:                 " << vertexY_/mm << " mm" <<  G4endl
-     << "Input -- Vertex_Z:                 " << vertexZ_/mm << " mm" << G4endl
+     << "Input -- Vertex_X:                 " << vertexX_/CLHEP::mm << " mm" << G4endl
+     << "Input -- Vertex_Y:                 " << vertexY_/CLHEP::mm << " mm" <<  G4endl
+     << "Input -- Vertex_Z:                 " << vertexZ_/CLHEP::mm << " mm" << G4endl
      << "Input -- Multirun:                 " << multirun_ << G4endl
      << G4endl
      << "Supernova -- N_Ar39_Decays:  " << nAr39Decays_ << G4endl
@@ -197,33 +198,15 @@ void ConfigManager::PrintConfig() const
      << "Supernova -- N_Pb214_Decays: " << nPb214Decays_ << G4endl
      << "Supernova -- N_Po210_Decays: " << nPo210Decays_ << G4endl
      << "Supernova -- N_Rn222_Decays: " << nRn222Decays_ << G4endl
-     << "Supernova -- Event_Cutoff:   " << eventCutoff_/ns << " ns" << G4endl
-     << "Supernova -- Event_Window:   " << eventWindow_/ns << " ns" << G4endl
+     << "Supernova -- Event_Cutoff:   " << eventCutoff_/CLHEP::ns << " ns" << G4endl
+     << "Supernova -- Event_Window:   " << eventWindow_/CLHEP::ns << " ns" << G4endl
      << G4endl
      << "SupernovaTiming -- Supernova_Timing_On: " << snTimingOn_ << G4endl
      << "SupernovaTiming -- TH2_Name:            " << th2Name_ << G4endl
      << G4endl
-     << "Geometry -- Detector_Configuration: " << detectorConfiguration_ << G4endl
-     << "Geometry -- Detector_Length:        " << detectorLength_ << G4endl
-     << "Geometry -- Detector_Width:         " << detectorWidth_ << G4endl
-     << "Geometry -- Detector_Height:        " << detectorHeight_ << G4endl
+     << "Geometry -- Use_HD_Detector_Configuration: " << useHDDetectorConfiguration_ << G4endl
+     << "Geometry -- Detector_Length:               " << detectorLength_/CLHEP::m << " m" << G4endl
+     << "Geometry -- Detector_Width:                " << detectorWidth_/CLHEP::m << " m" << G4endl
+     << "Geometry -- Detector_Height:               " << detectorHeight_/CLHEP::m << " m" <<G4endl
      << G4endl;
 }
-
-//-----------------------------------------------------------------------------
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-

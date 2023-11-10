@@ -24,7 +24,7 @@
 #include "G4LogicalVolumeStore.hh"
 
 #include "G4ParticleDefinition.hh"
-#include "G4SystemOfUnits.hh"
+#include "CLHEP/Units/SystemOfUnits.h"
 #include "G4IonTable.hh"
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
@@ -50,15 +50,7 @@
 
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
-    particle_gun_(0)//,
-    //isotropic_(false),
-    //decay_at_time_zero_(false),
-    //override_vertex_position_(false),
-    //vertex_x_(0),
-    //vertex_y_(0),
-    //vertex_z_(0),
-    //printParticleInfo_(false),
-    //particleType_("")
+    particle_gun_(0)
 {
 
   particle_gun_ = new G4GeneralParticleSource();
@@ -72,7 +64,6 @@ PrimaryGeneration::PrimaryGeneration()
   super = new Supernova();
 
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  // std::default_random_engine generator(seed);
   generator_ = std::default_random_engine(seed);
   distribution_ = std::normal_distribution< double >(0, 1);
 }
@@ -91,11 +82,6 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
   // Set variables from ConfigManager
   G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
-  G4bool isotropic_ = ConfigManager::GetIsotropic();
-  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
-  G4double vertex_x_ = ConfigManager::GetVertexX();
-  G4double vertex_y_ = ConfigManager::GetVertexY();
-  G4double vertex_z_ = ConfigManager::GetVertexZ();
   G4String particleType_ = ConfigManager::GetParticleType();
 
   particleType_.toLower();
@@ -202,11 +188,6 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
 void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
 {
-
-
-  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
-  G4bool isotropic_ = ConfigManager::GetIsotropic();
-  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
   G4bool printParticleInfo_ = ConfigManager::GetPrintParticleInfo();
   G4double vertex_x_ = ConfigManager::GetVertexX();
   G4double vertex_y_ = ConfigManager::GetVertexY();
@@ -215,7 +196,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
   G4ThreeVector momentumDirection_ = ConfigManager::GetMomentumDirection();
 
   particleType.toLower();
-
 
   // Get MCTruthManager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
@@ -259,25 +239,6 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
       G4Exception("[PrimaryGeneration]","GENIEGeneratePrimaries",G4ExceptionSeverity::JustWarning,str1.c_str());
       continue;
     }
-
-    // Print out info about the GENIE particle
-    //G4cout << "..........oooooOOO000OOOooooo.........." << G4endl
-    //       << "GENIE Particle Info:" << G4endl
-    //       << "  PDG Code:       " << genieManager->GetPDG_(np) << G4endl
-    //       << "  Energy:         " << genieManager->GetE_(np) << G4endl
-    //       << "  Px:             " << genieManager->GetPx_(np) << G4endl
-    //       << "  Py:             " << genieManager->GetPy_(np) << G4endl
-    //       << "  Pz:             " << genieManager->GetPz_(np) << G4endl
-    //       << "G4ParticleDefinition Info:" << G4endl
-    //       << "  Mass:           " << pdef->GetPDGMass() << G4endl
-    //       << "  Charge:         " << pdef->GetPDGCharge() << G4endl
-    //       << "User defined Info:" << G4endl
-    //       << "  Vertex:         " << vertex3d << G4endl
-    //       << "..........oooooOOO000OOOooooo.........." << G4endl;
-
-
-    // filter the particles less than 1 eV
-    // if(genieManager->GetE_(np)<(1 *CLHEP::eV)) continue;
 
     // create a generator particle and set initial values
     GeneratorParticle * generatorParticle = new GeneratorParticle();
@@ -374,7 +335,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
 void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
 {
 
-  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  //G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
   G4bool isotropic_ = ConfigManager::GetIsotropic();
   G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
   G4double vertex_x_ = ConfigManager::GetVertexX();

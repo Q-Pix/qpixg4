@@ -238,7 +238,7 @@ void AnalysisData::AddMCParticle(MCParticle const * particle)
 }
 
 //-----------------------------------------------------------------------------
-int AnalysisData::ProcessToKey(std::string const & process)
+int AnalysisData::ProcessToKey(const G4String & process)
 {
   int key = -2;
 

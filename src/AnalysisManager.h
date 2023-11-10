@@ -31,7 +31,7 @@ class AnalysisManager {
     void Book(const std::string&);
     void Save();
     void EventFill(const AnalysisData&);
-    void FillMetadata(bool const &, double const &, double const &, double const &);
+    void FillMetadata();
     static AnalysisManager* Instance();
 
     AnalysisData event;
@@ -58,7 +58,7 @@ class AnalysisManager {
     double detector_length_x_;
     double detector_length_y_;
     double detector_length_z_;
-    bool detectorConfiguration_;
+    bool useHDDetectorConfiguration_;
 
 };
 

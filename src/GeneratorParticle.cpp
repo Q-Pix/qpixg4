@@ -9,7 +9,7 @@
 #include "globals.hh"
 #include "GeneratorParticle.h"
 
-#include "G4SystemOfUnits.hh"
+#include "CLHEP/Units/SystemOfUnits.h"
 
 //-----------------------------------------------------------------------------
 GeneratorParticle::GeneratorParticle()

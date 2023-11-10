@@ -28,7 +28,6 @@ class RunAction: public G4UserRunAction
     private:
 
         G4String root_output_path_;
-        bool multirun_;
         AnalysisData event;
 
 
@@ -37,6 +36,7 @@ class RunAction: public G4UserRunAction
         G4String        marleyJson_;
         G4String        generator_;
         G4String        genieFormat_;
+        G4bool          multirun_;
         G4String        particleType_; 
 };
 

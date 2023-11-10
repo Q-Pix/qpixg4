@@ -48,18 +48,6 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
 
   private:
 
-    G4GenericMessenger* msg_; // Messenger for configuration parameters
-    G4String Particle_Type_;
-    //double Particle_Energy_;
-
-    //bool decay_at_time_zero_;
-    //bool isotropic_;
-    //bool override_vertex_position_;
-    //G4bool printParticleInfo_;
-    //double vertex_x_;
-    //double vertex_y_;
-    //double vertex_z_;
-
     G4GeneralParticleSource * particle_gun_;
 
     SupernovaTiming * supernova_timing_;

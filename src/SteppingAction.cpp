@@ -25,7 +25,7 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-    AnalysisManager * analysis_manager = AnalysisManager::Instance();
+    AnalysisManager::Instance();
 
     if (step->GetPostStepPoint()->GetProcessDefinedStep() != 0){
       event.AddProcess(step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());

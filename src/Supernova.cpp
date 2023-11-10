@@ -6,17 +6,17 @@
 //   * Creation date: 17 September 2020
 // -----------------------------------------------------------------------------
 
+#include "ConfigManager.h"
+#include "Supernova.h"
+
 #include "G4Event.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4IonTable.hh"
 #include "Randomize.hh"
 #include "G4LogicalVolumeStore.hh"
-
 #include "G4ParticleDefinition.hh"
 #include "G4GenericMessenger.hh"
 
-#include "ConfigManager.h"
-#include "Supernova.h"
+#include "CLHEP/Units/SystemOfUnits.h"
 
 #include <math.h> 
 
@@ -137,13 +137,13 @@ void Supernova::Generate_Radioisotope(G4Event* event, int Atomic_Number, int Ato
     if (!pdef)G4Exception("SetParticleDefinition()", "[IonGun]",FatalException, " can not create ion ");
 
     // pdef->SetPDGLifeTime(1.*CLHEP::ps);
-    pdef->SetPDGLifeTime(1.*ps);
+    pdef->SetPDGLifeTime(1.*CLHEP::ps);
 
     G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
 
     Random_Direction(Px_hat, Py_hat, Pz_hat, 1);
     particle->SetMomentumDirection(G4ThreeVector(Px_hat, Py_hat, Pz_hat));
-    particle->SetKineticEnergy(1.*eV); // just an ion sitting
+    particle->SetKineticEnergy(1.*CLHEP::eV); // just an ion sitting
 
     if (Region == "Vol")
     {
@@ -182,7 +182,7 @@ void Supernova::Gen_CPA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
 {
     Ran_X = G4UniformRand() * detector_length_x_;
     Ran_Y = G4UniformRand() * detector_length_y_;
-    Ran_Z = detector_length_z_ - 1 *um;
+    Ran_Z = detector_length_z_ - 1 *CLHEP::um;
 }
 
 //-----------------------------------------------------------------------------
@@ -190,9 +190,9 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
 {
 
     double case_weight = G4UniformRand();
-    Ran_X = -10 *m;
-    Ran_Y = -10 *m;
-    Ran_Z = 1 *um;
+    Ran_X = -10 *CLHEP::m;
+    Ran_Y = -10 *CLHEP::m;
+    Ran_Z = 1 *CLHEP::um;
 
     if (case_weight <= 0.6)
     {
@@ -200,18 +200,18 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         // APA 3x long supports
         if (case_number == 1)
         {
-            Ran_X = 0.0 *m  + G4UniformRand() * 0.10 *m;
-            Ran_Y = 0.15 *m + G4UniformRand() * (6 *m - 0.15*2 *m);
+            Ran_X = 0.0 *CLHEP::m  + G4UniformRand() * 0.10 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + G4UniformRand() * (6 *CLHEP::m - 0.15*2 *CLHEP::m);
         }
         else if (case_number == 2 )
         {
-            Ran_X = 1.10 *m + G4UniformRand() * 0.10 *m;
-            Ran_Y = 0.15 *m + G4UniformRand() * (6 *m - 0.15*2 *m);
+            Ran_X = 1.10 *CLHEP::m + G4UniformRand() * 0.10 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + G4UniformRand() * (6 *CLHEP::m - 0.15*2 *CLHEP::m);
         }
         else if (case_number == 3 )
         {
-            Ran_X = 2.20 *m + G4UniformRand() * 0.10 *m;
-            Ran_Y = 0.15 *m + G4UniformRand() * (6 *m - 0.15*2 *m);
+            Ran_X = 2.20 *CLHEP::m + G4UniformRand() * 0.10 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + G4UniformRand() * (6 *CLHEP::m - 0.15*2 *CLHEP::m);
         }
     }
     else if (case_weight >= 0.6 && case_weight <= 0.8)
@@ -220,13 +220,13 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         // APA header and footer
         if (case_number == 1 )
         {
-            Ran_X = G4UniformRand() * 2.3 *m;
-            Ran_Y = G4UniformRand() * 0.15 *m;
+            Ran_X = G4UniformRand() * 2.3 *CLHEP::m;
+            Ran_Y = G4UniformRand() * 0.15 *CLHEP::m;
         }
         else if (case_number == 2 )
         {
-            Ran_X = G4UniformRand() * 2.3 *m;
-            Ran_Y = 6 *m - G4UniformRand() * 0.15 *m;
+            Ran_X = G4UniformRand() * 2.3 *CLHEP::m;
+            Ran_Y = 6 *CLHEP::m - G4UniformRand() * 0.15 *CLHEP::m;
         }
     }
     else if (case_weight >= 0.8)
@@ -235,43 +235,43 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         // Now the 8x cross braces
         if (case_number == 1 )
         {
-            Ran_X = 0.10 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*1 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 0.10 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*1 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 2 )
         {
-            Ran_X = 0.10 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*2 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 0.10 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*2 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 3 )
         {
-            Ran_X = 0.10 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*3 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 0.10 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*3 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 4 )
         {
-            Ran_X = 0.10 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*4 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 0.10 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*4 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 5 )
         {
-            Ran_X = 1.20 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*1 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 1.20 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*1 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 6 )
         {
-            Ran_X = 1.20 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*2 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 1.20 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*2 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 7 )
         {
-            Ran_X = 1.20 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*3 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 1.20 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*3 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 8 )
         {
-            Ran_X = 1.20 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*4 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 1.20 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*4 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
     }  
     

@@ -6,6 +6,7 @@
 //   * Creation date: 14 Aug 2019
 // -----------------------------------------------------------------------------
 
+// QPix includes
 #include "ActionInitialization.h"
 #include "ConfigManager.h"
 #include "DetectorConstruction.h"
@@ -16,39 +17,36 @@
 #include "SteppingAction.h"
 #include "TrackingAction.h"
 
-
+// Geant4 includes
 #include "G4RunManagerFactory.hh"
-#include <G4RunManager.hh>
-#include <G4UImanager.hh>
+#include "G4RunManager.hh"
+#include "G4UImanager.hh"
 #include "G4VisExecutive.hh"
-#include <G4UIExecutive.hh>
-#include <FTFP_BERT_HP.hh>
-#include <G4EmStandardPhysics_option4.hh>
-#include <G4OpticalPhysics.hh>
+#include "G4UIExecutive.hh"
+#include "FTFP_BERT_HP.hh"
+#include "G4EmStandardPhysics_option4.hh"
+#include "G4OpticalPhysics.hh"
 
+// ROOT includes
 #include "TROOT.h"
 
-#include "Randomize.hh"
-#include "time.h"
+// system includes
+#include <Randomize.hh>
+#include <time.h>
 #include <string>
 #include <typeinfo>
-
 
 int main(int argc, char** argv)
 {
 
-  ConfigManager * configManager = ConfigManager::Instance();
-  ConfigManager::Print();
+  ConfigManager::Instance();
   //choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
   //set random seed with system time
   G4long seed = time(NULL);
-  //CLHEP::HepRandom::setTheSeed(seed);
-  CLHEP::HepRandom::setTheSeed(1234567890); // For debuging purposes
-
+  CLHEP::HepRandom::setTheSeed(seed);
 
   // Detect interactive mode (if no arguments) and define UI session
-  //
   G4UIExecutive* ui = 0;
   if ( argc == 1 ) {
     ui = new G4UIExecutive(argc, argv);
@@ -62,7 +60,6 @@ int main(int argc, char** argv)
   run_manager->SetUserInitialization(physics_list);
 
   run_manager->SetUserInitialization(new DetectorConstruction());
-
   run_manager->SetUserInitialization(new ActionInitialization());
 
   // Initialize visualization

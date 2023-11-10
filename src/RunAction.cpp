@@ -30,7 +30,7 @@
 RunAction::RunAction()
   : G4UserRunAction()
 {
-  ConfigManager * configManager = ConfigManager::Instance();
+  ConfigManager::Instance();
 }
 
 
@@ -41,16 +41,16 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
-    ConfigManager * configManager = ConfigManager::Instance();
+    ConfigManager::Instance();
     //ConfigManager::Print();
 
-    G4String inputFile_ = ConfigManager::GetInputFile();
-    G4String outputFile_ = ConfigManager::GetOutputFile();
-    G4String marleyJson_ = ConfigManager::GetMarleyJson();
-    G4String generator_ = ConfigManager::GetGenerator();
-    G4String genieFormat_ = ConfigManager::GetGenieFormat();
-    G4bool multirun_ = ConfigManager::GetMultirun();
-    G4String particleType_ = ConfigManager::GetParticleType();
+    inputFile_ = ConfigManager::GetInputFile();
+    outputFile_ = ConfigManager::GetOutputFile();
+    marleyJson_ = ConfigManager::GetMarleyJson();
+    generator_ = ConfigManager::GetGenerator();
+    genieFormat_ = ConfigManager::GetGenieFormat();
+    multirun_ = ConfigManager::GetMultirun();
+    particleType_ = ConfigManager::GetParticleType();
 
 
 
@@ -97,30 +97,11 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
         std::ostringstream ss;
         ss << std::setw(4) << std::setfill('0') << g4run->GetRunID();
         std::string runStr_(ss.str());
-
-        // G4cout << "run_str: " << run_str << G4endl;
-
-        //std::filesystem::path path = static_cast<std::string> (root_output_path_);
-
-        // G4cout << "root_name:      " << path.root_name()      << G4endl;
-        // G4cout << "root_directory: " << path.root_directory() << G4endl;
-        // G4cout << "root_path:      " << path.root_path()      << G4endl;
-        // G4cout << "relative_path:  " << path.relative_path()  << G4endl;
-        // G4cout << "parent_path:    " << path.parent_path()    << G4endl;
-        // G4cout << "filename:       " << path.filename()       << G4endl;
-        // G4cout << "stem:           " << path.stem()           << G4endl;
-        // G4cout << "extension:      " << path.extension()      << G4endl;
-
         G4String parentPath_ = outputFile_(0, outputFile_.last('/'));
         G4String baseName_ = outputFile_(outputFile_.last('/')+1, outputFile_.length());
         G4String stem_ = baseName_(0, baseName_.last('.'));
         G4String extension_ = baseName_(baseName_.last('.'), baseName_.length());
-
-        // G4cout << "parent_path: " << parent_path << G4endl;
-        // G4cout << "stem:        " << stem        << G4endl;
-        // G4cout << "extension:   " << extension   << G4endl;
-
-
+        
         root_output_path = parentPath_;
         root_output_path += "/";
         root_output_path += stem_;
@@ -132,7 +113,6 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
     // get run number
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
-    // analysis_manager->Book(root_output_path_);
 
     analysis_manager->Book(root_output_path);
     event.SetRun(g4run->GetRunID());
@@ -150,48 +130,26 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
 void RunAction::EndOfRunAction(const G4Run*)
 {
-    G4String inputFile_ = ConfigManager::GetInputFile();
-    G4String outputFile_ = ConfigManager::GetOutputFile();
-    G4String marleyJson_ = ConfigManager::GetMarleyJson();
-    G4String generator_ = ConfigManager::GetGenerator();
-    G4String genieFormat_ = ConfigManager::GetGenieFormat();
-    G4bool multirun_ = ConfigManager::GetMultirun();
-    G4String particleType_ = ConfigManager::GetParticleType();
-
-    // get analysis manager
+    // instantiate classes to allow for messengers
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
+    GENIEManager::Instance();
 
-    // get detector dimensions
-    G4LogicalVolume* detector_logic_vol
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
-    if (detector_logic_vol)
-    {
-      G4Box * detector_solid_vol
-        = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
 
-      double const detector_length_x = detector_solid_vol->GetXHalfLength() * 2. / CLHEP::cm;
-      double const detector_length_y = detector_solid_vol->GetYHalfLength() * 2. / CLHEP::cm;
-      double const detector_length_z = detector_solid_vol->GetZHalfLength() * 2. / CLHEP::cm;
+    inputFile_ = ConfigManager::GetInputFile();
+    outputFile_ = ConfigManager::GetOutputFile();
+    marleyJson_ = ConfigManager::GetMarleyJson();
+    generator_ = ConfigManager::GetGenerator();
+    genieFormat_ = ConfigManager::GetGenieFormat();
+    multirun_ = ConfigManager::GetMultirun();
+    particleType_ = ConfigManager::GetParticleType();
 
-      // G4cout << "det. dim.: " << detector_length_x << " cm × "
-      //                         << detector_length_y << " cm × "
-      //                         << detector_length_z << " cm"
-      //        << G4endl;
-
-      G4RunManager* rm = G4RunManager::GetRunManager(); // Get the run manager to access the detector construction
-
-      // save detector dimensions as metadata
-      if (G4Threading::IsMasterThread()){
-        analysis_manager->FillMetadata(ConfigManager::GetDetectorConfiguration(),
-                                     detector_length_x,
-                                     detector_length_y,
-                                     detector_length_z);
-      }
+    // save detector dimensions as metadata
+    if (G4Threading::IsMasterThread()){
+      analysis_manager->FillMetadata();
     }
+   
 
     // save run to ROOT file
     analysis_manager->Save();
-
-    GENIEManager *genieManager=GENIEManager::Instance();
 }
 

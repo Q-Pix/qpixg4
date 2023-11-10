@@ -57,11 +57,7 @@ AnalysisManager * AnalysisManager::Instance()
 void AnalysisManager::Book(const std::string& file_path)
 {
 
-  if (!G4Threading::IsMasterThread()) 
-  //G4AutoLock bookLock(&bookMutex);
-  {
-    return;
-  }  // only run Book() for the master thread
+  if (!G4Threading::IsMasterThread()) return; // only run Book() for the master thread
 
   // Check if tfile_ is a null pointer, if so, create ROOT output file
   if (tfile_ == 0) {
@@ -77,7 +73,7 @@ void AnalysisManager::Book(const std::string& file_path)
     metadata_->Branch("detector_length_x", &detector_length_x_, "detector_length_x/D");
     metadata_->Branch("detector_length_y", &detector_length_y_, "detector_length_y/D");
     metadata_->Branch("detector_length_z", &detector_length_z_, "detector_length_z/D");
-    metadata_->Branch("detector_configuration", &detectorConfiguration_);
+    metadata_->Branch("use_HD_detector_configuration", &useHDDetectorConfiguration_);
   }
 
   // check if event_tree_ is a null pointer, if so, create event tree
@@ -191,15 +187,13 @@ void AnalysisManager::EventFill(const AnalysisData& rhs)
 }
 
 //-----------------------------------------------------------------------------
-void AnalysisManager::FillMetadata(bool const & detectorConfiguration, double const & detector_length_x,
-                                   double const & detector_length_y,
-                                   double const & detector_length_z)
+void AnalysisManager::FillMetadata()
 {
   G4AutoLock metaLock(&metaMutex);
-  detector_length_x_ = detector_length_x;
-  detector_length_y_ = detector_length_y;
-  detector_length_z_ = detector_length_z;
-  detectorConfiguration_ = ConfigManager::GetDetectorConfiguration();
+  detector_length_x_ = ConfigManager::GetDetectorWidth();
+  detector_length_y_ = ConfigManager::GetDetectorHeight();
+  detector_length_z_ = ConfigManager::GetDetectorLength();
+  useHDDetectorConfiguration_ = ConfigManager::GetUseHDDetectorConfiguration();
   metadata_->Fill();
 }
 

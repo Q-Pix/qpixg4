@@ -97,7 +97,7 @@ G4int GENIEManager::Initialize() {
       if (!f_ || !f_->IsOpen()) {
         f_ = new TFile(inputFile_);
       }
-      if(f_->IsZombie()){
+      if(f_->!IsGood()){
         return isInitialized ;
       }
       f_->GetObject(treeName_,tree_);
@@ -105,7 +105,7 @@ G4int GENIEManager::Initialize() {
         this->SetBranches();
       } else {
         G4cerr << "tree_ is a null pointer" << G4endl;
-        abort;
+        abort();
       }
     }
     isInitialized=1;
@@ -147,7 +147,7 @@ void GENIEManager::SetBranches() {
   }
   else{
     G4cerr << "tree_ is a null pointer" << G4endl;
-    abort;
+    abort();
   }
 
 
@@ -159,8 +159,7 @@ Int_t GENIEManager::GetNEntries() {
 
 
 void GENIEManager::Cd(){
-  if(f_)
-    f_->cd();
+  if (f_) f_->cd();
 }
 
 

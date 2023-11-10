@@ -16,7 +16,9 @@
 
 // GEANT4 includes
 #include "G4SDManager.hh"
-#include "G4SystemOfUnits.hh"
+
+// CLHEP includes
+#include "CLHEP/Units/SystemOfUnits.h"
 
 // C++ includes
 #include <vector>
@@ -52,7 +54,7 @@ G4bool TrackingSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   G4double edep = aStep->GetTotalEnergyDeposit();
 
   // if (edep==0.) return false;
-  if (edep < 1. *keV ) return false;
+  if (edep < 1. *CLHEP::keV ) return false;
 
   if (Event_Cutoff_ != 0.0)
   {

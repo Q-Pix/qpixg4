@@ -1,10 +1,10 @@
 // -----------------------------------------------------------------------------
-// //  G4_QPIX | QPixActionInitialization.cpp
-// //
-// //
-// //   * Author: Everybody is an author!
-// //   * Creation date: 27 Oct 2022
-// // -----------------------------------------------------------------------------
+// G4_QPIX | QPixActionInitialization.cpp
+//
+//
+//   * Author: Dave Elofson (dave.elofson@tamu.edu)
+//   * Creation date: 27 Oct 2022
+// -----------------------------------------------------------------------------
 
 // Class Includes
 #include "ActionInitialization.h"

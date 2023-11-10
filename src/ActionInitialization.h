@@ -33,10 +33,6 @@ class ActionInitialization : public G4VUserActionInitialization
     mutable PrimaryGeneration* masterPrimaryGeneration;
     mutable EventAction* masterEventAction;
     mutable RunAction* masterRunAction;
-
-  private:
-    G4String   particleType;
-    G4String   string;
 };
 
 #endif

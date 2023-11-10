@@ -14,10 +14,12 @@
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4NistManager.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4VisAttributes.hh"
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
+
+#include "CLHEP/Units/SystemOfUnits.h"
+
 
 DetectorConstruction::DetectorConstruction(): G4VUserDetectorConstruction()
 {
@@ -29,9 +31,24 @@ DetectorConstruction::~DetectorConstruction()
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
+  // Get Detector Geometry first to dicatate world_size
+  if(ConfigManager::GetUseHDDetectorConfiguration())
+  {
+    // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
+    // resemble an APA size
+    ConfigManager::SetDetectorWidth(2.3*CLHEP::m);   // detector_x
+    ConfigManager::SetDetectorHeight(6.0*CLHEP::m);  // detector_y
+    ConfigManager::SetDetectorLength(3.6*CLHEP::m);  // detector_z
+  } else {
+    // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
+    ConfigManager::SetDetectorHeight(13.0*CLHEP::m); // detector_y
+    ConfigManager::SetDetectorLength(6.5*CLHEP::m);  // detector_z
+    ConfigManager::SetDetectorWidth(20.0*CLHEP::m);  // detector_x
+  }
+
   // WORLD /////////////////////////////////////////////////
 
-  G4double world_size = 30.*m;
+  G4double world_size = std::max({ConfigManager::GetDetectorHeight(),ConfigManager::GetDetectorLength(),ConfigManager::GetDetectorWidth()})*CLHEP::m;
   G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
 
   G4Box* world_solid_vol =
@@ -46,24 +63,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                       world_logic_vol, "world.physical", 0, false, 0, true);
                       
 
-  std::cout << " Detector configuration is: " << ConfigManager::GetDetectorConfiguration() << std::endl;
+  std::cout << " Detector configuration is: " << ConfigManager::GetUseHDDetectorConfiguration() << std::endl;
 
-  if(ConfigManager::GetDetectorConfiguration())
-  {
-  // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
-  // resemble an APA size
-    ConfigManager::SetDetectorWidth(2.3*m);
-    ConfigManager::SetDetectorHeight(6.0*m);
-    ConfigManager::SetDetectorLength(3.6*m);
-  }
-  else
-  {
-  // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
-    ConfigManager::SetDetectorHeight(13.0*m);
-    ConfigManager::SetDetectorLength(6.5*m);
-    ConfigManager::SetDetectorWidth(20.0*m);
-  }
-
+  // DETECTOR
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
 
   G4Box* detector_solid_vol =
