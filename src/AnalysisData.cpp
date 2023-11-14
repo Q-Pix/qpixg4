@@ -245,7 +245,7 @@ int AnalysisData::ProcessToKey(const G4String & process)
   if (process == "NoProcess") key = -1;
   else if (process == "primary") key =  0;
   else if (process == "eIoni") key =  1;
-  else if (process == "msc"0) key =  2;
+  else if (process == "msc") key =  2;
   else if (process == "compt") key =  3;
   else if (process == "phot") key =  4;
   else if (process == "eBrem") key =  5;
