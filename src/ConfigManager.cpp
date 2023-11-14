@@ -9,14 +9,11 @@
 // Class Includes
 #include "ConfigManager.h"
 
-// Package Includes
-
 // Geant Includes
 #include "globals.hh"
 #include "G4GenericMessenger.hh"
 #include "G4Threading.hh"
 #include "G4ThreeVector.hh"
-
 #include "CLHEP/Units/SystemOfUnits.h"
 
 // System Includes
@@ -25,7 +22,6 @@
 #include <typeinfo>
 #include <float.h>
 #include <stdlib.h>
-
 
 //-----------------------------------------------------------------------------
 // Singleton Initializers for master and worker threads
@@ -48,17 +44,13 @@ ConfigManager* ConfigManager::Instance() {
 //-----------------------------------------------------------------------------
 ConfigManager::ConfigManager()
   : eventIDOffset_(0), energyThreshold_(0),
-  
   particleType_(""), decayAtTimeZero_(false), isotropic_(true),
   overrideVertexPosition_(false), printParticleInfo_(false), inputFile_(""), outputFile_(""), marleyJson_(""), generator_(""),
   genieFormat_(""), multirun_(false), momentumDirection_(0,0,0), vertexX_(2.3*CLHEP::m/2), vertexY_(6.0*CLHEP::m/2), vertexZ_(3.7*CLHEP::m/2),
-  
   nAr39Decays_(0), nAr42Decays_(0), nKr85Decays_(0), nCo60Decays_(0), nK40Decays_(0),
   nK42Decays_(0), nBi214Decays_(0), nPb214Decays_(0), nPo210Decays_(0), nRn222Decays_(0), eventCutoff_(0),
   eventWindow_(0),
-
   snTimingOn_(false), th2Name_("nusperbin2d_nue"),
-
   useHDDetectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0)
 {
   CreateCommands();
@@ -68,7 +60,6 @@ ConfigManager::ConfigManager()
 ConfigManager::ConfigManager(const ConfigManager& master)
   : eventIDOffset_(master.eventIDOffset_),
   energyThreshold_(master.energyThreshold_),
-
   particleType_(master.particleType_),
   decayAtTimeZero_(master.decayAtTimeZero_), isotropic_(master.isotropic_),
   overrideVertexPosition_(master.overrideVertexPosition_),
@@ -78,16 +69,13 @@ ConfigManager::ConfigManager(const ConfigManager& master)
   multirun_(master.multirun_), momentumDirection_(master.momentumDirection_),
   vertexX_(master.vertexX_), vertexY_(master.vertexY_),
   vertexZ_(master.vertexZ_),
-
   nAr39Decays_(master.nAr39Decays_), nAr42Decays_(master.nAr42Decays_),
   nKr85Decays_(master.nKr85Decays_), nCo60Decays_(master.nCo60Decays_),
   nK40Decays_(master.nK40Decays_), nK42Decays_(master.nK42Decays_),
   nBi214Decays_(master.nBi214Decays_), nPb214Decays_(master.nPb214Decays_),
   nPo210Decays_(master.nPo210Decays_), nRn222Decays_(master.nRn222Decays_),
   eventCutoff_(master.eventCutoff_), eventWindow_(master.eventWindow_),
-
   snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_),
-
   useHDDetectorConfiguration_(master.useHDDetectorConfiguration_), detectorLength_(master.detectorLength_),
   detectorWidth_(master.detectorWidth_), detectorHeight_(master.detectorHeight_)
 {
@@ -118,7 +106,6 @@ void ConfigManager::CreateCommands()
   msgEvent_->DeclareProperty("offset", eventIDOffset_, "Event ID offset.");
   msgEvent_->DeclarePropertyWithUnit("energy_threshold", "MeV", energyThreshold_, "Events that deposit less energy than this energy threshold will not be saved.");
 
-
   // Declare all properties for msgInputs
   msgInputs_->DeclareProperty("particle_type", particleType_,  "which kind of particle?");
   msgInputs_->DeclareProperty("decay_at_time_zero", decayAtTimeZero_, "Set to true to make unstable isotopes decay at t=0.");
@@ -133,11 +120,9 @@ void ConfigManager::CreateCommands()
   msgInputs_->DeclareProperty("genie_format", genieFormat_, "format of genie-produced input file");
   msgInputs_->DeclareProperty("momentum_direction", momentumDirection_, "initial momentum of generator particles");
 
-
   msgInputs_->DeclarePropertyWithUnit("vertex_x", "mm", vertexX_, "vertex x");
   msgInputs_->DeclarePropertyWithUnit("vertex_y", "mm", vertexY_, "vertex y");
   msgInputs_->DeclarePropertyWithUnit("vertex_z", "mm", vertexZ_, "vertex z");
-
 
   // Declare all properties for msgSupernova
   msgSupernova_->DeclareProperty("N_Ar39_Decays", nAr39Decays_,  "number of Ar39 decays");
@@ -153,7 +138,6 @@ void ConfigManager::CreateCommands()
 
   msgSupernova_->DeclarePropertyWithUnit("Event_Cutoff", "ns", eventCutoff_,  "window to simulate the times");
   msgSupernova_->DeclarePropertyWithUnit("Event_Window", "ns", eventWindow_,  "window to simulate the times");
-
 
   // Declare all properties for msgSupernovaTiming
   msgSupernovaTiming_->DeclareProperty("on", snTimingOn_, "turn on SupernovaTiming");

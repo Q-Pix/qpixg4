@@ -16,14 +16,13 @@ class G4Material;
 
 class DetectorConstruction: public G4VUserDetectorConstruction
 {
-public:
-  DetectorConstruction();
-  virtual ~DetectorConstruction();
+  public:
+    DetectorConstruction();
+    virtual ~DetectorConstruction();
 
-private:
-  virtual G4VPhysicalVolume* Construct();
-  virtual void ConstructSDandField();
-
+  private:
+    virtual G4VPhysicalVolume* Construct();
+    virtual void ConstructSDandField();
 };
 
 #endif
