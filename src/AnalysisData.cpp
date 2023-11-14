@@ -242,30 +242,30 @@ int AnalysisData::ProcessToKey(const G4String & process)
 {
   int key = -2;
 
-  if (process.compare("NoProcess")                 == 0) key = -1;
-  else if (process.compare("primary")              == 0) key =  0;
-  else if (process.compare("eIoni")                == 0) key =  1;
-  else if (process.compare("msc")                  == 0) key =  2;
-  else if (process.compare("compt")                == 0) key =  3;
-  else if (process.compare("phot")                 == 0) key =  4;
-  else if (process.compare("eBrem")                == 0) key =  5;
-  else if (process.compare("ionIoni")              == 0) key =  6;
-  else if (process.compare("hIoni")                == 0) key =  7;
-  else if (process.compare("RadioactiveDecayBase") == 0) key =  8;
-  else if (process.compare("CoulombScat")          == 0) key =  9;
-  else if (process.compare("Rayl")                 == 0) key = 10;
-  else if (process.compare("Transportation")       == 0) key = 11;
-  else if (process.compare("annihil")              == 0) key = 12;
-  else if (process.compare("conv")                 == 0) key = 13;
-  else if (process.compare("hadElastic")           == 0) key = 14;
-  else if (process.compare("nCapture")             == 0) key = 15;
-  else if (process.compare("neutronInelastic")     == 0) key = 16;
-  else if (process.compare("photonNuclear")        == 0) key = 17;
-  else if (process.compare("protonInelastic")      == 0) key = 18;
-  else if (process.compare("dInelastic")           == 0) key = 19;
-  else if (process.compare("Decay")                == 0) key = 20;
-  else if (process.compare("RadioactiveDecay")     == 0) key = 21;
-  else { std::cout << "Uncategorized process: " << process << std::endl; }
+  if (process == "NoProcess") key = -1;
+  else if (process == "primary") key =  0;
+  else if (process == "eIoni") key =  1;
+  else if (process == "msc"0) key =  2;
+  else if (process == "compt") key =  3;
+  else if (process == "phot") key =  4;
+  else if (process == "eBrem") key =  5;
+  else if (process == "ionIoni") key =  6;
+  else if (process == "hIoni") key =  7;
+  else if (process == "RadioactiveDecayBase") key =  8;
+  else if (process == "CoulombScat") key =  9;
+  else if (process == "Rayl") key = 10;
+  else if (process == "Transportation") key = 11;
+  else if (process == "annihil") key = 12;
+  else if (process == "conv") key = 13;
+  else if (process == "hadElastic") key = 14;
+  else if (process == "nCapture") key = 15;
+  else if (process == "neutronInelastic") key = 16;
+  else if (process == "photonNuclear") key = 17;
+  else if (process == "protonInelastic") key = 18;
+  else if (process == "dInelastic") key = 19;
+  else if (process == "Decay") key = 20;
+  else if (process == "RadioactiveDecay") key = 21;
+  else { G4cout << "Uncategorized process: " << process << G4endl; }
 
   return key;
 }
