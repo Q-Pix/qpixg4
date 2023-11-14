@@ -9,8 +9,12 @@
 #ifndef STEPPING_ACTION_H
 #define STEPPING_ACTION_H
 
+
+#include "AnalysisData.h"
+
 #include <G4UserSteppingAction.hh>
 
+class AnalysisData;
 
 class SteppingAction: public G4UserSteppingAction
 {
@@ -18,6 +22,9 @@ class SteppingAction: public G4UserSteppingAction
     SteppingAction();
     virtual ~SteppingAction();
     virtual void UserSteppingAction(const G4Step*);
+
+  private:
+    AnalysisData event;
 };
 
 #endif

@@ -6,48 +6,39 @@
 //   * Creation date: 17 September 2020
 // -----------------------------------------------------------------------------
 
+#include "ConfigManager.h"
+#include "Supernova.h"
+
 #include "G4Event.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4IonTable.hh"
 #include "Randomize.hh"
 #include "G4LogicalVolumeStore.hh"
-
 #include "G4ParticleDefinition.hh"
 #include "G4GenericMessenger.hh"
 
-#include "Supernova.h"
+#include "CLHEP/Units/SystemOfUnits.h"
 
 #include <math.h> 
 
 
 //-----------------------------------------------------------------------------
-Supernova::Supernova():
-N_Ar39_Decays_(0),N_Ar42_Decays_(0),
-N_Kr85_Decays_(0),N_Co60_Decays_(0),
-N_K40_Decays_(0),N_K42_Decays_(0),
-N_Bi214_Decays_(0),N_Pb214_Decays_(0),
-N_Po210_Decays_(0),N_Rn222_Decays_(0)
+Supernova::Supernova()
+  : N_Ar39_Decays_(ConfigManager::GetNAr39Decays()),
+    N_Ar42_Decays_(ConfigManager::GetNAr42Decays()),
+    N_Kr85_Decays_(ConfigManager::GetNKr85Decays()),
+    N_Co60_Decays_(ConfigManager::GetNCo60Decays()),
+    N_K40_Decays_(ConfigManager::GetNK40Decays()),
+    N_K42_Decays_(ConfigManager::GetNK42Decays()),
+    N_Bi214_Decays_(ConfigManager::GetNBi214Decays()),
+    N_Pb214_Decays_(ConfigManager::GetNPb214Decays()),
+    N_Po210_Decays_(ConfigManager::GetNPo210Decays()),
+    N_Rn222_Decays_(ConfigManager::GetNRn222Decays())
 {
-    msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
-    msg_->DeclareProperty("Event_Window", Event_Window_,  "window to simulate the times").SetUnit("ns");
-
-    msg_->DeclareProperty("N_Ar39_Decays", N_Ar39_Decays_,  "number of Ar39 decays");
-    msg_->DeclareProperty("N_Ar42_Decays", N_Ar42_Decays_,  "number of Ar42 decays");
-    msg_->DeclareProperty("N_Kr85_Decays", N_Kr85_Decays_,  "number of Kr85 decays");
-    msg_->DeclareProperty("N_Co60_Decays", N_Co60_Decays_,  "number of Co60 decays");
-    msg_->DeclareProperty("N_K40_Decays", N_K40_Decays_,  "number of K40 decays");
-    msg_->DeclareProperty("N_K42_Decays", N_K42_Decays_,  "number of K42 decays");
-    msg_->DeclareProperty("N_Bi214_Decays", N_Bi214_Decays_,  "number of Bi214 decays");
-    msg_->DeclareProperty("N_Pb214_Decays", N_Pb214_Decays_,  "number of Pb214 decays");
-    msg_->DeclareProperty("N_Po210_Decays", N_Po210_Decays_,  "number of Po210 decays");
-    msg_->DeclareProperty("N_Rn222_Decays", N_Rn222_Decays_,  "number of Rn222 decays");
-
 }
 
 //-----------------------------------------------------------------------------
 Supernova::~Supernova()
 {
-    delete msg_;
 }
 
 
@@ -146,13 +137,13 @@ void Supernova::Generate_Radioisotope(G4Event* event, int Atomic_Number, int Ato
     if (!pdef)G4Exception("SetParticleDefinition()", "[IonGun]",FatalException, " can not create ion ");
 
     // pdef->SetPDGLifeTime(1.*CLHEP::ps);
-    pdef->SetPDGLifeTime(1.*ps);
+    pdef->SetPDGLifeTime(1.*CLHEP::ps);
 
     G4PrimaryParticle* particle = new G4PrimaryParticle(pdef);
 
     Random_Direction(Px_hat, Py_hat, Pz_hat, 1);
     particle->SetMomentumDirection(G4ThreeVector(Px_hat, Py_hat, Pz_hat));
-    particle->SetKineticEnergy(1.*eV); // just an ion sitting
+    particle->SetKineticEnergy(1.*CLHEP::eV); // just an ion sitting
 
     if (Region == "Vol")
     {
@@ -191,7 +182,7 @@ void Supernova::Gen_CPA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
 {
     Ran_X = G4UniformRand() * detector_length_x_;
     Ran_Y = G4UniformRand() * detector_length_y_;
-    Ran_Z = detector_length_z_ - 1 *um;
+    Ran_Z = detector_length_z_ - 1 *CLHEP::um;
 }
 
 //-----------------------------------------------------------------------------
@@ -199,9 +190,9 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
 {
 
     double case_weight = G4UniformRand();
-    Ran_X = -10 *m;
-    Ran_Y = -10 *m;
-    Ran_Z = 1 *um;
+    Ran_X = -10 *CLHEP::m;
+    Ran_Y = -10 *CLHEP::m;
+    Ran_Z = 1 *CLHEP::um;
 
     if (case_weight <= 0.6)
     {
@@ -209,18 +200,18 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         // APA 3x long supports
         if (case_number == 1)
         {
-            Ran_X = 0.0 *m  + G4UniformRand() * 0.10 *m;
-            Ran_Y = 0.15 *m + G4UniformRand() * (6 *m - 0.15*2 *m);
+            Ran_X = 0.0 *CLHEP::m  + G4UniformRand() * 0.10 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + G4UniformRand() * (6 *CLHEP::m - 0.15*2 *CLHEP::m);
         }
         else if (case_number == 2 )
         {
-            Ran_X = 1.10 *m + G4UniformRand() * 0.10 *m;
-            Ran_Y = 0.15 *m + G4UniformRand() * (6 *m - 0.15*2 *m);
+            Ran_X = 1.10 *CLHEP::m + G4UniformRand() * 0.10 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + G4UniformRand() * (6 *CLHEP::m - 0.15*2 *CLHEP::m);
         }
         else if (case_number == 3 )
         {
-            Ran_X = 2.20 *m + G4UniformRand() * 0.10 *m;
-            Ran_Y = 0.15 *m + G4UniformRand() * (6 *m - 0.15*2 *m);
+            Ran_X = 2.20 *CLHEP::m + G4UniformRand() * 0.10 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + G4UniformRand() * (6 *CLHEP::m - 0.15*2 *CLHEP::m);
         }
     }
     else if (case_weight >= 0.6 && case_weight <= 0.8)
@@ -229,13 +220,13 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         // APA header and footer
         if (case_number == 1 )
         {
-            Ran_X = G4UniformRand() * 2.3 *m;
-            Ran_Y = G4UniformRand() * 0.15 *m;
+            Ran_X = G4UniformRand() * 2.3 *CLHEP::m;
+            Ran_Y = G4UniformRand() * 0.15 *CLHEP::m;
         }
         else if (case_number == 2 )
         {
-            Ran_X = G4UniformRand() * 2.3 *m;
-            Ran_Y = 6 *m - G4UniformRand() * 0.15 *m;
+            Ran_X = G4UniformRand() * 2.3 *CLHEP::m;
+            Ran_Y = 6 *CLHEP::m - G4UniformRand() * 0.15 *CLHEP::m;
         }
     }
     else if (case_weight >= 0.8)
@@ -244,43 +235,43 @@ void Supernova::Gen_APA_Position(double& Ran_X, double& Ran_Y, double& Ran_Z)
         // Now the 8x cross braces
         if (case_number == 1 )
         {
-            Ran_X = 0.10 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*1 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 0.10 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*1 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 2 )
         {
-            Ran_X = 0.10 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*2 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 0.10 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*2 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 3 )
         {
-            Ran_X = 0.10 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*3 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 0.10 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*3 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 4 )
         {
-            Ran_X = 0.10 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*4 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 0.10 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*4 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 5 )
         {
-            Ran_X = 1.20 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*1 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 1.20 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*1 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 6 )
         {
-            Ran_X = 1.20 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*2 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 1.20 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*2 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 7 )
         {
-            Ran_X = 1.20 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*3 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 1.20 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*3 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
         else if (case_number == 8 )
         {
-            Ran_X = 1.20 *m + G4UniformRand() * 1.0 *m;
-            Ran_Y = 0.15 *m + 1.115*4 *m + G4UniformRand() * (0.05 *m);
+            Ran_X = 1.20 *CLHEP::m + G4UniformRand() * 1.0 *CLHEP::m;
+            Ran_Y = 0.15 *CLHEP::m + 1.115*4 *CLHEP::m + G4UniformRand() * (0.05 *CLHEP::m);
         }
     }  
     

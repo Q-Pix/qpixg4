@@ -6,21 +6,17 @@
 //   * Creation date: 25 September 2020
 // -----------------------------------------------------------------------------
 
+#include "ConfigManager.h"
 #include "SupernovaTiming.h"
 
 //-----------------------------------------------------------------------------
 SupernovaTiming::SupernovaTiming()
   : initialized_(false),
-    on_(false),
-    input_file_(""),
-    th2_name_("nusperbin2d_nue"),
+    on_(ConfigManager::GetSNTimingOn()),
+    input_file_(ConfigManager::GetInputFile()),
+    th2_name_(ConfigManager::GetTh2Name()),
     tfile_(0)
 {
-    msg_ = new G4GenericMessenger(
-        this, "/supernova/timing/", "control commands for SupernovaTiming");
-    msg_->DeclareProperty("on", on_, "turn on SupernovaTiming");
-    msg_->DeclareProperty("input_file", input_file_, "input ROOT file");
-    msg_->DeclareProperty("th2_name", th2_name_, "name of TH2");
 }
 
 //-----------------------------------------------------------------------------

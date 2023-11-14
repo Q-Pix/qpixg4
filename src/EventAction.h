@@ -9,25 +9,29 @@
 #ifndef EVENT_ACTION_H
 #define EVENT_ACTION_H
 
+// QPix includes
+#include "AnalysisData.h"
+
 #include <G4UserEventAction.hh>
 
 
 class G4GenericMessenger;
+class AnalysisData;
 
 class EventAction: public G4UserEventAction
 {
-    public:
+  public:
 
-        EventAction();
-        virtual ~EventAction();
-        virtual void BeginOfEventAction(const G4Event*);
-        virtual void EndOfEventAction(const G4Event*);
+    EventAction();
+    virtual ~EventAction();
+    virtual void BeginOfEventAction(const G4Event*);
+    virtual void EndOfEventAction(const G4Event*);
+    AnalysisData event;
 
-    private:
+  private:
 
-        G4GenericMessenger* msg_; // Messenger for configuration parameters
-        int event_id_offset_;
-        double energy_threshold_;
+    G4int event_id_offset_;
+    G4double energy_threshold_;
 };
 
 #endif
