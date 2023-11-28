@@ -4,7 +4,7 @@
 /tracking/verbose 0
 
 # output path
-/Inputs/root_output ../output/proton.root
+/inputs/root_output ../output/proton.root
 
 # initialize run
 /run/initialize
@@ -12,7 +12,7 @@
 
 # limit radioactive decay chains
 # use if needed
-#/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+#/process/had/rdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 
 # particle type
 # e-, e+, mu-, mu+, neutron, proton, anti_proton, pi-, pi+, pi0, kaon-, kaon+,
