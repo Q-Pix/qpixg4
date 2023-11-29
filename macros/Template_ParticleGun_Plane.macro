@@ -4,7 +4,7 @@
 /tracking/verbose 0
 
 # output path
-/inputs/root_output ../output/muon.root
+/inputs/output_file ../output/muon.root
 
 # initialize run
 /run/initialize
