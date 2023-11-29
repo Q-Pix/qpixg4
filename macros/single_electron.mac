@@ -4,7 +4,7 @@
 /tracking/verbose 0
 
 # output path
-/inputs/root_output ./output/single_electron.root
+/inputs/output_file ./output/single_electron.root
 
 # initialize run
 /run/initialize
