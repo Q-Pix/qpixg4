@@ -7,7 +7,7 @@
 /inputs/particle_type SUPERNOVA
 
 # output path
-/inputs/root_output ../output/SUPERNOVA_BACKGROUND.root
+/inputs/output_file ../output/SUPERNOVA_BACKGROUND.root
 
 # initialize run
 /run/initialize
