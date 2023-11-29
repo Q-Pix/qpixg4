@@ -4,7 +4,7 @@
 /tracking/verbose 0
 
 # output path
-/inputs/root_output ./output/Radioactive.root
+/inputs/output_file ./output/Radioactive.root
 
 # make unstable isotopes decay at t=0
 /inputs/decay_at_time_zero true  # this is set to false by default
