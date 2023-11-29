@@ -4,7 +4,7 @@
 /tracking/verbose 0
 
 # output path
-/inputs/root_output ./output/single_pion.root
+/inputs/output_file ./output/single_pion.root
 
 # initialize run
 /run/initialize
