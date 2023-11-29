@@ -19,7 +19,7 @@
 /supernova/timing/th2_name   nusperbin2d_nue
 
 # output path
-/inputs/root_output ../output/SUPERNOVA_NEUTRINO.root
+/inputs/output_file ../output/SUPERNOVA_NEUTRINO.root
 
 # initialize run
 /run/initialize
