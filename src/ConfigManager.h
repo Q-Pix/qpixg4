@@ -1,173 +1,200 @@
 // -----------------------------------------------------------------------------
-//  G4_QPIX | ConfigManager.h
+//  ConfigManager.cpp
 //
-//
+//  Class definition of the ConfigManager Singleton Container
 //   * Author: Everybody is an author!
-//   * Creation date: 18 Nov 2022
+//   * Creation date: 18 November 2022
 // -----------------------------------------------------------------------------
 
-#ifndef CONFIG_MANAGER_H
-#define CONFIG_MANAGER_H 
-
 // Class Includes
-
-// Package Includes
+#include "ConfigManager.h"
 
 // Geant Includes
-#include "G4Types.hh"
-#include "G4String.hh"
+#include "globals.hh"
+#include "G4GenericMessenger.hh"
+#include "G4Threading.hh"
 #include "G4ThreeVector.hh"
+#include "CLHEP/Units/SystemOfUnits.h"
 
 // System Includes
+#include <fstream>
+#include <iostream>
+#include <typeinfo>
+#include <float.h>
+#include <stdlib.h>
 
-// Forward Declarations
-class G4GenericMessenger;
+//-----------------------------------------------------------------------------
+// Singleton Initializers for master and worker threads
+ConfigManager* ConfigManager::Instance() {
+  static const ConfigManager* masterInstance = 0;
+  static G4ThreadLocal ConfigManager* theInstance = 0;
 
+  if (!theInstance) {
+    if (!G4Threading::IsWorkerThread()) {   // Master or sequential
+      theInstance = new ConfigManager;
+      masterInstance = theInstance;
+    } else {                    // Workers copy from master
+      theInstance = new ConfigManager(*masterInstance);
+    }
+  }
 
-class ConfigManager {
-  public:
+  return theInstance;
+}
 
-    // Thread-specific instance for use with Get/Set functions
-    static ConfigManager* Instance();
+//-----------------------------------------------------------------------------
+ConfigManager::ConfigManager()
+  : eventIDOffset_(0), energyThreshold_(0),
+  particleType_(""), decayAtTimeZero_(false), isotropic_(true),
+  overrideVertexPosition_(false), printParticleInfo_(false), inputFile_(""), outputFile_(""), marleyJson_(""), generator_(""),
+  genieFormat_(""), multirun_(false), momentumDirection_(0,0,0), vertexX_(2.3*CLHEP::m/2), vertexY_(6.0*CLHEP::m/2), vertexZ_(3.7*CLHEP::m/2),
+  nAr39Decays_(0), nAr42Decays_(0), nKr85Decays_(0), nCo60Decays_(0), nK40Decays_(0),
+  nK42Decays_(0), nBi214Decays_(0), nPb214Decays_(0), nPo210Decays_(0), nPo214Decays_(0), nPo218Decays_(0), nRn222Decays_(0), eventCutoff_(0),
+  eventWindow_(0),
+  snTimingOn_(false), th2Name_("nusperbin2d_nue"),
+  useHDDetectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0)
+{
+  CreateCommands();
+}
 
-    ConfigManager();
-    ConfigManager(const ConfigManager&);
-    ~ConfigManager();
-    
-    void CreateCommands();
+//-----------------------------------------------------------------------------
+ConfigManager::ConfigManager(const ConfigManager& master)
+  : eventIDOffset_(master.eventIDOffset_),
+  energyThreshold_(master.energyThreshold_),
+  particleType_(master.particleType_),
+  decayAtTimeZero_(master.decayAtTimeZero_), isotropic_(master.isotropic_),
+  overrideVertexPosition_(master.overrideVertexPosition_),
+  printParticleInfo_(master.printParticleInfo_), inputFile_(master.inputFile_),
+  outputFile_(master.outputFile_), marleyJson_(master.marleyJson_),
+  generator_(master.generator_), genieFormat_(master.genieFormat_),
+  multirun_(master.multirun_), momentumDirection_(master.momentumDirection_),
+  vertexX_(master.vertexX_), vertexY_(master.vertexY_),
+  vertexZ_(master.vertexZ_),
+  nAr39Decays_(master.nAr39Decays_), nAr42Decays_(master.nAr42Decays_),
+  nKr85Decays_(master.nKr85Decays_), nCo60Decays_(master.nCo60Decays_),
+  nK40Decays_(master.nK40Decays_), nK42Decays_(master.nK42Decays_),
+  nBi214Decays_(master.nBi214Decays_), nPb214Decays_(master.nPb214Decays_),
+  nPo210Decays_(master.nPo210Decays_), nPo214Decays_(master.nPo214Decays_), nPo218Decays_(master.nPo218Decays_), nRn222Decays_(master.nRn222Decays_),
+  eventCutoff_(master.eventCutoff_), eventWindow_(master.eventWindow_),
+  snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_),
+  useHDDetectorConfiguration_(master.useHDDetectorConfiguration_), detectorLength_(master.detectorLength_),
+  detectorWidth_(master.detectorWidth_), detectorHeight_(master.detectorHeight_)
+{
+  CreateCommands();
+}
 
+//-----------------------------------------------------------------------------
+ConfigManager::~ConfigManager()
+{
+  delete msgEvent_;
+  delete msgInputs_;
+  delete msgSupernova_;
+  delete msgSupernovaTiming_;
+  delete msgGeometry_;
+}
 
-    // Access current values
-    static G4int         GetEventIDOffset()                 { return Instance()->eventIDOffset_; }
-    static G4double      GetEnergyThreshold()               { return Instance()->energyThreshold_; }
-    static G4String      GetParticleType()                  { return Instance()->particleType_; }
-    static G4bool        GetDecayAtTimeZero()               { return Instance()->decayAtTimeZero_; }
-    static G4bool        GetIsotropic()                     { return Instance()->isotropic_; }
-    static G4bool        GetOverrideVertexPosition()        { return Instance()->overrideVertexPosition_; }
-    static G4bool        GetPrintParticleInfo()             { return Instance()->printParticleInfo_; }
-    static G4String      GetInputFile()                     { return Instance()->inputFile_; }
-    static G4String      GetOutputFile()                    { return Instance()->outputFile_; }
-    static G4String      GetMarleyJson()                    { return Instance()->marleyJson_; }
-    static G4String      GetGenerator()                     { return Instance()->generator_; }
-    static G4String      GetGenieFormat()                   { return Instance()->genieFormat_; }
-    static G4bool        GetMultirun()                      { return Instance()->multirun_; }
-    static G4ThreeVector GetMomentumDirection()             { return Instance()->momentumDirection_; }
-    static G4double      GetVertexX()                       { return Instance()->vertexX_; }
-    static G4double      GetVertexY()                       { return Instance()->vertexY_; }
-    static G4double      GetVertexZ()                       { return Instance()->vertexZ_; }
-    static G4int         GetNAr39Decays()                   { return Instance()->nAr39Decays_; }
-    static G4int         GetNAr42Decays()                   { return Instance()->nAr42Decays_; }
-    static G4int         GetNKr85Decays()                   { return Instance()->nKr85Decays_; }
-    static G4int         GetNCo60Decays()                   { return Instance()->nCo60Decays_; }
-    static G4int         GetNK40Decays()                    { return Instance()->nK40Decays_; }
-    static G4int         GetNK42Decays()                    { return Instance()->nK42Decays_; }
-    static G4int         GetNBi214Decays()                  { return Instance()->nBi214Decays_; }
-    static G4int         GetNPb214Decays()                  { return Instance()->nPb214Decays_; }
-    static G4int         GetNPo210Decays()                  { return Instance()->nPo210Decays_; }
-    static G4int         GetNRn222Decays()                  { return Instance()->nRn222Decays_; }
-    static G4double      GetEventCutoff()                   { return Instance()->eventCutoff_; }
-    static G4double      GetEventWindow()                   { return Instance()->eventWindow_; }
-    static G4bool        GetSNTimingOn()                    { return Instance()->snTimingOn_; }
-    static G4String      GetTh2Name()                       { return Instance()->th2Name_; }
-    static G4bool        GetUseHDDetectorConfiguration()    { return Instance()->useHDDetectorConfiguration_; }
-    static G4double      GetDetectorLength()                { return Instance()->detectorLength_; }
-    static G4double      GetDetectorWidth()                 { return Instance()->detectorWidth_; }
-    static G4double      GetDetectorHeight()                { return Instance()->detectorHeight_; }
+//-----------------------------------------------------------------------------
+void ConfigManager::CreateCommands()
+{
+  // Instantiate all messengers
+  msgEvent_ = new G4GenericMessenger(this, "/event/", "user-defined event configuration");
+  msgInputs_ = new G4GenericMessenger(this, "/inputs/", "Control commands of the ion primary generator.");
+  msgSupernova_ = new G4GenericMessenger(this, "/supernova/", "Control commands of the supernova generator.");
+  msgSupernovaTiming_ = new G4GenericMessenger(this, "/supernova/timing/", "control commands for SupernovaTiming");
+  msgGeometry_ = new G4GenericMessenger(this, "/geometry/", "control commands for DetectorConstruction");
 
-    // Change values (e.g. via Messenger) -- pass strings by value for toLower()
-    static void SetEventIDOffset(G4int value)               { Instance()->eventIDOffset_ = value; }
-    static void SetEnergyThreshold(G4double value)          { Instance()->energyThreshold_ = value; }
-    static void SetParticleType(G4String value)             { Instance()->particleType_ = value; }
-    static void SetDecayAtTimeZero(G4bool value)            { Instance()->decayAtTimeZero_ = value; }
-    static void SetIsotropic(G4bool value)                  { Instance()->isotropic_ = value; }
-    static void SetOverrideVertexPosition(G4bool value)     { Instance()->overrideVertexPosition_ = value; }
-    static void SetPrintParticleInfo(G4bool value)          { Instance()->printParticleInfo_ = value; }
-    static void SetInputFile(G4String value)                { Instance()->inputFile_ = value; }
-    static void SetOutputFile(G4String value)               { Instance()->outputFile_= value; }
-    static void SetMarleyJson(G4String value)               { Instance()->marleyJson_= value; }
-    static void SetGenerator(G4String value)                { Instance()->generator_ = value; }
-    static void SetGenieFormat(G4String value)              { Instance()->genieFormat_ = value; }
-    static void SetMultirun(G4bool value)                   { Instance()->multirun_ = value; }
-    static void SetMomentumDirection(G4ThreeVector value)   { Instance()->momentumDirection_ = value; }
-    static void SetVertexX(G4double value)                  { Instance()->vertexX_ = value; }
-    static void SetVertexY(G4double value)                  { Instance()->vertexY_ = value; }
-    static void SetVertexZ(G4double value)                  { Instance()->vertexZ_ = value; }
-    static void SetNAr39Decays(G4int value)                 { Instance()->nAr39Decays_ = value; }
-    static void SetNAr42Decays(G4int value)                 { Instance()->nAr42Decays_ = value; }
-    static void SetNKr85Decays(G4int value)                 { Instance()->nKr85Decays_ = value; }
-    static void SetNCo60Decays(G4int value)                 { Instance()->nCo60Decays_ = value; }
-    static void SetNK40Decays(G4int value)                  { Instance()->nK40Decays_ = value; }
-    static void SetNK42Decays(G4int value)                  { Instance()->nK42Decays_ = value; }
-    static void SetNBi214Decays(G4int value)                { Instance()->nBi214Decays_ = value; }
-    static void SetNPb214Decays(G4int value)                { Instance()->nPb214Decays_ = value; }
-    static void SetNPo210Decays(G4int value)                { Instance()->nPo210Decays_ = value; }
-    static void SetNRn222Decays(G4int value)                { Instance()->nRn222Decays_ = value; }
-    static void SetEventCutoff(G4double value)              { Instance()->eventCutoff_ = value; }
-    static void SetEventWindow(G4double value)              { Instance()->eventWindow_ = value; }
-    static void SetSNTimingOn(G4bool value)                 { Instance()->snTimingOn_ = value; }
-    static void SetTh2Name(G4String value)                  { Instance()->th2Name_ = value; }            
-    static void SetUseHDDetectorConfiguration(G4bool value) { Instance()->useHDDetectorConfiguration_ = value; }
-    static void SetDetectorLength(G4double value)           { Instance()->detectorLength_ = value; }
-    static void SetDetectorWidth(G4double value)            { Instance()->detectorWidth_ = value; }
-    static void SetDetectorHeight(G4double value)           { Instance()->detectorHeight_ = value; }
+  // Declare all properties for msgEvent
+  msgEvent_->DeclareProperty("offset", eventIDOffset_, "Event ID offset.");
+  msgEvent_->DeclarePropertyWithUnit("energy_threshold", "MeV", energyThreshold_, "Events that deposit less energy than this energy threshold will not be saved.");
 
-    // Print out all configuration settings
-    static void Print() { Instance()->PrintConfig(); }
-    void PrintConfig() const;
+  // Declare all properties for msgInputs
+  msgInputs_->DeclareProperty("particle_type", particleType_,  "which kind of particle?");
+  msgInputs_->DeclareProperty("decay_at_time_zero", decayAtTimeZero_, "Set to true to make unstable isotopes decay at t=0.");
+  msgInputs_->DeclareProperty("isotropic", isotropic_, "isotropic");
+  msgInputs_->DeclareProperty("override_vertex_position", overrideVertexPosition_, "override vertex position");
+  msgInputs_->DeclareProperty("print_particle_info", printParticleInfo_, "Extra Printing for Debugging");
+  msgInputs_->DeclareProperty("input_file", inputFile_, "input ROOT file");
+  msgInputs_->DeclareProperty("output_file", outputFile_, "output ROOT file");
+  msgInputs_->DeclareProperty("MARLEY_json", marleyJson_, "marley config json file");
+  msgInputs_->DeclareProperty("generator", generator_, "event generator of input file");
+  msgInputs_->DeclareProperty("multirun", multirun_, "multiple runs");
+  msgInputs_->DeclareProperty("genie_format", genieFormat_, "format of genie-produced input file");
+  msgInputs_->DeclareProperty("momentum_direction", momentumDirection_, "initial momentum of generator particles");
 
-  private:
-    // All messengers
-    G4GenericMessenger* msgEvent_;
-    G4GenericMessenger* msgInputs_;
-    G4GenericMessenger* msgSupernova_;
-    G4GenericMessenger* msgSupernovaTiming_;
-    G4GenericMessenger* msgGeometry_;
+  msgInputs_->DeclarePropertyWithUnit("vertex_x", "mm", vertexX_, "vertex x");
+  msgInputs_->DeclarePropertyWithUnit("vertex_y", "mm", vertexY_, "vertex y");
+  msgInputs_->DeclarePropertyWithUnit("vertex_z", "mm", vertexZ_, "vertex z");
 
+  // Declare all properties for msgSupernova
+  msgSupernova_->DeclareProperty("N_Ar39_Decays", nAr39Decays_,  "number of Ar39 decays");
+  msgSupernova_->DeclareProperty("N_Ar42_Decays", nAr42Decays_,  "number of Ar42 decays");
+  msgSupernova_->DeclareProperty("N_Kr85_Decays", nKr85Decays_,  "number of Kr85 decays");
+  msgSupernova_->DeclareProperty("N_Co60_Decays", nCo60Decays_,  "number of Co60 decays");
+  msgSupernova_->DeclareProperty("N_K40_Decays", nK40Decays_,  "number of K40 decays");
+  msgSupernova_->DeclareProperty("N_K42_Decays", nK42Decays_,  "number of K42 decays");
+  msgSupernova_->DeclareProperty("N_Bi214_Decays", nBi214Decays_,  "number of Bi214 decays");
+  msgSupernova_->DeclareProperty("N_Pb214_Decays", nPb214Decays_,  "number of Pb214 decays");
+  msgSupernova_->DeclareProperty("N_Po210_Decays", nPo210Decays_,  "number of Po210 decays");
+  msgSupernova_->DeclareProperty("N_Po214_Decays", nPo214Decays_,  "number of Po214 decays");
+  msgSupernova_->DeclareProperty("N_Po218_Decays", nPo218Decays_,  "number of Po218 decays");
+  msgSupernova_->DeclareProperty("N_Rn222_Decays", nRn222Decays_,  "number of Rn222 decays");
 
-  private:
-    // msgEvent variables
-    G4int         eventIDOffset_;
-    G4double      energyThreshold_;
+  msgSupernova_->DeclarePropertyWithUnit("Event_Cutoff", "ns", eventCutoff_,  "window to simulate the times");
+  msgSupernova_->DeclarePropertyWithUnit("Event_Window", "ns", eventWindow_,  "window to simulate the times");
 
-    // msgInputs variables
-    G4String      particleType_;
-    G4bool        decayAtTimeZero_;
-    G4bool        isotropic_;
-    G4bool        overrideVertexPosition_;
-    G4bool        printParticleInfo_;
-    G4String      inputFile_;
-    G4String      outputFile_;
-    G4String      marleyJson_;
-    G4String      generator_;
-    G4String      genieFormat_;
-    G4bool        multirun_;
-    G4ThreeVector momentumDirection_;
-    G4double      vertexX_;
-    G4double      vertexY_;
-    G4double      vertexZ_;
+  // Declare all properties for msgSupernovaTiming
+  msgSupernovaTiming_->DeclareProperty("on", snTimingOn_, "turn on SupernovaTiming");
+  msgSupernovaTiming_->DeclareProperty("th2_name", th2Name_, "name of TH2");
 
-    // msgSupernova variables
-    G4int         nAr39Decays_;
-    G4int         nAr42Decays_;
-    G4int         nKr85Decays_;
-    G4int         nCo60Decays_;
-    G4int         nK40Decays_;
-    G4int         nK42Decays_;
-    G4int         nBi214Decays_;
-    G4int         nPb214Decays_;
-    G4int         nPo210Decays_;
-    G4int         nRn222Decays_;
-    G4double      eventCutoff_;
-    G4double      eventWindow_;
+  // Declare all properties for msgGeometry
+  msgGeometry_->DeclareProperty("use_hd_detector_configuration", useHDDetectorConfiguration_, "True if HD, false if VD");
+  msgGeometry_->DeclareProperty("detector_length", detectorLength_, "detector length");
+  msgGeometry_->DeclareProperty("detector_width", detectorWidth_, "detector width");
+  msgGeometry_->DeclareProperty("detector_height", detectorHeight_, "detector height");
+}
 
-    // msgSupernovaTiming variables
-    G4bool        snTimingOn_;
-    G4String      th2Name_;
-
-    // msgGeometry variables
-    G4bool        useHDDetectorConfiguration_;
-    G4double      detectorLength_;
-    G4double      detectorWidth_;
-    G4double      detectorHeight_;
-};
-#endif
+//-----------------------------------------------------------------------------
+void ConfigManager::PrintConfig() const
+{
+  G4cout << "EventAction -- Event_ID_Offset:    " << eventIDOffset_ << G4endl
+     << "EventAction -- Energy_Threshold:   " << energyThreshold_ << G4endl
+     << G4endl
+     << "Input -- Generator:                " << generator_ << G4endl
+     << "Input -- Genie Format:             " << genieFormat_ << G4endl
+     << "Input -- Particle_Type:            " << particleType_ << G4endl
+     << "Input -- Decay_At_Time_Zero:       " << decayAtTimeZero_ << G4endl
+     << "Input -- Isotropic:                " << isotropic_ << G4endl
+     << "Input -- Override_Vertex_Position: " << overrideVertexPosition_ << G4endl
+     << "Input -- Print_Particle_Info:      " << printParticleInfo_ << G4endl
+     << "Input -- Input_File:               " << inputFile_ << G4endl
+     << "Input -- Output_File:              " << outputFile_ << G4endl
+     << "Input -- MARLEY_json:              " << marleyJson_ << G4endl
+     << "Input -- Momentum_Direction:       " << momentumDirection_ << G4endl
+     << "Input -- Vertex_X:                 " << vertexX_/CLHEP::mm << " mm" << G4endl
+     << "Input -- Vertex_Y:                 " << vertexY_/CLHEP::mm << " mm" <<  G4endl
+     << "Input -- Vertex_Z:                 " << vertexZ_/CLHEP::mm << " mm" << G4endl
+     << "Input -- Multirun:                 " << multirun_ << G4endl
+     << G4endl
+     << "Supernova -- N_Ar39_Decays:  " << nAr39Decays_ << G4endl
+     << "Supernova -- N_Ar42_Decays:  " << nAr42Decays_ << G4endl
+     << "Supernova -- N_Kr85_Decays:  " << nKr85Decays_ << G4endl
+     << "Supernova -- N_Co60_Decays:  " << nCo60Decays_ << G4endl
+     << "Supernova -- N_K40_Decays:   " << nK40Decays_ << G4endl
+     << "Supernova -- N_K42_Decays:   " << nK42Decays_ << G4endl
+     << "Supernova -- N_Bi214_Decays: " << nBi214Decays_ << G4endl
+     << "Supernova -- N_Pb214_Decays: " << nPb214Decays_ << G4endl
+     << "Supernova -- N_Po210_Decays: " << nPo210Decays_ << G4endl
+     << "Supernova -- N_Po214_Decays: " << nPo214Decays_ << G4endl
+     << "Supernova -- N_Po218_Decays: " << nPo218Decays_ << G4endl
+     << "Supernova -- N_Rn222_Decays: " << nRn222Decays_ << G4endl
+     << "Supernova -- Event_Cutoff:   " << eventCutoff_/CLHEP::ns << " ns" << G4endl
+     << "Supernova -- Event_Window:   " << eventWindow_/CLHEP::ns << " ns" << G4endl
+     << G4endl
+     << "SupernovaTiming -- Supernova_Timing_On: " << snTimingOn_ << G4endl
+     << "SupernovaTiming -- TH2_Name:            " << th2Name_ << G4endl
+     << G4endl
+     << "Geometry -- Use_HD_Detector_Configuration: " << useHDDetectorConfiguration_ << G4endl
+     << "Geometry -- Detector_Length:               " << detectorLength_/CLHEP::m << " m" << G4endl
+     << "Geometry -- Detector_Width:                " << detectorWidth_/CLHEP::m << " m" << G4endl
+     << "Geometry -- Detector_Height:               " << detectorHeight_/CLHEP::m << " m" <<G4endl
+     << G4endl;
+}
