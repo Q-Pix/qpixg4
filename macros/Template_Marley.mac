@@ -14,7 +14,7 @@
 /inputs/vertex_z 1.8 m
 
 # output path
-/inputs/root_output ../output/MARLEY.root
+/inputs/output_file ../output/MARLEY.root
 
 # initialize run
 /run/initialize
