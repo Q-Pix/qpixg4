@@ -74,7 +74,7 @@ G4int GENIEManager::Initialize() {
   inputFile_ = ConfigManager::GetInputFile(); 
   particleType_ = ConfigManager::GetParticleType();
  
-  genieFormat_.toLower();
+  G4StrUtil::to_lower(genieFormat_);
 
   if (genieFormat_ == "rootracker" || genieFormat_ == "grootracker") {
     treeName_ = "gRooTracker";

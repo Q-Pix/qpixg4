@@ -21,7 +21,7 @@
 /random/setSeeds 0 31
 
 # limit radioactive decays 
-/process/had/rdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+#/process/had/rdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 
 # run
 /run/beamOn 100

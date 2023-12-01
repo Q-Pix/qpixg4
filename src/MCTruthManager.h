@@ -62,6 +62,24 @@ class MCTruthManager {
 
         inline std::map< int, MCParticle * > GetMCParticleMap() const { return mc_particle_map_; }
 
+        //all particles of the event
+        std::vector<int>    *GetParticlesID()                    {return _particle_track_id;}
+        std::vector<int>    *GetParticlesParentID()              {return _particle_parent_track_id;}
+        std::vector<int>    *GetParticlesPDG()                   {return _particle_pdg_code;}
+        std::vector<double> *GetParticlesEnergy()                {return _particle_initial_energy;}
+        std::vector<double> *GetParticlesMass()                  {return _particle_mass;}
+        std::vector<double> *GetParticlesCharge()                {return _particle_charge;}
+        std::vector<int>    *GetParticlesProcess()               {return _particle_process_key;}
+        std::vector<double> *GetParticlesX()                     {return _particle_initial_x;}
+        std::vector<double> *GetParticlesY()                     {return _particle_initial_y;}
+        std::vector<double> *GetParticlesZ()                     {return _particle_initial_z;}
+        std::vector<double> *GetParticlesT()                     {return _particle_initial_t;}
+        std::vector<double> *GetParticlesPx()                    {return _particle_initial_px;}
+        std::vector<double> *GetParticlesPy()                    {return _particle_initial_py;}
+        std::vector<double> *GetParticlesPz()                    {return _particle_initial_pz;}
+        std::vector<int>    *GetParticlesNDaughters()            {return _particle_number_daughters;}
+        std::vector<std::vector<int>> *GetParticlesDaughtersIDs(){return _particle_daughter_track_ids;}
+
         typedef std::map<int,MCParticle*> MCParticleMap;
 
     private:
@@ -83,6 +101,24 @@ class MCTruthManager {
         // MC particle map
         // std::map< int, MCParticle > mc_particle_map_;
         std::map< int, MCParticle * > mc_particle_map_;
+
+        //all particles of the event
+        std::vector<int>    *_particle_track_id;
+        std::vector<int>    *_particle_parent_track_id;
+        std::vector<int>    *_particle_pdg_code;
+        std::vector<double> *_particle_initial_energy;
+        std::vector<double> *_particle_mass;
+        std::vector<double> *_particle_charge;
+        std::vector<int>    *_particle_process_key;
+        std::vector<double> *_particle_initial_x;
+        std::vector<double> *_particle_initial_y;
+        std::vector<double> *_particle_initial_z;
+        std::vector<double> *_particle_initial_t;
+        std::vector<double> *_particle_initial_px;
+        std::vector<double> *_particle_initial_py;
+        std::vector<double> *_particle_initial_pz;
+        std::vector<int>    *_particle_number_daughters;
+        std::vector<std::vector<int>> *_particle_daughter_track_ids;
 
 };
 

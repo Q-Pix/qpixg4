@@ -12,8 +12,8 @@
 // Qpix includes
 #include "AnalysisData.h"
 
-// GEANT4 includes
-#include "globals.hh"
+// // GEANT4 includes
+// #include </cvmfs/larsoft.opensciencegrid.org/products/geant4/v4_11_1_p01ba/Linux64bit+3.10-2.17-e20-prof/include/Geant4/globals.hh>
 
 // C++ includes
 #include <map>

@@ -46,14 +46,14 @@ void MARLEYManager::Initialize()
 {
     if (!marley_json_.empty())
     {
-        std::cout << "Configuring MARLEY..." << std::endl;
+        G4cout << "Configuring MARLEY..." << G4endl;
         marley::JSONConfig marley_config(marley_json_);
         marley_generator_ = marley_config.create_generator();
     }
     else
     {
-        std::cout << "MARLEY configuration file not found!  Continuing..."
-                  << std::endl;
+        G4cout << "MARLEY configuration file not found!  Continuing..."
+                  << G4endl;
     }
 }
 
