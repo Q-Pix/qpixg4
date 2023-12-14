@@ -47,16 +47,29 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   }
 
   // WORLD /////////////////////////////////////////////////
-
   G4double world_size = std::max({ConfigManager::GetDetectorHeight(),ConfigManager::GetDetectorLength(),ConfigManager::GetDetectorWidth()})*CLHEP::m;
+  
+  G4double world_height = ConfigManager::GetWorldHeight()*CLHEP::m; // world_y
+  G4double world_length = ConfigManager::GetWorldLength()*CLHEP::m; // world_z
+  G4double world_width  = ConfigManager::GetWorldWidth()*CLHEP::m;  // world_x
+
+  if(world_height < ConfigManager::GetDetectorHeight() || 
+     world_length < ConfigManager::GetDetectorLength() ||
+     world_width  < ConfigManager::GetDetectorWidth())
+    {
+     world_height = world_size/CLHEP::m;
+     world_width  = world_size/CLHEP::m;
+     world_length = world_size/CLHEP::m;
+    }
+  
   G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
 
   G4Box* world_solid_vol =
-    new G4Box("world.solid", world_size/2., world_size/2., world_size/2.);
+    new G4Box("world.solid", world_width/2., world_height/2., world_length/2.);
 
   G4LogicalVolume* world_logic_vol =
     new G4LogicalVolume(world_solid_vol, world_mat, "world.logical");
-  world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
+  // world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
 
   G4VPhysicalVolume* world_phys_vol =
     new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
@@ -74,9 +87,9 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4LogicalVolume* detector_logic_vol =
     new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
 
-  G4ThreeVector offset(ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
+  //G4ThreeVector offset(ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
 
-  new G4PVPlacement(0, offset,
+  new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
                     detector_logic_vol, "detector.physical", world_logic_vol, false, 0, true);
   //////////////////////////////////////////////////////////
 

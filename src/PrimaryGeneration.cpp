@@ -63,6 +63,9 @@ PrimaryGeneration::PrimaryGeneration()
 
   super = new Supernova();
 
+  // get neutron background generation class
+  neutron = new NeutronBackground();
+
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   generator_ = std::default_random_engine(seed);
   distribution_ = std::normal_distribution< double >(0, 1);
@@ -74,6 +77,7 @@ PrimaryGeneration::~PrimaryGeneration()
   delete particle_gun_;
   delete supernova_timing_;
   delete super;
+  delete neutron;
 }
 
 
@@ -110,6 +114,12 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     super->Gen_Supernova_Background(event);
   }
 
+  // Add the background contribution from neutron capture processes
+  else if(particleType_ == "neutron")
+  {
+    neutron->GeneratePrimaryVertex(event);
+  }
+
   else if (particleType_ ==  "marley")
   {
     this->MARLEYGeneratePrimaries(event);
@@ -143,8 +153,8 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
     G4ThreeVector const & position = particle_gun_->GetParticlePosition();
     G4ThreeVector const & direction = particle_gun_->GetParticleMomentumDirection();
-    G4cout << "position =  " << position << G4endl;
-    G4cout << "direction = " << direction << G4endl;
+    /*G4cout << "position =  " << position << G4endl;
+    G4cout << "direction = " << direction << G4endl;*/
 
 
     double const x = position.x() / CLHEP::cm;

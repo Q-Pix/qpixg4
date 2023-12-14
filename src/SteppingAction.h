@@ -14,6 +14,14 @@
 
 #include <G4UserSteppingAction.hh>
 
+#include "AnalysisManager.h"
+#include "G4VProcess.hh"
+#include "G4SystemOfUnits.hh"
+#include "G4Event.hh"
+#include "globals.hh"
+
+class G4GenericMessenger;
+
 class AnalysisData;
 
 class SteppingAction: public G4UserSteppingAction
@@ -24,6 +32,7 @@ class SteppingAction: public G4UserSteppingAction
     virtual void UserSteppingAction(const G4Step*);
 
   private:
+
     AnalysisData event;
 };
 

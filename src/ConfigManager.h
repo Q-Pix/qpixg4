@@ -73,6 +73,11 @@ class ConfigManager {
     static G4double      GetDetectorLength()                { return Instance()->detectorLength_; }
     static G4double      GetDetectorWidth()                 { return Instance()->detectorWidth_; }
     static G4double      GetDetectorHeight()                { return Instance()->detectorHeight_; }
+    static G4double      GetWorldLength()                   { return Instance()->worldLength_; }
+    static G4double      GetWorldWidth()                    { return Instance()->worldWidth_; }
+    static G4double      GetWorldHeight()                   { return Instance()->worldHeight_; }
+    static G4bool        GetGetPhotons()                    { return Instance()->getPhotons_; }
+    static G4bool        GetGetElectrons()                  { return Instance()->getElectrons_; }
 
     // Change values (e.g. via Messenger) -- pass strings by value for toLower()
     static void SetEventIDOffset(G4int value)               { Instance()->eventIDOffset_ = value; }
@@ -110,6 +115,11 @@ class ConfigManager {
     static void SetDetectorLength(G4double value)           { Instance()->detectorLength_ = value; }
     static void SetDetectorWidth(G4double value)            { Instance()->detectorWidth_ = value; }
     static void SetDetectorHeight(G4double value)           { Instance()->detectorHeight_ = value; }
+    static void SetWorldLength(G4double value)              { Instance()->worldLength_ = value; }
+    static void SetWorldWidth(G4double value)               { Instance()->worldWidth_ = value; }
+    static void SetWorldHeight(G4double value)              { Instance()->worldHeight_ = value; }
+    static void SetGetPhotons(G4bool value)                 { Instance()->getPhotons_ = value; }
+    static void SetGetElectrons(G4bool value)               { Instance()->getElectrons_ = value; }
 
     // Print out all configuration settings
     static void Print() { Instance()->PrintConfig(); }
@@ -122,6 +132,7 @@ class ConfigManager {
     G4GenericMessenger* msgSupernova_;
     G4GenericMessenger* msgSupernovaTiming_;
     G4GenericMessenger* msgGeometry_;
+    G4GenericMessenger* msgNeutron_;
 
 
   private:
@@ -169,5 +180,12 @@ class ConfigManager {
     G4double      detectorLength_;
     G4double      detectorWidth_;
     G4double      detectorHeight_;
+    G4double      worldLength_;
+    G4double      worldWidth_;
+    G4double      worldHeight_;
+
+    // msgNeutron variables
+    G4bool        getPhotons_;
+    G4bool        getElectrons_;
 };
 #endif

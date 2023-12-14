@@ -3,11 +3,16 @@
 /run/verbose 1
 /tracking/verbose 0
 
-# The detector configuration (false  VD or true HD)
-/geometry/detector_configuration true
-
 # output path
 /inputs/output_file ./output/single_muon.root
+
+# The detector configuration (false  VD or true HD)
+/geometry/use_hd_detector_configuration true
+
+# World volume dimensions in meters. Place this config before run initialization
+/geometry/world_length 10.
+/geometry/world_width  10.
+/geometry/world_height 10.
 
 # initialize run
 /run/initialize

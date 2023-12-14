@@ -51,7 +51,8 @@ ConfigManager::ConfigManager()
   nK42Decays_(0), nBi214Decays_(0), nPb214Decays_(0), nPo210Decays_(0), nRn222Decays_(0), eventCutoff_(0),
   eventWindow_(0),
   snTimingOn_(false), th2Name_("nusperbin2d_nue"),
-  useHDDetectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0)
+  useHDDetectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0), 
+  worldLength_(0), worldWidth_(0), worldHeight_(0), getPhotons_(false), getElectrons_(false)
 {
   CreateCommands();
 }
@@ -77,7 +78,9 @@ ConfigManager::ConfigManager(const ConfigManager& master)
   eventCutoff_(master.eventCutoff_), eventWindow_(master.eventWindow_),
   snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_),
   useHDDetectorConfiguration_(master.useHDDetectorConfiguration_), detectorLength_(master.detectorLength_),
-  detectorWidth_(master.detectorWidth_), detectorHeight_(master.detectorHeight_)
+  detectorWidth_(master.detectorWidth_), detectorHeight_(master.detectorHeight_), worldLength_(master.worldLength_), 
+  worldWidth_(master.worldWidth_), worldHeight_(master.worldHeight_), getPhotons_(master.getPhotons_),
+  getElectrons_(master.getElectrons_)
 {
   CreateCommands();
 }
@@ -90,6 +93,7 @@ ConfigManager::~ConfigManager()
   delete msgSupernova_;
   delete msgSupernovaTiming_;
   delete msgGeometry_;
+  delete msgNeutron_;
 }
 
 //-----------------------------------------------------------------------------
@@ -101,6 +105,7 @@ void ConfigManager::CreateCommands()
   msgSupernova_ = new G4GenericMessenger(this, "/supernova/", "Control commands of the supernova generator.");
   msgSupernovaTiming_ = new G4GenericMessenger(this, "/supernova/timing/", "control commands for SupernovaTiming");
   msgGeometry_ = new G4GenericMessenger(this, "/geometry/", "control commands for DetectorConstruction");
+  msgNeutron_ = new G4GenericMessenger(this, "/neutron/", "control commands for DetectorConstruction");
 
   // Declare all properties for msgEvent
   msgEvent_->DeclareProperty("offset", eventIDOffset_, "Event ID offset.");
@@ -144,10 +149,20 @@ void ConfigManager::CreateCommands()
   msgSupernovaTiming_->DeclareProperty("th2_name", th2Name_, "name of TH2");
 
   // Declare all properties for msgGeometry
+  // Detector
   msgGeometry_->DeclareProperty("use_hd_detector_configuration", useHDDetectorConfiguration_, "True if HD, false if VD");
   msgGeometry_->DeclareProperty("detector_length", detectorLength_, "detector length");
   msgGeometry_->DeclareProperty("detector_width", detectorWidth_, "detector width");
   msgGeometry_->DeclareProperty("detector_height", detectorHeight_, "detector height");
+
+  // World
+  msgGeometry_->DeclareProperty("world_length", worldLength_, "world length");
+  msgGeometry_->DeclareProperty("world_width", worldWidth_, "world width");
+  msgGeometry_->DeclareProperty("world_height", worldHeight_, "world height");
+
+  // Declare all properties for msgNeutron
+  msgNeutron_->DeclareProperty("get_photons", getPhotons_, "get photons from neutron capture in SteppingAction");
+  msgNeutron_->DeclareProperty("get_electrons", getElectrons_, "get secondary electrons from neutron capture in SteppingAction");
 }
 
 //-----------------------------------------------------------------------------
@@ -192,5 +207,11 @@ void ConfigManager::PrintConfig() const
      << "Geometry -- Detector_Length:               " << detectorLength_/CLHEP::m << " m" << G4endl
      << "Geometry -- Detector_Width:                " << detectorWidth_/CLHEP::m << " m" << G4endl
      << "Geometry -- Detector_Height:               " << detectorHeight_/CLHEP::m << " m" <<G4endl
+     << "Geometry -- World_Length:                  " << worldLength_/CLHEP::m << " m" << G4endl
+     << "Geometry -- World_Width:                   " << worldWidth_/CLHEP::m << " m" << G4endl
+     << "Geometry -- World_Height:                  " << worldHeight_/CLHEP::m << " m" <<G4endl
+     << G4endl
+     << "Neutron -- Use SteppingAction to get photons from neutron capture: " << getPhotons_ << G4endl
+     << "Neutron -- Use SteppingAction to get electrons from neutron capture: " << getElectrons_ << G4endl
      << G4endl;
 }

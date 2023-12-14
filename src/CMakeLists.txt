@@ -19,6 +19,7 @@ SET(SRC   ActionInitialization.cpp
           MARLEYManager.cpp
           MCTruthManager.cpp
           MCParticle.cpp
+          NeutronBackground.cpp
           PrimaryGeneration.cpp
           RunAction.cpp
           SteppingAction.cpp

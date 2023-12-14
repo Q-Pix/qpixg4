@@ -21,6 +21,7 @@
 // Q-Pix includes
 #include "Supernova.h"
 #include "SupernovaTiming.h"
+#include "NeutronBackground.h"
 
 // ROOT includes
 #include "Math/SVector.h"
@@ -53,6 +54,8 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     SupernovaTiming * supernova_timing_;
 
     Supernova * super;
+
+    NeutronBackground * neutron;
 
     double detector_length_x_;
     double detector_length_y_;

@@ -30,11 +30,17 @@
 // ROOT includes
 #include "TROOT.h"
 
+//Use to export programmatic geometry 
+#include <G4GDMLParser.hh>
+
 // system includes
 #include <Randomize.hh>
 #include <time.h>
 #include <string>
 #include <typeinfo>
+
+#define G4VIS_USE_OPENGLX
+#define G4VIS_USE_OPENGLQT
 
 int main(int argc, char** argv)
 {
@@ -55,8 +61,8 @@ int main(int argc, char** argv)
   // Construct the run manager and set the initialization classes
   auto* run_manager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
-  G4VModularPhysicsList* physics_list = new FTFP_BERT_HP();
-  physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
+  G4VModularPhysicsList* physics_list = new FTFP_BERT_HP(0); // activate verbosity, level 1
+  // physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
   run_manager->SetUserInitialization(physics_list);
 
   run_manager->SetUserInitialization(new DetectorConstruction());
@@ -74,9 +80,12 @@ int main(int argc, char** argv)
   if (!ui) {
     // batch mode
     // Execute Macro file using any aliases set above
+    ui = new G4UIExecutive(argc, argv, "Qt");
     G4String command = "/control/execute ";
     G4String macro_name = argv[1];
     uimgr->ApplyCommand(command+macro_name);
+    ui->SessionStart();
+    delete ui;
   }
   else {
     // interactive mode
@@ -84,6 +93,19 @@ int main(int argc, char** argv)
     ui->SessionStart();
     delete ui;
   }
+
+    // Export the programmatic geometry
+    G4GDMLParser parser;
+    parser.SetEnergyCutsExport(true);
+    parser.SetSDExport(true);
+    parser.SetOverlapCheck(true);
+    parser.SetOutputFileOverwrite(true);
+    parser.Write("../output/q-pix-geometry.gdml",
+                 G4TransportationManager::GetTransportationManager()
+                     ->GetNavigatorForTracking()
+                     ->GetWorldVolume()
+                     ->GetLogicalVolume(),
+                 true); // bool appends ptr address to name
 
   // Job termination
   // Free the store: user actions, physics_list and detector_description are

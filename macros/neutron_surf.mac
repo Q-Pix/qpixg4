@@ -1,0 +1,184 @@
+# This is a comment and will be ignored by geant4
+
+# The detector configuration (false  VD or true HD)
+/geometry/use_hd_detector_configuration true
+
+# World volume dimensions in meters. Place this config before run initialization
+# For hd detectot geometry
+/geometry/world_width  134.
+/geometry/world_height 20.
+/geometry/world_length 4.
+
+# initialize run
+/random/setSeeds 3981 31
+/run/initialize
+
+# print photons from neutron capture. 0: false 1:true
+/neutron/get_photons 1
+
+# Use this open statement to create an OpenGL view:
+/vis/open OGL
+
+# Draw geometry:
+/vis/drawVolume
+
+# Specify view angle:
+/vis/viewer/set/rotationStyle freeRotation
+/vis/viewer/set/viewpointThetaPhi 45 45 deg
+
+# Specify zoom value:
+/vis/viewer/zoom 1.0
+
+# Draw smooth trajectories at end of event, showing trajectory points
+# as markers 2 pixels wide:
+/vis/scene/add/trajectories smooth
+/vis/modeling/trajectories/create/drawByCharge
+/vis/modeling/trajectories/drawByCharge-0/default/setDrawStepPts true
+/vis/modeling/trajectories/drawByCharge-0/default/setStepPtsSize 5
+
+# To superimpose all of the events from a given run:
+/vis/scene/endOfEventAction accumulate
+
+# Re-establish auto refreshing and verbosity:
+/vis/viewer/set/autoRefresh true
+
+# set verbosity
+/control/verbose 0
+/run/verbose 0
+/tracking/verbose 0
+
+# output path
+/inputs/output_file ../output/neutron.root
+
+# limit radioactive decay chains
+# use if needed
+#/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+
+/process/had/particle_hp/use_photo_evaporation false
+
+################################################################################
+# source - isotropic sphere
+################################################################################
+
+/gps/particle neutron
+
+# energy distribution
+# spectrum from https://indico.ific.uv.es/event/6722/contributions/19226/attachments/10450/14134/SURF_DUNE_ExternalRadiologicalBackgrounds_3Nov2022_Valencia_JR_.pdf
+# slide 10 
+/gps/ene/type User
+/gps/hist/type energy
+/gps/hist/point	0.01	0.0193076
+/gps/hist/point	0.21000000000000002	0.0458832
+/gps/hist/point	0.41000000000000003	0.0603811
+/gps/hist/point	0.6100000000000001	0.0657496
+/gps/hist/point	0.81	0.0667843
+/gps/hist/point	1.01	0.066913
+/gps/hist/point	1.2100000000000002	0.0658115
+/gps/hist/point	1.4100000000000001	0.0637427
+/gps/hist/point	1.61	0.0609203
+/gps/hist/point	1.81	0.0575751
+/gps/hist/point	2.01	0.0540071
+/gps/hist/point	2.21	0.0495134
+/gps/hist/point	2.41	0.0449821
+/gps/hist/point	2.61	0.040458
+/gps/hist/point	2.81	0.0357582
+/gps/hist/point	3.01	0.0312657
+/gps/hist/point	3.21	0.0271876
+/gps/hist/point	3.41	0.0232842
+/gps/hist/point	3.61	0.0197913
+/gps/hist/point	3.81	0.0169058
+/gps/hist/point	4.01	0.014367
+/gps/hist/point	4.21	0.0122784
+/gps/hist/point	4.41	0.01042
+/gps/hist/point	4.61	0.0087148
+/gps/hist/point	4.8100000000000005	0.007451
+/gps/hist/point	5.01	0.0064434
+/gps/hist/point	5.21	0.0054554
+/gps/hist/point	5.41	0.0047317
+/gps/hist/point	5.61	0.004091
+/gps/hist/point	5.8100000000000005	0.0035036
+/gps/hist/point	6.01	0.0030854
+/gps/hist/point	6.21	0.0027864
+/gps/hist/point	6.41	0.0004501
+/gps/hist/point	6.61	0.
+/gps/hist/point	6.8100000000000005	0.
+/gps/hist/point	7.01	0.
+/gps/hist/point	7.21	0.
+/gps/hist/point	7.41	0.
+/gps/hist/point	7.61	0.
+/gps/hist/point	7.8100000000000005	0.
+/gps/hist/point	8.01	0.
+/gps/hist/point	8.21	0.
+/gps/hist/point	8.41	0.
+/gps/hist/point	8.61	0.
+/gps/hist/point	8.81	0.
+/gps/hist/point	9.01	0.
+/gps/hist/point	9.21	0.
+/gps/hist/point	9.41	0.
+/gps/hist/point	9.610000000000001	0.
+/gps/hist/point	9.81	0.
+
+# geometry of the source
+# For hd detector geometry
+
+# source 1 - back of the cave, negligible contribution
+#/gps/pos/type Plane
+#/gps/pos/shape Circle
+#/gps/pos/rot1 0 1 0
+#/gps/pos/rot2 0 0 1
+#/gps/pos/centre -67. 0. 0. m
+#/gps/pos/radius 10. m
+#/gps/ang/type iso
+#/gps/ang/maxtheta 0 deg
+#/gps/ang/mintheta -45 deg
+
+#/gps/source/add 1.
+
+# source 2 - side wall close to the detector
+/gps/pos/type Plane
+/gps/pos/shape Circle
+/gps/pos/rot1 0 1 0
+/gps/pos/rot2 1 0 0
+/gps/pos/centre 0. 0. -2. m
+/gps/pos/radius 5. m
+/gps/ang/type iso
+/gps/ang/maxtheta 0 deg
+/gps/ang/mintheta -45 deg
+
+/gps/source/add 1.
+
+# source 3 - floor
+/gps/pos/type Plane
+/gps/pos/shape Circle
+/gps/pos/rot1 0 0 1
+/gps/pos/rot2 1 0 0
+/gps/pos/centre 0. -3. 0. m
+/gps/pos/radius 5. m
+/gps/ang/type iso
+/gps/ang/maxtheta 0 deg
+/gps/ang/mintheta -45 deg
+
+/gps/source/add 1.
+
+# source 4 - cave ceiling
+/gps/pos/type Plane
+/gps/pos/shape Circle
+/gps/pos/rot1 0 0 1
+/gps/pos/rot2 1 0 0
+/gps/pos/centre 0. 10. 0. m
+/gps/pos/radius 5. m
+/gps/ang/type iso
+/gps/ang/maxtheta 0 deg
+/gps/ang/mintheta -45 deg
+
+# Spherical source, for testing purposes
+#/gps/pos/type Surface
+#/gps/pos/shape Sphere
+#/gps/pos/centre 0. 0. 0. m
+#/gps/pos/radius 5. m
+#/gps/ang/type iso
+#/gps/ang/maxtheta 1 deg
+#/gps/ang/mintheta 0 deg
+
+# run
+/run/beamOn 100000
