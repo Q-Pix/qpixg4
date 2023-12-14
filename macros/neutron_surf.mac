@@ -129,7 +129,7 @@
 #/gps/pos/centre -67. 0. 0. m
 #/gps/pos/radius 10. m
 #/gps/ang/type iso
-#/gps/ang/maxtheta 0 deg
+#/gps/ang/maxtheta 45 deg
 #/gps/ang/mintheta -45 deg
 
 #/gps/source/add 1.
@@ -142,7 +142,7 @@
 /gps/pos/centre 0. 0. -2. m
 /gps/pos/radius 5. m
 /gps/ang/type iso
-/gps/ang/maxtheta 0 deg
+/gps/ang/maxtheta 45 deg
 /gps/ang/mintheta -45 deg
 
 /gps/source/add 1.
@@ -155,7 +155,7 @@
 /gps/pos/centre 0. -3. 0. m
 /gps/pos/radius 5. m
 /gps/ang/type iso
-/gps/ang/maxtheta 0 deg
+/gps/ang/maxtheta 45 deg
 /gps/ang/mintheta -45 deg
 
 /gps/source/add 1.
@@ -168,7 +168,7 @@
 /gps/pos/centre 0. 10. 0. m
 /gps/pos/radius 5. m
 /gps/ang/type iso
-/gps/ang/maxtheta 0 deg
+/gps/ang/maxtheta 45 deg
 /gps/ang/mintheta -45 deg
 
 # Spherical source, for testing purposes
