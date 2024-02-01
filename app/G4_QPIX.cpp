@@ -13,6 +13,7 @@
 #include "EventAction.h"
 #include "PrimaryGeneration.h"
 #include "GENIEManager.h"
+#include "PhysicsList.h"
 #include "RunAction.h"
 #include "SteppingAction.h"
 #include "TrackingAction.h"
@@ -39,7 +40,8 @@
 int main(int argc, char** argv)
 {
 
-  ConfigManager::Instance();
+  auto* config = ConfigManager::Instance();
+  config->PrintConfig();
   //choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
   //set random seed with system time
@@ -55,9 +57,10 @@ int main(int argc, char** argv)
   // Construct the run manager and set the initialization classes
   auto* run_manager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
-  G4VModularPhysicsList* physics_list = new FTFP_BERT_HP();
-  physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
-  run_manager->SetUserInitialization(physics_list);
+  // G4VModularPhysicsList* physics_list = new FTFP_BERT_HP();
+  // physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
+  // run_manager->SetUserInitialization(physics_list);
+  run_manager->SetUserInitialization(new PhysicsList());
 
   run_manager->SetUserInitialization(new DetectorConstruction());
   run_manager->SetUserInitialization(new ActionInitialization());

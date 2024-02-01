@@ -64,6 +64,8 @@ class ConfigManager {
     static G4int         GetNBi214Decays()                  { return Instance()->nBi214Decays_; }
     static G4int         GetNPb214Decays()                  { return Instance()->nPb214Decays_; }
     static G4int         GetNPo210Decays()                  { return Instance()->nPo210Decays_; }
+    static G4int         GetNPo214Decays()                  { return Instance()->nPo214Decays_; }
+    static G4int         GetNPo218Decays()                  { return Instance()->nPo218Decays_; }
     static G4int         GetNRn222Decays()                  { return Instance()->nRn222Decays_; }
     static G4double      GetEventCutoff()                   { return Instance()->eventCutoff_; }
     static G4double      GetEventWindow()                   { return Instance()->eventWindow_; }
@@ -101,6 +103,8 @@ class ConfigManager {
     static void SetNBi214Decays(G4int value)                { Instance()->nBi214Decays_ = value; }
     static void SetNPb214Decays(G4int value)                { Instance()->nPb214Decays_ = value; }
     static void SetNPo210Decays(G4int value)                { Instance()->nPo210Decays_ = value; }
+    static void SetNPo214Decays(G4int value)                { Instance()->nPo214Decays_ = value; }
+    static void SetNPo218Decays(G4int value)                { Instance()->nPo218Decays_ = value; }
     static void SetNRn222Decays(G4int value)                { Instance()->nRn222Decays_ = value; }
     static void SetEventCutoff(G4double value)              { Instance()->eventCutoff_ = value; }
     static void SetEventWindow(G4double value)              { Instance()->eventWindow_ = value; }
@@ -156,6 +160,8 @@ class ConfigManager {
     G4int         nBi214Decays_;
     G4int         nPb214Decays_;
     G4int         nPo210Decays_;
+    G4int         nPo214Decays_;
+    G4int         nPo218Decays_;
     G4int         nRn222Decays_;
     G4double      eventCutoff_;
     G4double      eventWindow_;

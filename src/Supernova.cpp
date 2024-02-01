@@ -32,6 +32,8 @@ Supernova::Supernova()
     N_Bi214_Decays_(ConfigManager::GetNBi214Decays()),
     N_Pb214_Decays_(ConfigManager::GetNPb214Decays()),
     N_Po210_Decays_(ConfigManager::GetNPo210Decays()),
+    N_Po214_Decays_(ConfigManager::GetNPo214Decays()),
+    N_Po218_Decays_(ConfigManager::GetNPo218Decays()),
     N_Rn222_Decays_(ConfigManager::GetNRn222Decays())
 {
 }
@@ -118,7 +120,20 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
         if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 84, 210, decay_time, "APA"); //Po210 from APA
     }
-    
+        // Generate Po214
+    for (int ct=0; ct<N_Po214_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        Generate_Radioisotope(event, 84, 214, decay_time, "Vol"); //Po214 from Volume
+    }    
+    // Generate Po218
+    for (int ct=0; ct<N_Po218_Decays_; ct++)
+    {
+        decay_time = G4UniformRand() * Event_Window_;
+        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        Generate_Radioisotope(event, 84, 218, decay_time, "Vol"); //Po218 from Volume
+    }
     // Generate Rn222
     for (int ct=0; ct<N_Rn222_Decays_; ct++)
     {
@@ -296,5 +311,3 @@ void Supernova::Get_Detector_Dimensions(double detector_x_, double detector_y_, 
     detector_length_y_ = detector_y_;
     detector_length_z_ = detector_z_;
 }
-
-

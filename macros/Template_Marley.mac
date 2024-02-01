@@ -4,23 +4,24 @@
 /tracking/verbose 0
 
 # configure marley
-/Inputs/Particle_Type MARLEY
-/Inputs/MARLEY_json ../cfg/marley_config.js
-/Inputs/isotropic false
-/Inputs/override_vertex_position false
-/Inputs/vertex_x 1.15 m
-/Inputs/vertex_y 3.0 m
-/Inputs/vertex_z 1.8 m
+/inputs/generator MARLEY
+/inputs/particle_type MARLEY
+/inputs/MARLEY_json ../cfg/marley_config.js
+/inputs/isotropic false
+/inputs/override_vertex_position false
+/inputs/vertex_x 1.15 m
+/inputs/vertex_y 3.0 m
+/inputs/vertex_z 1.8 m
 
 # output path
-/Inputs/root_output ../output/MARLEY.root
+/inputs/output_file ../output/MARLEY.root
 
 # initialize run
 /run/initialize
 /random/setSeeds 0 31
 
 # limit radioactive decays 
-/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+#/process/had/rdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 
 # run
 /run/beamOn 100

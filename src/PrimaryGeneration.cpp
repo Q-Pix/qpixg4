@@ -84,7 +84,7 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
   G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
   G4String particleType_ = ConfigManager::GetParticleType();
 
-  particleType_.toLower();
+  G4StrUtil::to_lower(particleType_);
 
 
   // get MC truth manager
@@ -158,6 +158,8 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 
     double const kinetic_energy = particle_gun_->GetParticleEnergy() * CLHEP::MeV;
     double const energy = kinetic_energy + mass;
+    G4cout << "Mass = " << mass << G4endl;
+    G4cout << "Kinetic energy = " << kinetic_energy << G4endl;
 
     double const momentum = std::sqrt(energy*energy - mass*mass);
 
@@ -195,7 +197,7 @@ void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
   G4String particleType = ConfigManager::GetParticleType();
   G4ThreeVector momentumDirection_ = ConfigManager::GetMomentumDirection();
 
-  particleType.toLower();
+  G4StrUtil::to_lower(particleType);
 
   // Get MCTruthManager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();

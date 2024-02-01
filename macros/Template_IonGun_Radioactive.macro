@@ -4,14 +4,14 @@
 /tracking/verbose 0
 
 # output path
-/Inputs/root_output ./output/Radioactive.root
+/inputs/output_file ./output/Radioactive.root
 
 # make unstable isotopes decay at t=0
-/Inputs/decay_at_time_zero true  # this is set to false by default
+/inputs/decay_at_time_zero true  # this is set to false by default
 
 # limit radioactive decay chains
 # use if needed
-#/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
+#/process/had/rdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 
 # initialize run
 /run/initialize
