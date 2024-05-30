@@ -39,6 +39,9 @@ void EventAction::EndOfEventAction(const G4Event* g4event)
 {
     event_id_offset_ = ConfigManager::GetEventIDOffset();
     energy_threshold_ = ConfigManager::GetEnergyThreshold();
+    G4String particleType_ = ConfigManager::GetParticleType();
+
+    particleType_.toLower();
 
     // get MC truth manager
     MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
@@ -68,7 +71,6 @@ void EventAction::EndOfEventAction(const G4Event* g4event)
 
         return;
     }
-
 
     // set event number
     event.SetEvent(g4event->GetEventID() + event_id_offset_);
@@ -107,4 +109,3 @@ void EventAction::EndOfEventAction(const G4Event* g4event)
     // reset event in MC truth manager
     mc_truth_manager->EventReset();
 }
-

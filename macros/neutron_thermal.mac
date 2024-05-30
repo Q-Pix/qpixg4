@@ -33,7 +33,13 @@
 # use if needed
 #/grdm/nucleusLimits 1 35 1 17  # aMin aMax zMin zMax
 
-/process/had/particle_hp/use_photo_evaporation false
+/process/had/particle_hp/use_photo_evaporation true
+/process/had/particle_hp/do_not_adjust_final_state false
+/process/had/particle_hp/skip_missing_isotopes false
+
+/process/inactivate hadElastic
+/process/inactivate neutronInelastic
+/process/inactivate nFission
 
 ################################################################################
 ## Source Definition
@@ -60,55 +66,9 @@
 ##/gps/source/intensity 0.0052
 /gps/particle neutron
 
-/gps/ene/type User
-/gps/hist/type energy
-/gps/hist/point 0. 0.0260712
-/gps/hist/point 0.2 0.0519149
-/gps/hist/point 0.4 0.0644695
-/gps/hist/point 0.6 0.0686237
-/gps/hist/point 0.8 0.0702712
-/gps/hist/point 1. 0.069995
-/gps/hist/point 1.2 0.0658463
-/gps/hist/point 1.4 0.0617589
-/gps/hist/point 1.6 0.0576174
-/gps/hist/point 1.8 0.0550852
-/gps/hist/point 2. 0.0501725
-/gps/hist/point 2.2 0.0460331
-/gps/hist/point 2.4 0.0426396
-/gps/hist/point 2.6 0.0374896
-/gps/hist/point 2.8 0.0339548
-/gps/hist/point 3. 0.0305741
-/gps/hist/point 3.2 0.0264008
-/gps/hist/point 3.4 0.0216205
-/gps/hist/point 3.6 0.0178012
-/gps/hist/point 3.8 0.0155747
-/gps/hist/point 4. 0.0128359
-/gps/hist/point 4.2 0.0110136
-/gps/hist/point 4.4 0.0094911
-/gps/hist/point 4.6 0.0082807
-/gps/hist/point 4.8 0.0072421
-/gps/hist/point 5. 0.0063383
-/gps/hist/point 5.2 0.0052699
-/gps/hist/point 5.4 0.0042666
-/gps/hist/point 5.6 0.0034948
-/gps/hist/point 5.8 0.0029247
-/gps/hist/point 6. 0.0025223
-/gps/hist/point 6.2 0.0020896
-/gps/hist/point 6.4 0.0017435
-/gps/hist/point 6.6 0.0014902
-/gps/hist/point 6.8 0.0013196
-/gps/hist/point 7. 0.0011781
-/gps/hist/point 7.2 0.0010319
-/gps/hist/point 7.4 0.0008613
-/gps/hist/point 7.6 0.0006678
-/gps/hist/point 7.8 0.0004972
-/gps/hist/point 8. 0.0004034
-/gps/hist/point 8.2 0.0003234
-/gps/hist/point 8.4 0.0002439
-/gps/hist/point 8.6 0.000184
-/gps/hist/point 8.8 0.0001439
-/gps/hist/point 9. 0.0001158
-/gps/hist/point 9.2 0.0000936
+/gps/ene/type Gauss
+/gps/ene/mono 30. eV
+/gps/ene/sigma 10. eV
 
 /gps/pos/type Plane
 /gps/pos/shape Circle
@@ -129,55 +89,9 @@
 ##/gps/source/add 0.0052
 /gps/particle neutron
 
-/gps/ene/type User
-/gps/hist/type energy
-/gps/hist/point 0. 0.0260712
-/gps/hist/point 0.2 0.0519149
-/gps/hist/point 0.4 0.0644695
-/gps/hist/point 0.6 0.0686237
-/gps/hist/point 0.8 0.0702712
-/gps/hist/point 1. 0.069995
-/gps/hist/point 1.2 0.0658463
-/gps/hist/point 1.4 0.0617589
-/gps/hist/point 1.6 0.0576174
-/gps/hist/point 1.8 0.0550852
-/gps/hist/point 2. 0.0501725
-/gps/hist/point 2.2 0.0460331
-/gps/hist/point 2.4 0.0426396
-/gps/hist/point 2.6 0.0374896
-/gps/hist/point 2.8 0.0339548
-/gps/hist/point 3. 0.0305741
-/gps/hist/point 3.2 0.0264008
-/gps/hist/point 3.4 0.0216205
-/gps/hist/point 3.6 0.0178012
-/gps/hist/point 3.8 0.0155747
-/gps/hist/point 4. 0.0128359
-/gps/hist/point 4.2 0.0110136
-/gps/hist/point 4.4 0.0094911
-/gps/hist/point 4.6 0.0082807
-/gps/hist/point 4.8 0.0072421
-/gps/hist/point 5. 0.0063383
-/gps/hist/point 5.2 0.0052699
-/gps/hist/point 5.4 0.0042666
-/gps/hist/point 5.6 0.0034948
-/gps/hist/point 5.8 0.0029247
-/gps/hist/point 6. 0.0025223
-/gps/hist/point 6.2 0.0020896
-/gps/hist/point 6.4 0.0017435
-/gps/hist/point 6.6 0.0014902
-/gps/hist/point 6.8 0.0013196
-/gps/hist/point 7. 0.0011781
-/gps/hist/point 7.2 0.0010319
-/gps/hist/point 7.4 0.0008613
-/gps/hist/point 7.6 0.0006678
-/gps/hist/point 7.8 0.0004972
-/gps/hist/point 8. 0.0004034
-/gps/hist/point 8.2 0.0003234
-/gps/hist/point 8.4 0.0002439
-/gps/hist/point 8.6 0.000184
-/gps/hist/point 8.8 0.0001439
-/gps/hist/point 9. 0.0001158
-/gps/hist/point 9.2 0.0000936
+/gps/ene/type Gauss
+/gps/ene/mono 30. eV
+/gps/ene/sigma 10. eV
 
 /gps/pos/type Plane
 /gps/pos/shape Circle
@@ -198,55 +112,9 @@
 ##/gps/source/add 0.0052
 /gps/particle neutron
 
-/gps/ene/type User
-/gps/hist/type energy
-/gps/hist/point 0. 0.0260712
-/gps/hist/point 0.2 0.0519149
-/gps/hist/point 0.4 0.0644695
-/gps/hist/point 0.6 0.0686237
-/gps/hist/point 0.8 0.0702712
-/gps/hist/point 1. 0.069995
-/gps/hist/point 1.2 0.0658463
-/gps/hist/point 1.4 0.0617589
-/gps/hist/point 1.6 0.0576174
-/gps/hist/point 1.8 0.0550852
-/gps/hist/point 2. 0.0501725
-/gps/hist/point 2.2 0.0460331
-/gps/hist/point 2.4 0.0426396
-/gps/hist/point 2.6 0.0374896
-/gps/hist/point 2.8 0.0339548
-/gps/hist/point 3. 0.0305741
-/gps/hist/point 3.2 0.0264008
-/gps/hist/point 3.4 0.0216205
-/gps/hist/point 3.6 0.0178012
-/gps/hist/point 3.8 0.0155747
-/gps/hist/point 4. 0.0128359
-/gps/hist/point 4.2 0.0110136
-/gps/hist/point 4.4 0.0094911
-/gps/hist/point 4.6 0.0082807
-/gps/hist/point 4.8 0.0072421
-/gps/hist/point 5. 0.0063383
-/gps/hist/point 5.2 0.0052699
-/gps/hist/point 5.4 0.0042666
-/gps/hist/point 5.6 0.0034948
-/gps/hist/point 5.8 0.0029247
-/gps/hist/point 6. 0.0025223
-/gps/hist/point 6.2 0.0020896
-/gps/hist/point 6.4 0.0017435
-/gps/hist/point 6.6 0.0014902
-/gps/hist/point 6.8 0.0013196
-/gps/hist/point 7. 0.0011781
-/gps/hist/point 7.2 0.0010319
-/gps/hist/point 7.4 0.0008613
-/gps/hist/point 7.6 0.0006678
-/gps/hist/point 7.8 0.0004972
-/gps/hist/point 8. 0.0004034
-/gps/hist/point 8.2 0.0003234
-/gps/hist/point 8.4 0.0002439
-/gps/hist/point 8.6 0.000184
-/gps/hist/point 8.8 0.0001439
-/gps/hist/point 9. 0.0001158
-/gps/hist/point 9.2 0.0000936
+/gps/ene/type Gauss
+/gps/ene/mono 30. eV
+/gps/ene/sigma 10. eV
 
 /gps/pos/type Plane
 /gps/pos/shape Circle
@@ -339,4 +207,4 @@
 #/gps/ang/mintheta 0 deg
 
 # run
-/run/beamOn 1000000
+/run/beamOn 100000

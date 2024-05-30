@@ -52,7 +52,7 @@ ConfigManager::ConfigManager()
   eventWindow_(0),
   snTimingOn_(false), th2Name_("nusperbin2d_nue"),
   useHDDetectorConfiguration_(true), detectorLength_(0), detectorWidth_(0), detectorHeight_(0), 
-  worldLength_(0), worldWidth_(0), worldHeight_(0), getPhotons_(false), getElectrons_(false)
+  worldLength_(0), worldWidth_(0), worldHeight_(0), getPhotons_(false), getElectrons_(false), nbverbose_(0)
 {
   CreateCommands();
 }
@@ -80,7 +80,7 @@ ConfigManager::ConfigManager(const ConfigManager& master)
   useHDDetectorConfiguration_(master.useHDDetectorConfiguration_), detectorLength_(master.detectorLength_),
   detectorWidth_(master.detectorWidth_), detectorHeight_(master.detectorHeight_), worldLength_(master.worldLength_), 
   worldWidth_(master.worldWidth_), worldHeight_(master.worldHeight_), getPhotons_(master.getPhotons_),
-  getElectrons_(master.getElectrons_)
+  getElectrons_(master.getElectrons_), nbverbose_(master.nbverbose_)
 {
   CreateCommands();
 }
@@ -105,7 +105,7 @@ void ConfigManager::CreateCommands()
   msgSupernova_ = new G4GenericMessenger(this, "/supernova/", "Control commands of the supernova generator.");
   msgSupernovaTiming_ = new G4GenericMessenger(this, "/supernova/timing/", "control commands for SupernovaTiming");
   msgGeometry_ = new G4GenericMessenger(this, "/geometry/", "control commands for DetectorConstruction");
-  msgNeutron_ = new G4GenericMessenger(this, "/neutron/", "control commands for DetectorConstruction");
+  msgNeutron_ = new G4GenericMessenger(this, "/neutron/", "control commands for NeutronBackground");
 
   // Declare all properties for msgEvent
   msgEvent_->DeclareProperty("offset", eventIDOffset_, "Event ID offset.");
@@ -163,6 +163,7 @@ void ConfigManager::CreateCommands()
   // Declare all properties for msgNeutron
   msgNeutron_->DeclareProperty("get_photons", getPhotons_, "get photons from neutron capture in SteppingAction");
   msgNeutron_->DeclareProperty("get_electrons", getElectrons_, "get secondary electrons from neutron capture in SteppingAction");
+  msgNeutron_->DeclareProperty("nb_verbose", nbverbose_, "activate verbose on generation of photons from neutron capture");
 }
 
 //-----------------------------------------------------------------------------
@@ -213,5 +214,6 @@ void ConfigManager::PrintConfig() const
      << G4endl
      << "Neutron -- Use SteppingAction to get photons from neutron capture: " << getPhotons_ << G4endl
      << "Neutron -- Use SteppingAction to get electrons from neutron capture: " << getElectrons_ << G4endl
+     << "Neutron -- Activate verbose on generation of photons from neutron capture: " << nbverbose_ << G4endl
      << G4endl;
 }

@@ -6,19 +6,11 @@
 //   * Creation date: 14 Aug 2019
 //
 //
-//  GVS: 08 Dec 2023
+//  GVS: 23 April 2024
 //       ATTENTION! USE THE FOLLOWING COMMAND LINES WHEN 
 //       RUNNING QPIXG4 FOR NEUTRON BACKGROUND STUDIES:
-//       1) ./app/G4_QPIX ../macros/neutron_surf.mac | awk '/NCapGamma:/ {print $4,$5,$6,$7,$8,$9,$10}' > ../output/photon_ncap.txt 
-//       -> Gets photons from neutron capture and 
-//          saves their position, multiplicity and initial 
-//          momentum in '../output/photon_ncap.txt'
-//          IF YOU WANT TO CHANGE THE TEXT FILE NAME, BE SURE 
-//          TO ALSO MODIFY THE FILE NAME IN 'NeutronBackground.cc'
-//       2) ./app/G4_QPIX ../macros/Template_Neutron_Background.mac | awk '/NCapElec:/ {print $2,$3,$4,$5,$6,$7}' > ../output/electron_ncap.txt
-//       -> Generates secondary electrons from these photons.
-//          ( | awk '/NCapElec:/ {print $2,$3,$4,$5,$6,$7}' > ../output/electron_ncap.txt ) is optional.
-//          Just be sure you have '/neutron/get_electrons 1' in your macro.
+//       cd PathToQPIXG4directory/qpixg4
+//       source run_neutron_background.sh
 // -----------------------------------------------------------------------------
 
 #include "SteppingAction.h"
@@ -51,7 +43,8 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   G4double flagProcess=0.;
 
   G4String procName;
-  G4int pdgCode, ev;
+  G4int pdgCode;
+  G4int isotope;
 
   const G4Event *evt;
 
@@ -62,47 +55,88 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
   // -----------------------------------------------------------------------------
   //   FOR NEUTRON BACKGROUND STUDIES ONLY!
   // -----------------------------------------------------------------------------
-  //   If simulating primary neutrons (
-  //   ./app/G4_QPIX ../macros/neutron_surf.mac | awk '/NCapGamma:/ {print $4,$5,$6,$7,$8,$9,$10}' > ../output/photon_ncap.txt
-  //   and 
-  //   ./app/G4_QPIX ../macros/Template_Neutron_Background.mac 
-  //   )
+  //   If simulating primary neutrons,
   //   Use the following piece of code to get the information
   //   Of photons and secondary electrons from neutron capture
   // -----------------------------------------------------------------------------
- 
+
+/*   if(pdgCode == 2112){
+    if(step->GetTrack()->GetParentID() == 0){
+      if(step->GetTrack()->GetCurrentStepNumber()==1){
+        if(procName != "Transportation"){
+          if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName() == "detector.physical"){
+            G4cout << "It is a primary neutron!" << G4endl;
+          }
+        }
+      }
+    } 
+  } */
 
   if(nCap_gamma){
-  if(pdgCode == 2112 && procName == "nCapture"){
+    if(pdgCode == 2112 && procName == "nCapture"){
+    
+      G4int eventID; //, nphotons;
+      G4double xph,yph,zph,tph; //,pxph,pyph,pzph;
+      G4double sum = 0;
+      G4String event_info;
+      // G4String momdir_info = " ";
+      // G4String append;
 
-    G4double xph,yph,zph;
-
-    const std::vector<const G4Track*> secondaries = *step->GetSecondaryInCurrentStep();
-
-    for(auto & sec : secondaries){
-
-      xph=sec->GetPosition().x()/mm;
-      yph=sec->GetPosition().y()/mm;
-      zph=sec->GetPosition().z()/mm;
+      const std::vector<const G4Track*> secondaries = *step->GetSecondaryInCurrentStep();
 
       // Making sure photons are being collected
       // And we are getting them inside the detector
-      if(sec->GetDefinition()->GetPDGEncoding() == 22){
-          if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName() == "detector.physical"){
-          
-            G4cout << "NCapGamma: "
-                   << xph                                                    << " " 
-                   << yph                                                    << " "
-                   << zph                                                    << " " 
-                   << sec->GetMomentumDirection().x()                        << " "
-                   << sec->GetMomentumDirection().y()                        << " "
-                   << sec->GetMomentumDirection().z()                        << " "
-                   << sec->GetGlobalTime()/ns                                << G4endl;
-          }
+      if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName() == "detector.physical"){
+
+        for(auto & sec : secondaries){
+             if(sec->GetDefinition()->GetPDGEncoding() == 1000180410){isotope = 41;}
+             if(sec->GetDefinition()->GetPDGEncoding() == 1000180370){isotope = 37;}
+             if(sec->GetDefinition()->GetPDGEncoding() == 22){
+                G4cout << "Energy is: " << sec->GetTotalEnergy() << G4endl;
+                sum = sum + sec->GetTotalEnergy();
+                
+            }
+        }
+
+        G4cout << "Sum is: " << sum << G4endl;
+        G4cout << "Multiplicity is: " << secondaries.size() - 1 << G4endl;
+
+          // Position and time of the secondaries from the same vertex are the same.
+          // These quantities will be saved once.
+          eventID = evt->GetEventID();
+          xph=secondaries.at(0)->GetPosition().x()/mm;
+          yph=secondaries.at(0)->GetPosition().y()/mm;
+          zph=secondaries.at(0)->GetPosition().z()/mm;
+          tph=secondaries.at(0)->GetGlobalTime()/ns;
+
+          event_info = "NCapGamma: " + std::to_string(isotope) + " "  + std::to_string(eventID) + " " 
+                                 + std::to_string(xph) + " " + std::to_string(yph) + " " 
+                                 + std::to_string(zph) + " " + std::to_string(tph) + " ";
+
+          G4cout <<  event_info << G4endl; 
       }
     }
   }
-  }
+
+      /* for(auto & sec : secondaries){
+
+        // Making sure photons are being collected
+        // And we are getting them inside the detector
+        if(sec->GetDefinition()->GetPDGEncoding() == 22){
+            if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName() == "detector.physical"){
+ 
+              pxph=sec->GetMomentumDirection().x();
+              pyph=sec->GetMomentumDirection().y();
+              pzph=sec->GetMomentumDirection().z();
+              append = std::to_string(pxph) + " " 
+                       + std::to_string(pyph) + " " 
+                       + std::to_string(pzph) + " ";
+
+            momdir_info = momdir_info + append;
+            energy = energy + sec->GetTotalEnergy();
+            }
+        }
+      } */
 
   if(nCap_elec){
     if(abs(pdgCode) == 11){
@@ -110,7 +144,7 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
 
       G4double xe,ye,ze;
 
-      if(step->GetTrack()->GetCurrentStepNumber()==1){
+      //if(step->GetTrack()->GetCurrentStepNumber()==1){
 
         xe= step->GetPreStepPoint()->GetPosition().x()/mm;
         ye= step->GetPreStepPoint()->GetPosition().y()/mm;
@@ -120,15 +154,15 @@ void SteppingAction::UserSteppingAction(const G4Step* step)
         // And we are getting them inside the detector
         if(step->GetPreStepPoint()->GetPhysicalVolume()->GetName() == "detector.physical"){
                   
-                  std::cout << "NCapElec: "
+                  G4cout << "NCapElec: "
                          << evt->GetEventID()                                    << " " 
                          << pdgCode                                              << " " 
                          << step->GetPreStepPoint()->GetKineticEnergy()/eV       << " "
                          << xe                                                   << " " 
                          << ye                                                   << " " 
-                         << ze                                                   << std::endl;
+                         << ze                                                   << G4endl;
         } 
-      }
+   //   }
     }
   }
   

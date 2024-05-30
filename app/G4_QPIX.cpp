@@ -62,7 +62,8 @@ int main(int argc, char** argv)
   auto* run_manager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
   G4VModularPhysicsList* physics_list = new FTFP_BERT_HP(0); // activate verbosity, level 1
-  // physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
+  // Simulate with this physics list -> QGSP_BIC_AllHP
+  //physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
   run_manager->SetUserInitialization(physics_list);
 
   run_manager->SetUserInitialization(new DetectorConstruction());
@@ -80,16 +81,14 @@ int main(int argc, char** argv)
   if (!ui) {
     // batch mode
     // Execute Macro file using any aliases set above
-    ui = new G4UIExecutive(argc, argv, "Qt");
     G4String command = "/control/execute ";
     G4String macro_name = argv[1];
     uimgr->ApplyCommand(command+macro_name);
-    ui->SessionStart();
     delete ui;
   }
   else {
     // interactive mode
-    uimgr->ApplyCommand("/control/execute init_vis.mac");
+    uimgr->ApplyCommand("/control/execute ../macros/init_vis.mac");
     ui->SessionStart();
     delete ui;
   }

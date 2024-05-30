@@ -55,7 +55,7 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
 
     Supernova * super;
 
-    NeutronBackground * neutron;
+    static G4VPrimaryGenerator* neutron;
 
     double detector_length_x_;
     double detector_length_y_;

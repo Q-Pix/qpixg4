@@ -35,4 +35,4 @@
 /neutron/get_electrons 1
 
 # run
-/run/beamOn 1
+/run/beamOn 23332

@@ -48,6 +48,14 @@
 #include <math.h>
 #include <stdlib.h>
 
+#include "G4AutoLock.hh"
+
+namespace {
+ G4Mutex PrimGenMutex = G4MUTEX_INITIALIZER; 
+}
+
+G4VPrimaryGenerator* PrimaryGeneration::neutron = nullptr;
+
 PrimaryGeneration::PrimaryGeneration()
   : G4VUserPrimaryGeneratorAction(),
     particle_gun_(0)
@@ -64,8 +72,12 @@ PrimaryGeneration::PrimaryGeneration()
   super = new Supernova();
 
   // get neutron background generation class
+  G4AutoLock lock(&PrimGenMutex);
+  if(!neutron){
   neutron = new NeutronBackground();
-
+  }
+ // lock.unlock();
+  
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
   generator_ = std::default_random_engine(seed);
   distribution_ = std::normal_distribution< double >(0, 1);
@@ -74,10 +86,11 @@ PrimaryGeneration::PrimaryGeneration()
 
 PrimaryGeneration::~PrimaryGeneration()
 {
+  G4AutoLock lock(&PrimGenMutex);
+  if(neutron) {delete neutron; neutron = 0;}
   delete particle_gun_;
   delete supernova_timing_;
   delete super;
-  delete neutron;
 }
 
 
@@ -117,6 +130,7 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
   // Add the background contribution from neutron capture processes
   else if(particleType_ == "neutron")
   {
+    G4AutoLock lock(&PrimGenMutex);
     neutron->GeneratePrimaryVertex(event);
   }
 

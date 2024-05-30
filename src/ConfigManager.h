@@ -78,6 +78,7 @@ class ConfigManager {
     static G4double      GetWorldHeight()                   { return Instance()->worldHeight_; }
     static G4bool        GetGetPhotons()                    { return Instance()->getPhotons_; }
     static G4bool        GetGetElectrons()                  { return Instance()->getElectrons_; }
+    static G4int         GetNBVerbose()                     { return Instance()->nbverbose_; }
 
     // Change values (e.g. via Messenger) -- pass strings by value for toLower()
     static void SetEventIDOffset(G4int value)               { Instance()->eventIDOffset_ = value; }
@@ -120,6 +121,7 @@ class ConfigManager {
     static void SetWorldHeight(G4double value)              { Instance()->worldHeight_ = value; }
     static void SetGetPhotons(G4bool value)                 { Instance()->getPhotons_ = value; }
     static void SetGetElectrons(G4bool value)               { Instance()->getElectrons_ = value; }
+    static void SetNBVerbose(G4int value)                   { Instance()->nbverbose_ = value; }
 
     // Print out all configuration settings
     static void Print() { Instance()->PrintConfig(); }
@@ -187,5 +189,6 @@ class ConfigManager {
     // msgNeutron variables
     G4bool        getPhotons_;
     G4bool        getElectrons_;
+    G4int         nbverbose_;
 };
 #endif
