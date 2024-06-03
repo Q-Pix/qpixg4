@@ -19,9 +19,13 @@ Outputs: output/neutron.root
          
 --------------------------------------------------------------------------------------------
 Neutron Spectrum from Guilherme Ruiz Ferreira (U. of Manchester)
+
 Email: guilherme.ruizferreira@postgrad.manchester.ac.uk
+
 Total neutron rates considering one DUNE cave (2 in total) with dimensions of 145mx20mx28m
+
 Total fluence of 277 neutrons/second
+
 Differencial fluence of 0.01842 neutrons/second/m^2
 --------------------------------------------------------------------------------------------
 
