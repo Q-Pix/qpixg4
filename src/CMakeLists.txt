@@ -6,6 +6,8 @@
 ##   * Creation date: 1 May 2020
 ## ---------------------------------------------------------
 
+include_directories(${Geant4_INCLUDE_DIRS})
+
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
 SET(SRC   ActionInitialization.cpp
