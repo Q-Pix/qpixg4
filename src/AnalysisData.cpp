@@ -20,6 +20,7 @@ AnalysisData::AnalysisData()
 {
 #ifdef G4ANALYSIS_USE
 #endif
+EventReset();
 }
 
 //-----------------------------------------------------------------------------
