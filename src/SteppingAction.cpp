@@ -25,7 +25,7 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-    AnalysisManager::Instance();
+    auto analysis_manager = AnalysisManager::Instance();
 
     if(step->GetPostStepPoint()->GetProcessDefinedStep() == NULL){
         analysis_manager->AddProcess("UserDefined");

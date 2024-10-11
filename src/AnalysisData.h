@@ -142,6 +142,47 @@ class AnalysisData {
     std::vector< double > generator_final_particle_mass_;
     std::vector< double > generator_final_particle_charge_;
 
+    // extra meta variables from the Odyssey neutrino interactions, defined
+    // in ROOTManager.h
+    Float_t axis_x_ = -42.0;
+    Float_t axis_y_ = -42.0;
+    Float_t axis_z_ = -42.0;
+    Float_t xpos_ = -1;
+    Float_t ypos_ = -1;
+    Float_t zpos_ = -1;
+    Int_t nEvt_ = -1;
+    Int_t fsPdg_ = 0;
+    Float_t fsEnergy_ = -1;
+    Int_t fsEvt_ = -1;
+    Int_t fsFileNo_ = -1;
+    Int_t fsFHC_ = -1;
+    Int_t fsRun_ = -1;
+    Int_t nFS_ = -1;
+    Float_t lepKE_ = -1;
+
+    // hadronic information for energy recon
+    Float_t hadTot_;
+    Float_t hadPip_;
+    Float_t hadPim_;
+    Float_t hadPi0_;
+    Float_t hadP_;
+    Float_t hadN_;
+    Float_t hadOther_;
+
+    // for FillMCParticle to fill by event
+    int    m_hit_track_id_;
+    double m_hit_start_x_;
+    double m_hit_start_y_;
+    double m_hit_start_z_;
+    double m_hit_start_t_;
+    double m_hit_end_x_;
+    double m_hit_end_y_;
+    double m_hit_end_z_;
+    double m_hit_end_t_;
+    double m_hit_length_;
+    double m_hit_energy_deposit_;
+    int m_hit_process_key_;
+    int m_particle_id=-1; // helper from run action
 };
 
 #endif

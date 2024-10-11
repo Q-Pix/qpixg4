@@ -30,26 +30,12 @@
 
 RunAction::RunAction(): G4UserRunAction(), multirun_(false),TreeName_("event_tree")
 {
-    messenger_ = new G4GenericMessenger(this, "/Inputs/");
-    messenger_->DeclareProperty("root_output", root_output_path_,
-                                "path to output ROOT file");
-    messenger_->DeclareProperty("MARLEY_json", marley_json_,
-                                "MARLEY configuration file");
-    messenger_->DeclareProperty("ReadFrom_Root_Path", ReadFrom_Root_,
-                                "Root File to Read");
-    messenger_->DeclareProperty("multirun", multirun_,
-                                "Multiple runs");
-    messenger_->DeclareProperty("TreeName", TreeName_,
-                                "RootTree Name if it is defined different");
-    messenger_->DeclareProperty("RadioParticleID", particle_type_,
-                                "Int ID for Decay Particle");
     runManager=G4RunManager::GetRunManager();
 }
 
 
 RunAction::~RunAction()
 {
-    delete messenger_;
     delete ROOTManager::Instance();
 }
 
@@ -91,7 +77,7 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
             if(runManager->GetNumberOfEventsToBeProcessed()>NumberEventsInTheFile or runManager->GetNumberOfEventsToBeProcessed()==228){
                 std::cout<<"Overwrting number of events to proccess to " << NumberEventsInTheFile <<" ..."<<std::endl;
                 runManager->SetNumberOfEventsToBeProcessed(NumberEventsInTheFile);
-                std::cout<<"Number of Events to Process -->"<<run->GetNumberOfEventToBeProcessed()<<std::endl;
+                std::cout<<"Number of Events to Process -->"<<g4run->GetNumberOfEventToBeProcessed()<<std::endl;
 
             }
 
@@ -100,11 +86,11 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
     }
 
-    if(!marley_json_.empty()){
-    // get MARLEY manager
-    MARLEYManager * marley_manager = MARLEYManager::Instance();
-    // configure and create MARLEY generator
-    marley_manager->Initialize(marley_json_);
+    if(!marleyJson_.empty()){
+        // get MARLEY manager
+        MARLEYManager * marley_manager = MARLEYManager::Instance();
+        // configure and create MARLEY generator
+        marley_manager->Initialize();
     }
 
 
@@ -133,8 +119,8 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
     // get run number
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
-    if(particle_type_ > 0)
-        analysis_manager->SetParticleID(particle_type_);
+    // if(particle_type_ > 0)
+    //     analysis_manager->SetParticleID(particle_type_);
     analysis_manager->Book(root_output_path);
     event.SetRun(g4run->GetRunID());
     // if we've passed a particle type, then activate and set the branch
@@ -147,10 +133,11 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
     // reset event in MC truth manager
     mc_truth_manager->EventReset();
+    }
 }
 
 
-void RunAction::EndOfRunAction(const G4Run*)
+void RunAction::EndOfRunAction(const G4Run* g4run)
 {
     // check the ROOTManager to add extra meta-data. this is a placeholder of a janky configmanager
     ROOTManager *rootManager=ROOTManager::Instance();
@@ -204,7 +191,7 @@ void RunAction::EndOfRunAction(const G4Run*)
 
     // save detector dimensions as metadata
     if (G4Threading::IsMasterThread()){
-      analysis_manager->FillMetadata();
+      analysis_manager->FillMetadata(); // TODO
     }
 
 

@@ -84,6 +84,16 @@
         "csignal": "cpp",
         "cfenv": "cpp",
         "testRotate.C": "cpp",
-        "directory": "cpp"
+        "directory": "cpp",
+        "qrot": "cpp",
+        "rotf": "cpp",
+        "vec2": "cpp",
+        "vec3": "cpp",
+        "vec4": "cpp",
+        "leaf": "cpp",
+        "bsf": "cpp",
+        "senum": "cpp",
+        "ntuple": "cpp",
+        "element": "cpp"
     }
 }

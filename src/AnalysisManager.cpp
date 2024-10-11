@@ -12,6 +12,9 @@
 // Qpix includes
 #include "AnalysisData.h"
 #include "ConfigManager.h"
+#include "MCParticle.h"
+#include "GeneratorParticle.h"
+
 
 // Geant4 includes
 #include "G4AutoLock.hh"
@@ -187,15 +190,9 @@ void AnalysisManager::EventFill(const AnalysisData& rhs)
 }
 
 //-----------------------------------------------------------------------------
-void AnalysisManager::FillMetadata()
-{
-    run_ = value;
-}
-
-//-----------------------------------------------------------------------------
 void AnalysisManager::SetEvent(int const value)
 {
-    event_ = value;
+    // event_ = value;
 }
 
 //-----------------------------------------------------------------------------
@@ -257,31 +254,31 @@ void AnalysisManager::FillROOTMeta(Float_t axis_x, Float_t axis_y, Float_t axis_
 
 
 //-----------------------------------------------------------------------------
-void AnalysisManager::FillMetadata(double const & detector_length_x,
-                                   double const & detector_length_y,
-                                   double const & detector_length_z)
+void AnalysisManager::FillMetadata()
 {
-    detector_length_x_ = detector_length_x;
-    detector_length_y_ = detector_length_y;
-    detector_length_z_ = detector_length_z;
-    metadata_->Fill();
+  G4AutoLock metaLock(&metaMutex);
+  detector_length_x_ = ConfigManager::GetDetectorWidth();
+  detector_length_y_ = ConfigManager::GetDetectorHeight();
+  detector_length_z_ = ConfigManager::GetDetectorLength();
+  useHDDetectorConfiguration_ = ConfigManager::GetUseHDDetectorConfiguration();
+  metadata_->Fill();
 }
 
 //-----------------------------------------------------------------------------
 void AnalysisManager::AddInitialGeneratorParticle(GeneratorParticle const * particle)
 {
-    // generator_initial_number_particles_ += 1;
-    // generator_initial_particle_pdg_code_.push_back(particle->PDGCode());
-    // generator_initial_particle_mass_.push_back(particle->Mass());
-    // generator_initial_particle_charge_.push_back(particle->Charge());
-    // generator_initial_particle_x_.push_back(particle->X());
-    // generator_initial_particle_y_.push_back(particle->Y());
-    // generator_initial_particle_z_.push_back(particle->Z());
-    // generator_initial_particle_t_.push_back(particle->T());
-    // generator_initial_particle_px_.push_back(particle->Px());
-    // generator_initial_particle_py_.push_back(particle->Py());
-    // generator_initial_particle_pz_.push_back(particle->Pz());
-    // generator_initial_particle_energy_.push_back(particle->Energy());
+    event.generator_initial_number_particles_ += 1;
+    event.generator_initial_particle_pdg_code_.push_back(particle->PDGCode());
+    event.generator_initial_particle_mass_.push_back(particle->Mass());
+    event.generator_initial_particle_charge_.push_back(particle->Charge());
+    event.generator_initial_particle_x_.push_back(particle->X());
+    event.generator_initial_particle_y_.push_back(particle->Y());
+    event.generator_initial_particle_z_.push_back(particle->Z());
+    event.generator_initial_particle_t_.push_back(particle->T());
+    event.generator_initial_particle_px_.push_back(particle->Px());
+    event.generator_initial_particle_py_.push_back(particle->Py());
+    event.generator_initial_particle_pz_.push_back(particle->Pz());
+    event.generator_initial_particle_energy_.push_back(particle->Energy());
 }
 
 //-----------------------------------------------------------------------------
@@ -325,8 +322,8 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
     // particle_number_daughters_.push_back(particle->NumberDaughters());
     // particle_daughter_track_ids_.push_back(particle->Daughters());
 
-    number_particles_ += 1;
-    std::vector< TrajectoryHit > const hits = particle->Hits();
+    // number_particles_ += 1;
+    // std::vector< TrajectoryHit > const hits = particle->Hits();
 
 // // not used for FillMCParticle
 //     for (auto const & hit : hits)
@@ -355,34 +352,34 @@ void AnalysisManager::AddMCParticle(MCParticle const * particle)
 
 void AnalysisManager::FillMCParticle(MCParticle const * particle)
 {
-    number_particles_ += 1;
-    std::vector< TrajectoryHit > const hits = particle->Hits();
-    number_hits_ = hits.size();
+    // number_particles_ += 1;
+    // std::vector< TrajectoryHit > const hits = particle->Hits();
+    // number_hits_ = hits.size();
 
-    for (auto const & hit : hits)
-    {
-        energy_deposit_ += hit.Energy();
+    // for (auto const & hit : hits)
+    // {
+    //     energy_deposit_ += hit.Energy();
 
-        m_hit_track_id_ = hit.TrackID();
+    //     m_hit_track_id_ = hit.TrackID();
 
-        m_hit_start_x_ = hit.StartPoint().X();
-        m_hit_start_y_ = hit.StartPoint().Y();
-        m_hit_start_z_ = hit.StartPoint().Z();
-        m_hit_start_t_ = hit.StartTime();
+    //     m_hit_start_x_ = hit.StartPoint().X();
+    //     m_hit_start_y_ = hit.StartPoint().Y();
+    //     m_hit_start_z_ = hit.StartPoint().Z();
+    //     m_hit_start_t_ = hit.StartTime();
 
-        m_hit_end_x_ = hit.EndPoint().X();
-        m_hit_end_y_ = hit.EndPoint().Y();
-        m_hit_end_z_ = hit.EndPoint().Z();
-        m_hit_end_t_ = hit.EndTime();
+    //     m_hit_end_x_ = hit.EndPoint().X();
+    //     m_hit_end_y_ = hit.EndPoint().Y();
+    //     m_hit_end_z_ = hit.EndPoint().Z();
+    //     m_hit_end_t_ = hit.EndTime();
 
-        m_hit_length_ = hit.Length();
-        m_hit_energy_deposit_ = hit.Energy();
+    //     m_hit_length_ = hit.Length();
+    //     m_hit_energy_deposit_ = hit.Energy();
 
-        m_hit_process_key_ = this->ProcessToKey(hit.Process());
+    //     m_hit_process_key_ = this->ProcessToKey(hit.Process());
 
-        // fill on every hit
-        event_tree_->Fill();
-    }
+    //     // fill on every hit
+    //     event_tree_->Fill();
+    // }
 }
 
 

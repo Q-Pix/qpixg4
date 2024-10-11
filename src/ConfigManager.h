@@ -169,5 +169,33 @@ class ConfigManager {
     G4double      detectorLength_;
     G4double      detectorWidth_;
     G4double      detectorHeight_;
+
+    // beam variables
+    // extra meta variables from the Odyssey neutrino interactions, defined
+    // in ROOTManager.h
+    float_t axis_x_ = -42.0;
+    float_t axis_y_ = -42.0;
+    float_t axis_z_ = -42.0;
+    float_t xpos_ = -1;
+    float_t ypos_ = -1;
+    float_t zpos_ = -1;
+    int nEvt_ = -1;
+    int fsPdg_ = 0;
+    float_t fsEnergy_ = -1;
+    int fsEvt_ = -1;
+    int fsFileNo_ = -1;
+    int fsFHC_ = -1;
+    int fsRun_ = -1;
+    int nFS_ = -1;
+    float_t lepKE_ = -1;
+
+    // hadronic information for energy recon
+    float_t hadTot_;
+    float_t hadPip_;
+    float_t hadPim_;
+    float_t hadPi0_;
+    float_t hadP_;
+    float_t hadN_;
+    float_t hadOther_;
 };
 #endif

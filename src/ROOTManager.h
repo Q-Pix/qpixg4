@@ -4,8 +4,8 @@
 
 
 
-#ifndef QPIXG4_ROOTMANAGER_H
-#define QPIXG4_ROOTMANAGER_H
+#ifndef QPIXG4_ROOTMANAGER_ButGood_H
+#define QPIXG4_ROOTMANAGER_ButGood_H
 // ROOT includes
 #include "TROOT.h"
 #include "TFile.h"

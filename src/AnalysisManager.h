@@ -6,8 +6,9 @@
 //   * Creation date: 4 August 2020
 // -----------------------------------------------------------------------------
 
-#ifndef AnalysisManager_h
-#define AnalysisManager_h 1
+#pragma once
+// #ifndef AnalysisManager_h
+// #define AnalysisManager_h 1
 
 // Qpix includes
 #include "AnalysisData.h"
@@ -28,10 +29,10 @@ class AnalysisManager {
   public:
     ~AnalysisManager();
 
-        void Book(std::string const);
+        void Book(std::string const&);
         void Save();
         void Cd();
-        void EventFill();
+        void EventFill(const AnalysisData& rhs);
         void EventReset();
 
         double GetEnergy() const {return energy_deposit_;};
@@ -39,13 +40,10 @@ class AnalysisManager {
         void SetEvent(int const);
         void SetParticleID(int const id){m_particle_id = id;};
 
-        void FillMetadata(double const &, double const &, double const &);
+        void FillMetadata();
         void FillROOTMeta(Float_t, Float_t, Float_t, Float_t, Float_t, Float_t,
                           Int_t, Int_t, Float_t, Int_t, Int_t, Int_t, Int_t, Int_t, Float_t,
                           Float_t, Float_t, Float_t, Float_t, Float_t, Float_t, Float_t, double);
-
-        void AddInitialGeneratorParticle(GeneratorParticle const *);
-        void AddFinalGeneratorParticle(GeneratorParticle const *);
 
         void AddMCParticle(MCParticle const *);
         // adding to fill entries in tree by hits instead of events
@@ -57,8 +55,7 @@ class AnalysisManager {
         inline std::set< std::string > GetProcessNames() const { return process_names_; }
 
         static AnalysisManager* Instance();
-
-    AnalysisData event;
+        AnalysisData event;
 
   private:
 
@@ -74,130 +71,44 @@ class AnalysisManager {
     void AddInitialGeneratorParticle(GeneratorParticle const *);
     void AddFinalGeneratorParticle(GeneratorParticle const *);
 
+
   private:
 
-    std::set< std::string > process_names_;
+        int m_particle_id = 0;
+
+        std::set< std::string > process_names_;
 
         // variables that will go into the metadata tree
         double detector_length_x_;
         double detector_length_y_;
         double detector_length_z_;
+        bool useHDDetectorConfiguration_;
 
-        // extra meta variables from the Odyssey neutrino interactions, defined
-        // in ROOTManager.h
-        Float_t axis_x_ = kMaxLong64;
-        Float_t axis_y_ = kMaxLong64;
-        Float_t axis_z_ = kMaxLong64;
-        Float_t xpos_ = -1;
-        Float_t ypos_ = -1;
-        Float_t zpos_ = -1;
-        Int_t nEvt_ = -1;
-        Int_t fsPdg_ = 0;
-        Float_t fsEnergy_ = -1;
-        Int_t fsEvt_ = -1;
-        Int_t fsFileNo_ = -1;
-        Int_t fsFHC_ = -1;
-        Int_t fsRun_ = -1;
-        Int_t nFS_ = -1;
-        Float_t lepKE_ = -1;
+        float_t energy_deposit_ = -42.0;
+        float_t axis_x_ = -42.0;
+        float_t axis_y_ = -42.0;
+        float_t axis_z_ = -42.0;
+        float_t xpos_ = -1;
+        float_t ypos_ = -1;
+        float_t zpos_ = -1;
+        int nEvt_ = -1;
+        int fsPdg_ = 0;
+        float_t fsEnergy_ = -1;
+        int fsEvt_ = -1;
+        int fsFileNo_ = -1;
+        int fsFHC_ = -1;
+        int fsRun_ = -1;
+        int nFS_ = -1;
+        float_t lepKE_ = -1;
 
         // hadronic information for energy recon
-        Float_t hadTot_;
-        Float_t hadPip_;
-        Float_t hadPim_;
-        Float_t hadPi0_;
-        Float_t hadP_;
-        Float_t hadN_;
-        Float_t hadOther_;
-
-        // variables that will go into the event trees
-        int run_;
-        int event_;
-
-        int number_particles_;
-        int number_hits_;
-
-        double energy_deposit_;
-
-        // for FillMCParticle to fill by event
-        int    m_hit_track_id_;
-        double m_hit_start_x_;
-        double m_hit_start_y_;
-        double m_hit_start_z_;
-        double m_hit_start_t_;
-        double m_hit_end_x_;
-        double m_hit_end_y_;
-        double m_hit_end_z_;
-        double m_hit_end_t_;
-        double m_hit_length_;
-        double m_hit_energy_deposit_;
-        int m_hit_process_key_;
-        int m_particle_id=-1; // helper from run action
-
-        // std::vector< int >    particle_track_id_;
-        // std::vector< int >    particle_parent_track_id_;
-        // std::vector< int >    particle_pdg_code_;
-        // std::vector< double > particle_mass_;
-        // std::vector< double > particle_charge_;
-        // std::vector< int >    particle_process_key_;
-        // std::vector< int >    particle_total_occupancy_;
-
-        // std::vector< int >                particle_number_daughters_;
-        // std::vector< std::vector< int > > particle_daughter_track_ids_;
-
-        // std::vector< double > particle_initial_x_;
-        // std::vector< double > particle_initial_y_;
-        // std::vector< double > particle_initial_z_;
-        // std::vector< double > particle_initial_t_;
-
-        // std::vector< double > particle_initial_px_;
-        // std::vector< double > particle_initial_py_;
-        // std::vector< double > particle_initial_pz_;
-        // std::vector< double > particle_initial_energy_;
-
-        // std::vector< int >    hit_track_id_;
-        // std::vector< double > hit_start_x_;
-        // std::vector< double > hit_start_y_;
-        // std::vector< double > hit_start_z_;
-        // std::vector< double > hit_start_t_;
-        // std::vector< double > hit_end_x_;
-        // std::vector< double > hit_end_y_;
-        // std::vector< double > hit_end_z_;
-        // std::vector< double > hit_end_t_;
-        // std::vector< double > hit_length_;
-        // std::vector< double > hit_energy_deposit_;
-        // std::vector< int >    hit_process_key_;
-
-        // number of generator particles
-        // int generator_initial_number_particles_;
-        // int generator_final_number_particles_;
-
-        // vectors for initial generator particles
-        // std::vector< double > generator_initial_particle_x_;
-        // std::vector< double > generator_initial_particle_y_;
-        // std::vector< double > generator_initial_particle_z_;
-        // std::vector< double > generator_initial_particle_t_;
-        // std::vector< double > generator_initial_particle_px_;
-        // std::vector< double > generator_initial_particle_py_;
-        // std::vector< double > generator_initial_particle_pz_;
-        // std::vector< double > generator_initial_particle_energy_;
-        // std::vector< int >    generator_initial_particle_pdg_code_;
-        // std::vector< double > generator_initial_particle_mass_;
-        // std::vector< double > generator_initial_particle_charge_;
-
-        // vectors for final generator particles
-        // std::vector< double > generator_final_particle_x_;
-        // std::vector< double > generator_final_particle_y_;
-        // std::vector< double > generator_final_particle_z_;
-        // std::vector< double > generator_final_particle_t_;
-        // std::vector< double > generator_final_particle_px_;
-        // std::vector< double > generator_final_particle_py_;
-        // std::vector< double > generator_final_particle_pz_;
-        // std::vector< double > generator_final_particle_energy_;
-        // std::vector< int >    generator_final_particle_pdg_code_;
-        // std::vector< double > generator_final_particle_mass_;
-        // std::vector< double > generator_final_particle_charge_;
-
+        float_t hadTot_;
+        float_t hadPip_;
+        float_t hadPim_;
+        float_t hadPi0_;
+        float_t hadP_;
+        float_t hadN_;
+        float_t hadOther_;
 };
 
-#endif
+// #endif

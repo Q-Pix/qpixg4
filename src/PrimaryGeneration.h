@@ -92,12 +92,12 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
 
     void MARLEYGeneratePrimaries(G4Event*);
     void GENIEGeneratePrimaries(G4Event*);
-    void ROOTGeneratePrimaries(G4Event * event);
+    void GENIEGeneratePrimariesBad(G4Event*);
+    void ROOTGeneratePrimaries(G4Event*);
 
     std::default_random_engine generator_;
     std::normal_distribution< double > distribution_;
 
-    ROOT::Math::SMatrix< double, 3 > Rotation_Matrix(G4ThreeVector, G4ThreeVector);
     ROOT::Math::SMatrix< double, 3 > Rotation_Matrix(G4ThreeVector, G4ThreeVector);
 };
 

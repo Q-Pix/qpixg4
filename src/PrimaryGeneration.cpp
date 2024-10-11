@@ -62,29 +62,6 @@ PrimaryGeneration::PrimaryGeneration()
     vertex_z_(3.6/2),
     particle_gun_(0)
 {
-  msg_ = new G4GenericMessenger(this, "/Inputs/", "Control commands of the ion primary generator.");
-  msg_->DeclareProperty("Particle_Type", Particle_Type_,  "which particle?");
-  msg_->DeclareProperty("decay_at_time_zero", decay_at_time_zero_,
-                        "Set to true to make unstable isotopes decay at t=0.");
-  msg_->DeclareProperty("PrintParticleInfo", PrintParticleInfo_,
-                        "Extra Printing for Debugging");
-  msg_->DeclareProperty("isotropic", isotropic_, "isotropic");
-  msg_->DeclareProperty("override_vertex_position",
-                        override_vertex_position_,
-                        "override vertex position");
-  msg_->DeclareProperty("vertex_x", vertex_x_, "vertex x").SetUnit("mm");
-  msg_->DeclareProperty("vertex_y", vertex_y_, "vertex y").SetUnit("mm");
-  msg_->DeclareProperty("vertex_z", vertex_z_, "vertex z").SetUnit("mm");
-  // axis of rotation
-  msg_->DeclareProperty("axis_x", axis_x_, "axis x");
-  msg_->DeclareProperty("axis_y", axis_y_, "axis y");
-  msg_->DeclareProperty("axis_z", axis_z_, "axis z");
-  msg_->DeclareProperty("nEvt", nEvt_, "nEvt");
-  // get a certain event within the file
-  msg_->DeclareProperty("fsPdg", fsPdg_, "fsPdg");
-  msg_->DeclareProperty("fsEnergy", fsEnergy_, "fsEnergy");
-  msg_->DeclareProperty("fsFHC", fsFHC_, "fsFHC");
-  msg_->DeclareProperty("fsRun", fsRun_, "fsRun");
 
   particle_gun_ = new G4GeneralParticleSource();
 
@@ -329,7 +306,7 @@ void PrimaryGeneration::ROOTGeneratePrimaries(G4Event * event) {
 
 }
 
-void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
+void PrimaryGeneration::GENIEGeneratePrimariesBad(G4Event* event)
 {
   G4bool printParticleInfo_ = ConfigManager::GetPrintParticleInfo();
   G4double vertex_x_ = ConfigManager::GetVertexX();
@@ -798,7 +775,10 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
   {
       this->GENIEGeneratePrimaries(event);
   }
-
+  else if(Particle_Type_=="GENIE")
+  {
+      this->GENIEGeneratePrimariesBad(event);
+  }
   else
   {
     particle_gun_->GeneratePrimaryVertex(event);
