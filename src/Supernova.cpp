@@ -34,6 +34,8 @@ Supernova::Supernova()
     N_Po210_Decays_(ConfigManager::GetNPo210Decays()),
     N_Rn222_Decays_(ConfigManager::GetNRn222Decays())
 {
+    auto conf = ConfigManager::Instance();
+    std::cout << "config argon decays: " << conf->GetNAr42Decays() << std::endl;
 }
 
 //-----------------------------------------------------------------------------

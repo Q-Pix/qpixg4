@@ -740,6 +740,12 @@ void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
 
 void PrimaryGeneration::GeneratePrimaries(G4Event* event)
 {
+  // Set variables from ConfigManager
+  G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  G4String particleType_ = ConfigManager::GetParticleType();
+
+  particleType_.toLower();
+
   // get MC truth manager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
@@ -757,25 +763,25 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
   }
 
-  if (particle_type_ ==  "SUPERNOVA")
+  if (particleType_ ==  "supernova")
   {
     super->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
     super->Gen_Supernova_Background(event);
   }
 
-  else if (particle_type_ ==  "MARLEY")
+  else if (particleType_ ==  "marley")
   {
     this->MARLEYGeneratePrimaries(event);
   }
-  else if(particle_type_=="ROOT")
+  else if(particleType_=="root")
   {
       this->ROOTGeneratePrimaries(event);
   }
-  else if(particle_type_=="ProtonDecay")
+  else if(particleType_=="protondecay")
   {
       this->GENIEGeneratePrimaries(event);
   }
-  else if(particle_type_=="GENIE")
+  else if(particleType_=="genie")
   {
       this->GENIEGeneratePrimariesBad(event);
   }
