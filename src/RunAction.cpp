@@ -36,12 +36,12 @@ RunAction::RunAction(): G4UserRunAction(), multirun_(false),TreeName_("event_tre
 
 RunAction::~RunAction()
 {
-    delete ROOTManager::Instance();
 }
 
 
 void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
+
     ConfigManager::Instance();
     //ConfigManager::Print();
 
@@ -61,7 +61,7 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
     //ConfigManager::Print();
 
-    if (generator_ == "marley") {
+    // if (generator_ == "marley") {
 
     //Get Root Manager
     if(!ReadFrom_Root_.empty()){
@@ -114,14 +114,15 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
         root_output_path += "_";
         root_output_path += runStr_;
         root_output_path += extension_;
-
     }
 
     // get run number
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
+    ConfigManager * ConfigManager = ConfigManager::Instance();
     // if(particle_type_ > 0)
     //     analysis_manager->SetParticleID(particle_type_);
-    analysis_manager->Book(root_output_path);
+    std::string output_file = ConfigManager->GetOutputFile();
+    analysis_manager->Book(output_file);
     event.SetRun(g4run->GetRunID());
     // if we've passed a particle type, then activate and set the branch
 
@@ -133,7 +134,6 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
     // reset event in MC truth manager
     mc_truth_manager->EventReset();
-    }
 }
 
 
