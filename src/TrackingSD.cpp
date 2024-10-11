@@ -10,12 +10,15 @@
 #include "TrackingHit.h"
 
 // Q-Pix includes
+#include "ConfigManager.h"
 #include "MCTruthManager.h"
 #include "MCParticle.h"
 
 // GEANT4 includes
 #include "G4SDManager.hh"
-#include "G4SystemOfUnits.hh"
+
+// CLHEP includes
+#include "CLHEP/Units/SystemOfUnits.h"
 
 // C++ includes
 #include <vector>
@@ -23,20 +26,16 @@
 
 TrackingSD::TrackingSD(const G4String& sd_name, const G4String& hc_name):
   G4VSensitiveDetector(sd_name),
-  Event_Cutoff_(0.0)
+  Event_Cutoff_(ConfigManager::GetEventCutoff())
   // hc_(nullptr)
 {
   collectionName.insert(hc_name);
-
-  msg_ = new G4GenericMessenger(this, "/Supernova/", "Control commands of the supernova generator.");
-  msg_->DeclareProperty("Event_Cutoff", Event_Cutoff_,  "window to simulate the times").SetUnit("ns");
 
 }
 
 
 TrackingSD::~TrackingSD()
 {
-  delete msg_;
 }
 
 
@@ -55,7 +54,7 @@ G4bool TrackingSD::ProcessHits(G4Step* aStep, G4TouchableHistory*)
   G4double edep = aStep->GetTotalEnergyDeposit();
 
   // if (edep==0.) return false;
-  if (edep < 1. *keV ) return false;
+  if (edep < 1. *CLHEP::keV ) return false;
 
   if (Event_Cutoff_ != 0.0)
   {

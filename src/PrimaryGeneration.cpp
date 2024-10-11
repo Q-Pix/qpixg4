@@ -9,9 +9,11 @@
 #include "PrimaryGeneration.h"
 
 // Q-Pix includes
+#include "ConfigManager.h"
+#include "GeneratorParticle.h"
+#include "GENIEManager.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
-#include "GeneratorParticle.h"
 
 // MARLEY includes
 #include "marley/Event.hh"
@@ -22,10 +24,11 @@
 #include "G4LogicalVolumeStore.hh"
 
 #include "G4ParticleDefinition.hh"
-#include "G4SystemOfUnits.hh"
+#include "CLHEP/Units/SystemOfUnits.h"
 #include "G4IonTable.hh"
 #include "G4PrimaryParticle.hh"
 #include "G4PrimaryVertex.hh"
+#include "G4RotationMatrix.hh"
 #include "G4Event.hh"
 
 #include "G4Electron.hh"
@@ -94,7 +97,6 @@ PrimaryGeneration::PrimaryGeneration()
   super = new Supernova();
 
   unsigned seed = std::chrono::system_clock::now().time_since_epoch().count();
-  // std::default_random_engine generator(seed);
   generator_ = std::default_random_engine(seed);
   distribution_ = std::normal_distribution< double >(0, 1);
 }
@@ -102,7 +104,6 @@ PrimaryGeneration::PrimaryGeneration()
 
 PrimaryGeneration::~PrimaryGeneration()
 {
-  delete msg_;
   delete particle_gun_;
   delete supernova_timing_;
   delete super;
@@ -328,9 +329,163 @@ void PrimaryGeneration::ROOTGeneratePrimaries(G4Event * event) {
 
 }
 
+void PrimaryGeneration::GENIEGeneratePrimaries(G4Event* event)
+{
+  G4bool printParticleInfo_ = ConfigManager::GetPrintParticleInfo();
+  G4double vertex_x_ = ConfigManager::GetVertexX();
+  G4double vertex_y_ = ConfigManager::GetVertexY();
+  G4double vertex_z_ = ConfigManager::GetVertexZ();
+  G4String particleType = ConfigManager::GetParticleType();
+  G4ThreeVector momentumDirection_ = ConfigManager::GetMomentumDirection();
+
+  particleType.toLower();
+
+  // Get MCTruthManager
+  MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
+
+  GENIEManager * genieManager = GENIEManager::Instance();
+
+  genieManager->Cd();
+
+  genieManager->LoadEvent(event);
+
+  G4ThreeVector vertex3d = G4ThreeVector (vertex_x_, vertex_y_, vertex_z_);
+
+  G4PrimaryVertex * vertex = new G4PrimaryVertex(vertex3d, 0);
+
+  for (int np = 0; np<genieManager->GetNParticles_(); np++){
+    if (genieManager->GetIdx_(np)<0)
+    {
+      G4cout<<"Skipping this particle PDGCode-> "<< genieManager->GetPDG_(np)<< " Idx-> "<<genieManager->GetIdx_(np)<<" Status= "<<genieManager->GetStatus_(np)<<G4endl;
+      continue;
+    }
+
+    // If the particle is a nucleus
+    G4ParticleDefinition *pdef=0;
+
+    if (genieManager->GetPDG_(np) > 1000000000 && genieManager->GetPDG_(np)<2000000000)
+    {
+      if (!pdef)
+      {
+        int const Z = (genieManager->GetPDG_(np) % 10000000) / 10000; // atomic number
+        int const A = (genieManager->GetPDG_(np) % 10000) / 10; // mass number
+        pdef = particle_table_->GetIonTable()->GetIon(Z, A, 0.);
+      }
+    } 
+    else
+    {
+      pdef = particle_table_->FindParticle(genieManager->GetPDG_(np));
+    }
+
+    if (pdef==0){
+      G4String str1="Couldnt find the particle table for " + std::to_string(genieManager->GetPDG_(np));
+      G4Exception("[PrimaryGeneration]","GENIEGeneratePrimaries",G4ExceptionSeverity::JustWarning,str1.c_str());
+      continue;
+    }
+
+    // create a generator particle and set initial values
+    GeneratorParticle * generatorParticle = new GeneratorParticle();
+    generatorParticle->SetPDGCode (genieManager->GetPDG_(np));
+    generatorParticle->SetMass    (pdef->GetPDGMass());
+    generatorParticle->SetCharge  (pdef->GetPDGCharge());
+    generatorParticle->SetX       (vertex3d[0]);
+    generatorParticle->SetY       (vertex3d[1]);
+    generatorParticle->SetZ       (vertex3d[2]);
+    generatorParticle->SetT       (0*CLHEP::ns);
+    generatorParticle->SetEnergy  (genieManager->GetE_(np));
+    generatorParticle->SetPx      (genieManager->GetPx_(np));
+    generatorParticle->SetPy      (genieManager->GetPy_(np));
+    generatorParticle->SetPz      (genieManager->GetPz_(np));
+    
+    
+
+    // rotate momentum about x axis, so initial momentum is in desired direction. Energy remains the same
+    double identity_array[9] = { 1, 0, 0,
+                                 0, 1, 0,
+                                 0, 0, 1  };
+
+    ROOT::Math::SMatrix< double, 3 > I(identity_array, 9);
+    ROOT::Math::SMatrix< double, 3 > R = I;
+
+    if (particleType == "beam")
+    {
+	  G4ThreeVector p_i(0, 0, 1);
+      
+      R =this->Rotation_Matrix(p_i, momentumDirection_);
+    } else if (particleType == "atmosphere" || particleType == "atmospheric")
+    {
+      G4ThreeVector p_i(0, 0, 1);
+      R = this->Rotation_Matrix(p_i, momentumDirection_);
+    } else
+    {
+      G4cerr << "Need to add '/inputs/momentum_direction <G4ThreeVector>' to your macro" << G4endl;
+    }
+    
+
+    // Rotate momentum to desired momentum using calculated rotation matrix
+    ROOT::Math::SVector< double, 3 > a(generatorParticle->Px(), generatorParticle->Py(), generatorParticle->Pz());
+    a = R*a;
+ 
+    
+    // set rotated generatorParticle values
+    generatorParticle->SetEnergy  (genieManager->GetE_(np));
+    generatorParticle->SetPx      (a(0));
+    generatorParticle->SetPy      (a(1));
+    generatorParticle->SetPz      (a(2));
+
+
+    // add ROOT particle to MCTruthManager
+    if (genieManager->GetStatus_(np)==0 ) // if marked as an initial particle
+    {
+      mc_truth_manager->AddInitialGeneratorParticle(generatorParticle);
+      continue;
+    }
+    else if (genieManager->GetStatus_(np)==1) // if marked as a stable final state particle
+    {
+      mc_truth_manager->AddFinalGeneratorParticle(generatorParticle);
+    }
+    else
+    {
+      mc_truth_manager->AddIntermediateGeneratorParticle(generatorParticle);
+      continue;
+    }
+
+    // Only completed for stable final state GENIE particles:
+    // Create a G4PrimaryParticle to be passed to Geant4 as a generator particle
+    G4PrimaryParticle * RootParticle=new G4PrimaryParticle(pdef,generatorParticle->Px(),generatorParticle->Py(),generatorParticle->Pz(),generatorParticle->Energy());
+
+    G4cout << "RootParticle:" << G4endl;
+    RootParticle->Print();
+
+    if(printParticleInfo_){
+      G4cout<<"Event -> "<<event->GetEventID()<<" "<<genieManager->Getevent_()<<G4endl;
+      G4cout<<"PDG -> "<<RootParticle->GetPDGcode()<<" "<<genieManager->GetPDG_(np)<<G4endl;
+      G4cout<<"E -> "<<RootParticle->GetTotalEnergy()<<" "<<genieManager->GetE_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"px -> "<<RootParticle->GetPx()<<" "<<genieManager->GetPx_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"py -> "<<RootParticle->GetPy()<<" "<<genieManager->GetPy_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"pz -> "<<RootParticle->GetPz()<<" "<<genieManager->GetPz_(np)*CLHEP::MeV<<G4endl;
+      G4cout<<"Idx -> "<<genieManager->GetIdx_(np)<<G4endl;
+      G4cout<<"Mother -> "<<genieManager->GetFirstMother_(np)<<G4endl;
+    }
+    vertex->SetPrimary(RootParticle);
+
+  }
+
+  event->AddPrimaryVertex(vertex);
+
+}
 
 void PrimaryGeneration::MARLEYGeneratePrimaries(G4Event* event)
 {
+
+  //G4bool decay_at_time_zero_ = ConfigManager::GetDecayAtTimeZero();
+  G4bool isotropic_ = ConfigManager::GetIsotropic();
+  G4bool override_vertex_position_ = ConfigManager::GetOverrideVertexPosition();
+  G4double vertex_x_ = ConfigManager::GetVertexX();
+  G4double vertex_y_ = ConfigManager::GetVertexY();
+  G4double vertex_z_ = ConfigManager::GetVertexZ();
+  G4String particleType_ = ConfigManager::GetParticleType();
+
   // get MC truth manager
   MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 

@@ -9,9 +9,11 @@
 #ifndef Supernova_h
 #define Supernova_h 1
 
-// #include "G4Box.hh"
-// #include "G4String.hh"
+#include "G4Box.hh"
+#include "G4String.hh"
 
+
+class G4Event;
 class G4GenericMessenger;
 
 class Supernova {
@@ -25,7 +27,6 @@ class Supernova {
         void Get_Detector_Dimensions(double detector_x_, double detector_y_, double detector_z_);
 
     private:
-        G4GenericMessenger* msg_; // Messenger for configuration parameters
         double Event_Window_;
         int N_Ar39_Decays_;
         int N_Ar42_Decays_;

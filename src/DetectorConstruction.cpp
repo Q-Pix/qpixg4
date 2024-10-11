@@ -6,6 +6,7 @@
 //   * Creation date: 14 Aug 2019
 // -----------------------------------------------------------------------------
 
+#include "ConfigManager.h"
 #include "DetectorConstruction.h"
 #include "TrackingSD.h"
 
@@ -13,23 +14,41 @@
 #include "G4LogicalVolume.hh"
 #include "G4PVPlacement.hh"
 #include "G4NistManager.hh"
-#include "G4SystemOfUnits.hh"
 #include "G4VisAttributes.hh"
 #include "G4SDManager.hh"
 #include "G4LogicalVolumeStore.hh"
 
+#include "CLHEP/Units/SystemOfUnits.h"
+
 
 DetectorConstruction::DetectorConstruction(): G4VUserDetectorConstruction()
-{}
+{
+}
 
 DetectorConstruction::~DetectorConstruction()
-{}
+{
+}
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
+  // Get Detector Geometry first to dicatate world_size
+  if(ConfigManager::GetUseHDDetectorConfiguration())
+  {
+    // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
+    // resemble an APA size
+    ConfigManager::SetDetectorWidth(2.3*CLHEP::m);   // detector_x
+    ConfigManager::SetDetectorHeight(6.0*CLHEP::m);  // detector_y
+    ConfigManager::SetDetectorLength(3.6*CLHEP::m);  // detector_z
+  } else {
+    // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
+    ConfigManager::SetDetectorHeight(13.0*CLHEP::m); // detector_y
+    ConfigManager::SetDetectorLength(6.5*CLHEP::m);  // detector_z
+    ConfigManager::SetDetectorWidth(20.0*CLHEP::m);  // detector_x
+  }
+
   // WORLD /////////////////////////////////////////////////
 
-  G4double world_size = 15.*m;
+  G4double world_size = std::max({ConfigManager::GetDetectorHeight(),ConfigManager::GetDetectorLength(),ConfigManager::GetDetectorWidth()})*CLHEP::m;
   G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
 
   G4Box* world_solid_vol =
@@ -42,25 +61,23 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4VPhysicalVolume* world_phys_vol =
     new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
                       world_logic_vol, "world.physical", 0, false, 0, true);
+                      
 
-  // DETECTOR //////////////////////////////////////////////
-  // resemble an APA size
-  G4double detector_width   = 2.3*m;
-  G4double detector_height  = 6.0*m;
-  G4double detector_length  = 3.6*m;
+  std::cout << " Detector configuration is: " << ConfigManager::GetUseHDDetectorConfiguration() << std::endl;
+
+  // DETECTOR
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
 
   G4Box* detector_solid_vol =
-    new G4Box("detector.solid", detector_width/2., detector_height/2., detector_length/2.);
+    new G4Box("detector.solid", ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
 
   G4LogicalVolume* detector_logic_vol =
     new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
 
-  G4ThreeVector offset(detector_width/2., detector_height/2., detector_length/2.);
+  G4ThreeVector offset(ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
 
   new G4PVPlacement(0, offset,
                     detector_logic_vol, "detector.physical", world_logic_vol, false, 0, true);
-
   //////////////////////////////////////////////////////////
 
   return world_phys_vol;

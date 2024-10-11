@@ -9,10 +9,13 @@
 #ifndef RUN_ACTION_H
 #define RUN_ACTION_H
 
+#include "AnalysisData.h"
+
 #include <G4UserRunAction.hh>
 #include "G4GenericMessenger.hh"
 
-class G4RunManager;
+class G4RunManager;class AnalysisData;
+
 class RunAction: public G4UserRunAction
 {
     public:
@@ -24,14 +27,21 @@ class RunAction: public G4UserRunAction
 
     private:
 
-        G4GenericMessenger * messenger_;
         G4String root_output_path_;
-        G4String marley_json_;
+        AnalysisData event;
+
+
+        G4String        inputFile_;
+        G4String        outputFile_;
+        G4String        marleyJson_;
         G4String ReadFrom_Root_;
-        bool multirun_;
+        G4String        generator_;
+        G4String        genieFormat_;
+        G4bool          multirun_;
         std::string TreeName_;
         int particle_type_=-1;
         G4RunManager * runManager;
+        G4String        particleType_; 
 };
 
 #endif

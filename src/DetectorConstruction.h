@@ -10,18 +10,19 @@
 #define DETECTOR_CONSTRUCTION_H 1
 
 #include "G4VUserDetectorConstruction.hh"
-
+#include "G4GenericMessenger.hh"
 class G4Material;
 
 
 class DetectorConstruction: public G4VUserDetectorConstruction
 {
-public:
-  DetectorConstruction();
-  virtual ~DetectorConstruction();
-private:
-  virtual G4VPhysicalVolume* Construct();
-  virtual void ConstructSDandField();
+  public:
+    DetectorConstruction();
+    virtual ~DetectorConstruction();
+
+  private:
+    virtual G4VPhysicalVolume* Construct();
+    virtual void ConstructSDandField();
 };
 
 #endif

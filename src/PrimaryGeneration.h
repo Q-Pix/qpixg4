@@ -26,6 +26,10 @@
 #include "Supernova.h"
 #include "SupernovaTiming.h"
 
+// ROOT includes
+#include "Math/SVector.h"
+#include "Math/SMatrix.h" 
+
 // C++ includes
 #include <random>
 
@@ -93,6 +97,7 @@ class PrimaryGeneration : public G4VUserPrimaryGeneratorAction
     std::default_random_engine generator_;
     std::normal_distribution< double > distribution_;
 
+    ROOT::Math::SMatrix< double, 3 > Rotation_Matrix(G4ThreeVector, G4ThreeVector);
     ROOT::Math::SMatrix< double, 3 > Rotation_Matrix(G4ThreeVector, G4ThreeVector);
 };
 

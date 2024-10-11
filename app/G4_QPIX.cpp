@@ -6,40 +6,40 @@
 //   * Creation date: 14 Aug 2019
 // -----------------------------------------------------------------------------
 
+// QPix includes
+#include "ActionInitialization.h"
+#include "ConfigManager.h"
 #include "DetectorConstruction.h"
-#include "PrimaryGeneration.h"
-#include "RunAction.h"
 #include "EventAction.h"
-#include "TrackingAction.h"
+#include "PrimaryGeneration.h"
+#include "GENIEManager.h"
+#include "RunAction.h"
 #include "SteppingAction.h"
-#include "../src/ROOTManager.h"
-#include <G4RunManager.hh>
-#include <G4UImanager.hh>
-#include <G4VisExecutive.hh>
-#include <G4UIExecutive.hh>
-#include <FTFP_BERT_HP.hh>
-#include <G4EmStandardPhysics_option4.hh>
-#include <G4OpticalPhysics.hh>
+#include "TrackingAction.h"
 
+// Geant4 includes
+#include "G4RunManagerFactory.hh"
+#include "G4RunManager.hh"
+#include "G4UImanager.hh"
+#include "G4VisExecutive.hh"
+#include "G4UIExecutive.hh"
+#include "FTFP_BERT_HP.hh"
+#include "G4EmStandardPhysics_option4.hh"
+#include "G4OpticalPhysics.hh"
 
-#include "Randomize.hh"
-#include "time.h"
-#include <getopt.h>
+// ROOT includes
+#include "TROOT.h"
 
-
-void PrintHelp(){
-    G4cerr << "\nUsage: ./build/app/G4_QPIX [-i/b] [-n number] <init_macro>\n"  << G4endl;
-    G4cerr << "Available options: " <<G4endl;
-    G4cerr << "-n --nevents --> number of events to simulate " <<G4endl;
-    G4cerr << "-i --interactive --> Interactive Mode   " <<G4endl;
-    G4cerr << "-b --batch  --> No Visual Mode " <<G4endl;
-    G4cerr << "-h --help --> Help" <<G4endl;
-    exit(EXIT_FAILURE);
-}
+// system includes
+#include <Randomize.hh>
+#include <time.h>
+#include <string>
+#include <typeinfo>
 
 int main(int argc, char** argv)
 {
 
+  ConfigManager::Instance();
   //choose the Random engine
   CLHEP::HepRandom::setTheEngine(new CLHEP::RanecuEngine());
   //set random seed with system time
@@ -47,26 +47,20 @@ int main(int argc, char** argv)
   CLHEP::HepRandom::setTheSeed(seed);
 
   // Detect interactive mode (if no arguments) and define UI session
-  //
   G4UIExecutive* ui = 0;
   if ( argc == 1 ) {
     ui = new G4UIExecutive(argc, argv);
   }
 
   // Construct the run manager and set the initialization classes
-  G4RunManager* run_manager = new G4RunManager();
+  auto* run_manager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Default);
 
   G4VModularPhysicsList* physics_list = new FTFP_BERT_HP();
   physics_list->ReplacePhysics(new G4EmStandardPhysics_option4());
   run_manager->SetUserInitialization(physics_list);
 
   run_manager->SetUserInitialization(new DetectorConstruction());
-
-  run_manager->SetUserAction(new PrimaryGeneration());
-  run_manager->SetUserAction(new RunAction());
-  run_manager->SetUserAction(new EventAction());
-  run_manager->SetUserAction(new TrackingAction());
-  run_manager->SetUserAction(new SteppingAction());
+  run_manager->SetUserInitialization(new ActionInitialization());
 
   // Initialize visualization
   G4VisManager* vismgr = new G4VisExecutive();
@@ -79,18 +73,10 @@ int main(int argc, char** argv)
   //
   if (!ui) {
     // batch mode
+    // Execute Macro file using any aliases set above
     G4String command = "/control/execute ";
-    G4String fileName = argv[1];
-    try {
-        uimgr->ApplyCommand(command+fileName);
-    }
-    catch (std::exception& e) {
-        std::ofstream ofile;
-        ofile.open("/home/argon/Projects/Kevin/err/g4_err.txt", std::ios_base::app);
-        ofile << fileName << std::endl;
-        ofile << "G4 Exception caught : " << e.what() << std::endl;
-        return -1;
-    }
+    G4String macro_name = argv[1];
+    uimgr->ApplyCommand(command+macro_name);
   }
   else {
     // interactive mode

@@ -6,23 +6,29 @@
 ##   * Creation date: 1 May 2020
 ## ---------------------------------------------------------
 
+include_directories(${Geant4_INCLUDE_DIRS})
+
 include_directories(${CMAKE_SOURCE_DIR}/src)
 
-SET(SRC   AnalysisManager.cpp
+SET(SRC   ActionInitialization.cpp
+          AnalysisManager.cpp
+          AnalysisData.cpp
+          ConfigManager.cpp
+          DetectorConstruction.cpp
+          EventAction.cpp
           GeneratorParticle.cpp
+          GENIEManager.cpp
           MARLEYManager.cpp
           MCTruthManager.cpp
           MCParticle.cpp
-          DetectorConstruction.cpp
           PrimaryGeneration.cpp
           RunAction.cpp
-          EventAction.cpp
           SteppingAction.cpp
+          Supernova.cpp
+          SupernovaTiming.cpp
           TrackingAction.cpp
           TrackingSD.cpp
           TrackingHit.cpp
-          Supernova.cpp
-          SupernovaTiming.cpp
           ROOTManager.cpp)
 
 add_library(${CMAKE_PROJECT_NAME} SHARED ${SRC} QPixG4Dict.cxx)

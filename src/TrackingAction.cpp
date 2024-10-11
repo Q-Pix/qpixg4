@@ -38,7 +38,6 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
     particle->SetMass(track->GetDynamicParticle()->GetMass());
     particle->SetCharge(track->GetDynamicParticle()->GetCharge());
     particle->SetGlobalTime(track->GetGlobalTime() / CLHEP::ns);
-    // particle->SetProcess();
     particle->SetTotalOccupancy(track->GetDynamicParticle()->GetTotalOccupancy());
 
     particle->SetInitialPosition(
@@ -71,6 +70,7 @@ void TrackingAction::PreUserTrackingAction(const G4Track* track)
 
     // add MC particle to MC truth manager
     mc_truth_manager->AddMCParticle(particle);
+    //G4cout << "Added MCParticle" << G4endl;
 }
 
 void TrackingAction::PostUserTrackingAction(const G4Track* track)

@@ -9,7 +9,9 @@
 #include "EventAction.h"
 
 // Q-Pix includes
+#include "AnalysisData.h"
 #include "AnalysisManager.h"
+#include "ConfigManager.h"
 #include "MCTruthManager.h"
 
 // GEANT4 includes
@@ -18,11 +20,8 @@
 
 
 EventAction::EventAction():
-  G4UserEventAction(), event_id_offset_(0), energy_threshold_(0.)
+  G4UserEventAction()
 {
-    msg_ = new G4GenericMessenger(this, "/event/", "user-defined event configuration");
-    msg_->DeclareProperty("offset", event_id_offset_, "Event ID offset.");
-    msg_->DeclareProperty("energy_threshold", energy_threshold_, "Events that deposit less energy than this energy threshold will not be saved.").SetUnit("MeV");
 }
 
 
@@ -33,28 +32,27 @@ EventAction::~EventAction()
 
 void EventAction::BeginOfEventAction(const G4Event*)
 {
-    // int mod = event->GetEventID() % 1000;
-    // if (mod == 0)
-    // {
-    //     G4cout << "Starting event" << event->GetEventID() << "..." << G4endl;
-    // }
 }
 
 
-void EventAction::EndOfEventAction(const G4Event* event)
+void EventAction::EndOfEventAction(const G4Event* g4event)
 {
+    event_id_offset_ = ConfigManager::GetEventIDOffset();
+    energy_threshold_ = ConfigManager::GetEnergyThreshold();
+
     // get MC truth manager
     MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
 
     // get map of particles from MC truth manager
-    auto const MCParticleMap = mc_truth_manager->GetMCParticleMap();
+    const MCTruthManager::MCParticleMap& particleMap = mc_truth_manager->GetMCParticleMap();
+
 
     double energy_deposited = 0.;
 
     // add particle to analysis manager
-    for (auto const& p : MCParticleMap)
+    for (auto const& p : particleMap)
     {
-        auto const& particle = p.second;
+        const MCParticle* particle = p.second;
         energy_deposited += particle->EnergyDeposited();
         // std::cout << "Energy deposited by particle PDG (" << particle->PDGCode() << "): " << particle->EnergyDeposited() << std::endl;
     }
@@ -70,11 +68,8 @@ void EventAction::EndOfEventAction(const G4Event* event)
     // don't save event if total energy deposited is below the energy threshold
     if (energy_deposited < energy_threshold_)
     {
-        // get analysis manager
-        AnalysisManager * analysis_manager = AnalysisManager::Instance();
-
         // reset event variables
-        analysis_manager->EventReset();
+        event.EventReset();
 
         // reset event in MC truth manager
         mc_truth_manager->EventReset();
@@ -82,41 +77,40 @@ void EventAction::EndOfEventAction(const G4Event* event)
         return;
     }
 
-    // get analysis manager
-    AnalysisManager * analysis_manager = AnalysisManager::Instance();
 
     // set event number
-    // event->SetEventID(event->GetEventID() + event_id_offset_);
-    // analysis_manager->SetEvent(event->GetEventID());
-    analysis_manager->SetEvent(event->GetEventID() + event_id_offset_);
+    event.SetEvent(g4event->GetEventID() + event_id_offset_);
 
     // add initial generator particles to analysis manager
-    // for (auto const& particle : mc_truth_manager->GetInitialGeneratorParticles())
-    // {
-        // analysis_manager->AddInitialGeneratorParticle(particle);
-    // }
+    for (auto const& particle : mc_truth_manager->GetInitialGeneratorParticles())
+    {
+        event.AddInitialGeneratorParticle(particle);
+    }
+
+    // add initial generator particles to analysis manager
+    for (auto const& particle : mc_truth_manager->GetIntermediateGeneratorParticles())
+    {
+      event.AddIntermediateGeneratorParticle(particle);
+    }
 
     // add final generator particles to analysis manager
-    // for (auto const& particle : mc_truth_manager->GetFinalGeneratorParticles())
-    // {
-        // analysis_manager->AddFinalGeneratorParticle(particle);
-    // }
-
-    // get map of particles from MC truth manager
-    // auto const MCParticleMap = mc_truth_manager->GetMCParticleMap();
+    for (auto const& particle : mc_truth_manager->GetFinalGeneratorParticles())
+    {
+        event.AddFinalGeneratorParticle(particle);
+    }
 
     // add particle to analysis manager
-    for (auto const& p : MCParticleMap)
+    for (auto const& p : particleMap)
     {
-        auto const& particle = p.second;
+        const MCParticle* particle = p.second;
 
-        // fill on every hit
-        analysis_manager->FillMCParticle(particle);
+        event.AddMCParticle(particle);
     }
 
     // write event to ROOT file and reset event variables
-    // analysis_manager->EventFill();
-    // analysis_manager->EventReset();
+    AnalysisManager * analysisManager = AnalysisManager::Instance();
+    analysisManager->EventFill(event);
+    event.EventReset();
 
     // reset event in MC truth manager
     mc_truth_manager->EventReset();

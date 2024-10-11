@@ -8,7 +8,7 @@
 
 #include "SteppingAction.h"
 
-
+#include "AnalysisData.h"
 #include "AnalysisManager.h"
 #include "G4VProcess.hh"
 
@@ -25,7 +25,7 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-    AnalysisManager * analysis_manager = AnalysisManager::Instance();
+    AnalysisManager::Instance();
 
     if(step->GetPostStepPoint()->GetProcessDefinedStep() == NULL){
         analysis_manager->AddProcess("UserDefined");

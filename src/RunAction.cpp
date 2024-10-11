@@ -10,15 +10,19 @@
 
 // Q-Pix includes
 #include "AnalysisManager.h"
+#include "ConfigManager.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
 #include "ROOTManager.h"
+#include "DetectorConstruction.h"
+#include "GENIEManager.h"
 
 // GEANT4 includes
 #include "G4Box.hh"
 #include "G4LogicalVolumeStore.hh"
 #include "G4Run.hh"
 #include "G4RunManager.hh"
+#include "G4VUserDetectorConstruction.hh"
 
 // C++ includes
 #include <filesystem>
@@ -50,10 +54,28 @@ RunAction::~RunAction()
 }
 
 
-void RunAction::BeginOfRunAction(const G4Run* run)
+void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
+    ConfigManager::Instance();
+    //ConfigManager::Print();
 
-    // G4cout << "RunAction::BeginOfRunAction: Run #" << run->GetRunID() << " start." << G4endl;
+    inputFile_ = ConfigManager::GetInputFile();
+    outputFile_ = ConfigManager::GetOutputFile();
+    marleyJson_ = ConfigManager::GetMarleyJson();
+    generator_ = ConfigManager::GetGenerator();
+    genieFormat_ = ConfigManager::GetGenieFormat();
+    multirun_ = ConfigManager::GetMultirun();
+    particleType_ = ConfigManager::GetParticleType();
+
+
+
+    particleType_.toLower();
+    generator_.toLower();
+    genieFormat_.toLower();
+
+    //ConfigManager::Print();
+
+    if (generator_ == "marley") {
 
     //Get Root Manager
     if(!ReadFrom_Root_.empty()){
@@ -93,33 +115,19 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     {
 
         std::ostringstream ss;
-        ss << std::setw(4) << std::setfill('0') << run->GetRunID();
-        std::string run_str(ss.str());
-
-        // G4cout << "run_str: " << run_str << G4endl;
-
-        std::filesystem::path path = static_cast<std::string> (root_output_path_);
-
-        // G4cout << "root_name:      " << path.root_name()      << G4endl;
-        // G4cout << "root_directory: " << path.root_directory() << G4endl;
-        // G4cout << "root_path:      " << path.root_path()      << G4endl;
-        // G4cout << "relative_path:  " << path.relative_path()  << G4endl;
-        // G4cout << "parent_path:    " << path.parent_path()    << G4endl;
-        // G4cout << "filename:       " << path.filename()       << G4endl;
-        // G4cout << "stem:           " << path.stem()           << G4endl;
-        // G4cout << "extension:      " << path.extension()      << G4endl;
-
-        std::string parent_path = path.parent_path();
-        std::string stem = path.stem();
-        std::string extension = path.extension();
-
-        // G4cout << "parent_path: " << parent_path << G4endl;
-        // G4cout << "stem:        " << stem        << G4endl;
-        // G4cout << "extension:   " << extension   << G4endl;
-
-        root_output_path = parent_path + "/" + stem + "_" + run_str + extension;
-
-        // G4cout << "root_output_path: " << root_output_path << G4endl;
+        ss << std::setw(4) << std::setfill('0') << g4run->GetRunID();
+        std::string runStr_(ss.str());
+        G4String parentPath_ = outputFile_(0, outputFile_.last('/'));
+        G4String baseName_ = outputFile_(outputFile_.last('/')+1, outputFile_.length());
+        G4String stem_ = baseName_(0, baseName_.last('.'));
+        G4String extension_ = baseName_(baseName_.last('.'), baseName_.length());
+        
+        root_output_path = parentPath_;
+        root_output_path += "/";
+        root_output_path += stem_;
+        root_output_path += "_";
+        root_output_path += runStr_;
+        root_output_path += extension_;
 
     }
 
@@ -128,11 +136,11 @@ void RunAction::BeginOfRunAction(const G4Run* run)
     if(particle_type_ > 0)
         analysis_manager->SetParticleID(particle_type_);
     analysis_manager->Book(root_output_path);
-    analysis_manager->SetRun(run->GetRunID());
+    event.SetRun(g4run->GetRunID());
     // if we've passed a particle type, then activate and set the branch
 
     // reset event variables
-    analysis_manager->EventReset();
+    event.EventReset();
 
     // get MC truth manager
     MCTruthManager * mc_truth_manager = MCTruthManager::Instance();
@@ -146,7 +154,7 @@ void RunAction::EndOfRunAction(const G4Run*)
 {
     // check the ROOTManager to add extra meta-data. this is a placeholder of a janky configmanager
     ROOTManager *rootManager=ROOTManager::Instance();
-    // get analysis manager
+    // instantiate classes to allow for messengers
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
 
     // These are filled within the generate primaries only when a non-background
@@ -183,28 +191,20 @@ void RunAction::EndOfRunAction(const G4Run*)
     }
     rootManager->Close();
 
+    GENIEManager::Instance();
 
-    // get detector dimensions
-    G4LogicalVolume* detector_logic_vol
-      = G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
-    if (detector_logic_vol)
-    {
-      G4Box * detector_solid_vol
-        = dynamic_cast<G4Box*>(detector_logic_vol->GetSolid());
 
-      double const detector_length_x = detector_solid_vol->GetXHalfLength() * 2. / CLHEP::cm;
-      double const detector_length_y = detector_solid_vol->GetYHalfLength() * 2. / CLHEP::cm;
-      double const detector_length_z = detector_solid_vol->GetZHalfLength() * 2. / CLHEP::cm;
+    inputFile_ = ConfigManager::GetInputFile();
+    outputFile_ = ConfigManager::GetOutputFile();
+    marleyJson_ = ConfigManager::GetMarleyJson();
+    generator_ = ConfigManager::GetGenerator();
+    genieFormat_ = ConfigManager::GetGenieFormat();
+    multirun_ = ConfigManager::GetMultirun();
+    particleType_ = ConfigManager::GetParticleType();
 
-      // G4cout << "det. dim.: " << detector_length_x << " cm × "
-      //                         << detector_length_y << " cm × "
-      //                         << detector_length_z << " cm"
-      //        << G4endl;
-
-      // save detector dimensions as metadata
-      analysis_manager->FillMetadata(detector_length_x,
-                                     detector_length_y,
-                                     detector_length_z);
+    // save detector dimensions as metadata
+    if (G4Threading::IsMasterThread()){
+      analysis_manager->FillMetadata();
     }
 
 

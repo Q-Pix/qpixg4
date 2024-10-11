@@ -9,29 +9,24 @@
 #ifndef AnalysisManager_h
 #define AnalysisManager_h 1
 
-// Q-Pix includes
-#include "GeneratorParticle.h"
-#include "MCParticle.h"
+// Qpix includes
+#include "AnalysisData.h"
 
 // GEANT4 includes
 #include "globals.hh"
-
-// ROOT includes
-#include "TROOT.h"
-#include "TFile.h"
-#include "TTree.h"
-#include "TBranch.h"
 
 // C++ includes
 #include <map>
 #include <set>
 
+class TFile;
+class TTree;
+class AnalysisData;
+
 class AnalysisManager {
 
-    public:
-
-        AnalysisManager();
-        ~AnalysisManager();
+  public:
+    ~AnalysisManager();
 
         void Book(std::string const);
         void Save();
@@ -63,16 +58,25 @@ class AnalysisManager {
 
         static AnalysisManager* Instance();
 
-    private:
+    AnalysisData event;
 
-        static AnalysisManager * instance_;
+  private:
 
-        std::set< std::string > process_names_;
+    AnalysisManager();
 
-        // ROOT objects
-        TFile * tfile_;
-        TTree * metadata_;
-        TTree * event_tree_;
+    static AnalysisManager * instance_;
+
+    // ROOT objects
+    TFile * tfile_;
+    TTree * metadata_;
+    TTree * event_tree_;
+
+    void AddInitialGeneratorParticle(GeneratorParticle const *);
+    void AddFinalGeneratorParticle(GeneratorParticle const *);
+
+  private:
+
+    std::set< std::string > process_names_;
 
         // variables that will go into the metadata tree
         double detector_length_x_;
