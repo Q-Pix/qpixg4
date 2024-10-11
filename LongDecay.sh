@@ -59,11 +59,11 @@ function makeMacroFile {
 	echo "/tracking/verbose 0" >> $dest
 
 	# configure supernova
-	echo "/Inputs/Particle_Type SUPERNOVA" >> $dest
-	echo "/Inputs/RadioParticleID $5" >> $dest
+	echo "/inputs/particle_type SUPERNOVA" >> $dest
+	echo "/inputs/RadioParticleID $5" >> $dest
 
 	# output path
-	echo "/Inputs/root_output $outputdir$1_$2.root" >> $dest
+	echo "/inputs/output_file $outputdir$1_$2.root" >> $dest
 
 	# initialize run, with a seed
 	echo "/run/initialize" >> $dest
@@ -73,11 +73,11 @@ function makeMacroFile {
 	echo "/event/offset 0" >> $dest
 
 	# Supernova configs
-	echo "/Supernova/Event_Window $time s" >> $dest
-	echo "/Supernova/Event_Cutoff $time s" >> $dest
+	echo "/supernova/Event_Window $time s" >> $dest
+	echo "/supernova/Event_Cutoff $time s" >> $dest
 
   # multiple macros
-  echo "/Supernova/$3 1" >> $dest
+  echo "/supernova/$3 1" >> $dest
 	echo "/run/beamOn $4" >> $dest
 }
 

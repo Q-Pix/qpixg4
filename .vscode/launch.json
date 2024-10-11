@@ -4,7 +4,17 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-        
-
+        {
+            "name": "Launch G4_QPIX",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/app/G4_QPIX",
+            // 'long' version arguments
+            "args": ["/home/papahuhu/dev/qpixg4/macros/Template_Supernova_Background.mac"],
+            // "args": ["/home/papahuhu/dev/qpixg4/macros/single_electron.mac"],
+            "environment": [{ "name": "config", "value": "Debug" }],
+            "preLaunchTask": "CMake: build",
+            "cwd": "${workspaceFolder}"
+        }
     ]
 }

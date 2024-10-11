@@ -160,25 +160,25 @@ function makeMacroFile {
   echo "/control/verbose 1" >> $dest
   echo "/run/verbose 1" >> $dest
   echo "/tracking/verbose 0" >> $dest
-  echo "/Inputs/root_output $output_file" >> $dest
-  echo "/Inputs/Particle_Type ProtonDecay" >> $dest
-  echo "/Inputs/TreeName tree" >> $dest
-  echo "/Inputs/ReadFrom_Root_Path $input_file" >> $dest
+  echo "/inputs/output_file $output_file" >> $dest
+  echo "/inputs/particle_type ProtonDecay" >> $dest
+  echo "/inputs/TreeName tree" >> $dest
+  echo "/inputs/ReadFrom_Root_Path $input_file" >> $dest
   ## meta data inputs that go to the ROOTManager
-  echo "/Inputs/vertex_x $xpos cm" >> $dest
-  echo "/Inputs/vertex_y $ypos cm" >> $dest
-  echo "/Inputs/vertex_z $zpos cm" >> $dest
-  echo "/Inputs/axis_x $xaxis" >> $dest
-  echo "/Inputs/axis_y $yaxis" >> $dest
-  echo "/Inputs/axis_z $zaxis" >> $dest
+  echo "/inputs/vertex_x $xpos cm" >> $dest
+  echo "/inputs/vertex_y $ypos cm" >> $dest
+  echo "/inputs/vertex_z $zpos cm" >> $dest
+  echo "/inputs/axis_x $xaxis" >> $dest
+  echo "/inputs/axis_y $yaxis" >> $dest
+  echo "/inputs/axis_z $zaxis" >> $dest
   # new inputs
-  echo "/Inputs/nEvt $nEvt" >> $dest
-  echo "/Inputs/fsPdg $fsPdg" >> $dest
-  echo "/Inputs/fsEnergy $fsEnergy" >> $dest
-  echo "/Inputs/fsFHC  $fsFHC" >> $dest
-  echo "/Inputs/fsRun 0" >> $dest
+  echo "/inputs/nEvt $nEvt" >> $dest
+  echo "/inputs/fsPdg $fsPdg" >> $dest
+  echo "/inputs/fsEnergy $fsEnergy" >> $dest
+  echo "/inputs/fsFHC  $fsFHC" >> $dest
+  echo "/inputs/fsRun 0" >> $dest
   # old inputs
-  echo "/Inputs/PrintParticleInfo false" >> $dest
+  echo "/inputs/PrintParticleInfo false" >> $dest
   echo "/run/initialize" >> $dest
   echo "/random/setSeeds 0 $seed" >> $dest
   echo "/run/beamOn 1" >> $dest

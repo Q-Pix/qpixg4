@@ -169,7 +169,7 @@ void ConfigManager::PrintConfig() const
      << G4endl
      << "Input -- Generator:                " << generator_ << G4endl
      << "Input -- Genie Format:             " << genieFormat_ << G4endl
-     << "Input -- Particle_Type:            " << particleType_ << G4endl
+     << "Input -- particle_type:            " << particleType_ << G4endl
      << "Input -- Decay_At_Time_Zero:       " << decayAtTimeZero_ << G4endl
      << "Input -- Isotropic:                " << isotropic_ << G4endl
      << "Input -- Override_Vertex_Position: " << overrideVertexPosition_ << G4endl

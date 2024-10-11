@@ -757,25 +757,25 @@ void PrimaryGeneration::GeneratePrimaries(G4Event* event)
     detector_length_z_ = detector_solid_vol_->GetZHalfLength() * 2.;
   }
 
-  if (Particle_Type_ ==  "SUPERNOVA")
+  if (particle_type_ ==  "SUPERNOVA")
   {
     super->Get_Detector_Dimensions(detector_length_x_, detector_length_y_, detector_length_z_);
     super->Gen_Supernova_Background(event);
   }
 
-  else if (Particle_Type_ ==  "MARLEY")
+  else if (particle_type_ ==  "MARLEY")
   {
     this->MARLEYGeneratePrimaries(event);
   }
-  else if(Particle_Type_=="ROOT")
+  else if(particle_type_=="ROOT")
   {
       this->ROOTGeneratePrimaries(event);
   }
-  else if(Particle_Type_=="ProtonDecay")
+  else if(particle_type_=="ProtonDecay")
   {
       this->GENIEGeneratePrimaries(event);
   }
-  else if(Particle_Type_=="GENIE")
+  else if(particle_type_=="GENIE")
   {
       this->GENIEGeneratePrimariesBad(event);
   }

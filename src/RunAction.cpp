@@ -82,7 +82,7 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
             }
 
         }else
-             G4Exception("[RunAction]","[BeginOfRunAction]",G4ExceptionSeverity::FatalException ,"RootManager is not properly initialized. Check to see if the following file exist /Inputs/ReadFrom_Root_Path in macros/ROOTRead.macro   ") ;
+             G4Exception("[RunAction]","[BeginOfRunAction]",G4ExceptionSeverity::FatalException ,"RootManager is not properly initialized. Check to see if the following file exist /inputs/ReadFrom_Root_Path in macros/ROOTRead.macro   ") ;
 
     }
 
