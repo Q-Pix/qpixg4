@@ -13,6 +13,7 @@
 #include "ConfigManager.h"
 #include "MARLEYManager.h"
 #include "MCTruthManager.h"
+#include "ROOTManager.h"
 #include "DetectorConstruction.h"
 #include "GENIEManager.h"
 
@@ -27,10 +28,9 @@
 #include <filesystem>
 
 
-RunAction::RunAction()
-  : G4UserRunAction()
+RunAction::RunAction(): G4UserRunAction(), multirun_(false),TreeName_("event_tree")
 {
-  ConfigManager::Instance();
+    runManager=G4RunManager::GetRunManager();
 }
 
 
@@ -41,6 +41,7 @@ RunAction::~RunAction()
 
 void RunAction::BeginOfRunAction(const G4Run* g4run)
 {
+
     ConfigManager::Instance();
     //ConfigManager::Print();
 
@@ -60,36 +61,41 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 
     //ConfigManager::Print();
 
-    if (generator_ == "marley") {
+    // if (generator_ == "marley") {
 
-        // get MARLEY manager
-        MARLEYManager * marleyManager = MARLEYManager::Instance();
-    
-    
-        // configure and create MARLEY generator
-        marleyManager->Initialize();
-    
-        if (particleType_ == "supernova")
-        {
-        }
+    //Get Root Manager
+    if(!ReadFrom_Root_.empty()){
+        ROOTManager *rootManager=ROOTManager::Instance();
+        if(rootManager->Initialize(ReadFrom_Root_,TreeName_)){
+            rootManager->SetBranches();
+            G4int NumberEventsInTheFile=(G4int)rootManager->GetNEntries();
 
-    } else if (generator_ == "genie")
-    {
+            //Get Current RunManager to change number events if they exceed the numberof events in the file.
 
-        // get ROOT manager
-        GENIEManager *genieManager=GENIEManager::Instance();
-        if (genieManager->Initialize())
-        {
-            G4int NumberEventsInTheFile=(G4int)genieManager->GetNEntries();
-            G4cout << "nEntries = " << NumberEventsInTheFile << G4endl;
-        } else
-        {
-            G4Exception("[RunAction]","[BeginOfRunAction]",G4ExceptionSeverity::FatalException ,"RootManager is not properly initialized. Check to see if the following file exist /Inputs/ReadFrom_Root_Path in macros/ROOTRead.macro   ") ;
 
-        }
+            // Replacing the Number of Current Events if it is 0 or set higher than the events in the root file
+            if(runManager->GetNumberOfEventsToBeProcessed()>NumberEventsInTheFile or runManager->GetNumberOfEventsToBeProcessed()==228){
+                std::cout<<"Overwrting number of events to proccess to " << NumberEventsInTheFile <<" ..."<<std::endl;
+                runManager->SetNumberOfEventsToBeProcessed(NumberEventsInTheFile);
+                std::cout<<"Number of Events to Process -->"<<g4run->GetNumberOfEventToBeProcessed()<<std::endl;
+
+            }
+
+        }else
+             G4Exception("[RunAction]","[BeginOfRunAction]",G4ExceptionSeverity::FatalException ,"RootManager is not properly initialized. Check to see if the following file exist /inputs/ReadFrom_Root_Path in macros/ROOTRead.macro   ") ;
+
     }
 
-    G4String root_output_path = outputFile_;
+    if(!marleyJson_.empty()){
+        // get MARLEY manager
+        MARLEYManager * marley_manager = MARLEYManager::Instance();
+        // configure and create MARLEY generator
+        marley_manager->Initialize();
+    }
+
+
+
+    std::string root_output_path = root_output_path_;
 
     if (multirun_)
     {
@@ -108,14 +114,17 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
         root_output_path += "_";
         root_output_path += runStr_;
         root_output_path += extension_;
-
     }
 
     // get run number
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
-
-    analysis_manager->Book(root_output_path);
+    ConfigManager * ConfigManager = ConfigManager::Instance();
+    // if(particle_type_ > 0)
+    //     analysis_manager->SetParticleID(particle_type_);
+    std::string output_file = ConfigManager->GetOutputFile();
+    analysis_manager->Book(output_file);
     event.SetRun(g4run->GetRunID());
+    // if we've passed a particle type, then activate and set the branch
 
     // reset event variables
     event.EventReset();
@@ -128,10 +137,47 @@ void RunAction::BeginOfRunAction(const G4Run* g4run)
 }
 
 
-void RunAction::EndOfRunAction(const G4Run*)
+void RunAction::EndOfRunAction(const G4Run* g4run)
 {
+    // check the ROOTManager to add extra meta-data. this is a placeholder of a janky configmanager
+    ROOTManager *rootManager=ROOTManager::Instance();
     // instantiate classes to allow for messengers
     AnalysisManager * analysis_manager = AnalysisManager::Instance();
+
+    // These are filled within the generate primaries only when a non-background
+    // event is created and there is metadata to add if the root manager has a
+    // non-default fsPdg number
+    if(rootManager->fsPdg != 0){
+        analysis_manager->FillROOTMeta(
+        rootManager->axis_x_,
+        rootManager->axis_y_,
+        rootManager->axis_z_,
+        rootManager->xpos,
+        rootManager->ypos,
+        rootManager->zpos,
+        rootManager->nEvt,
+        rootManager->fsPdg,
+        rootManager->fsEnergy,
+        rootManager->fsEvt,
+        rootManager->fsFileno,
+        rootManager->fsFHC,
+        rootManager->fsRun,
+        rootManager->nFS,
+        rootManager->fsLepKE,
+        // add the hadron values
+        rootManager->hadTot_,
+        rootManager->hadPip_,
+        rootManager->hadPim_,
+        rootManager->hadPi0_,
+        rootManager->hadP_,
+        rootManager->hadN_,
+        rootManager->hadOther_,
+        // all of the other variables tracked in the GENIE file
+        analysis_manager->GetEnergy()
+        );
+    }
+    rootManager->Close();
+
     GENIEManager::Instance();
 
 
@@ -145,9 +191,9 @@ void RunAction::EndOfRunAction(const G4Run*)
 
     // save detector dimensions as metadata
     if (G4Threading::IsMasterThread()){
-      analysis_manager->FillMetadata();
+      analysis_manager->FillMetadata(); // TODO
     }
-   
+
 
     // save run to ROOT file
     analysis_manager->Save();

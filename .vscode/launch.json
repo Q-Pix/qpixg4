@@ -1,0 +1,17 @@
+{
+    "version": "1.0.0",
+    "configurations": [
+        {
+            "name": "Launch G4_QPIX",
+            "type": "cppdbg",
+            "request": "launch",
+            "program": "${workspaceFolder}/build/app/G4_QPIX",
+            // 'long' version arguments
+            "args": ["${workspaceFolder}/macros/Template_Supernova_Background.mac"],
+            // "args": ["${workspaceFolder}/macros/single_electron.mac"],
+            "environment": [{ "name": "config", "value": "Debug" }],
+            "preLaunchTask": "CMake: build",
+            "cwd": "${workspaceFolder}"
+        }
+    ]
+}

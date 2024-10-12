@@ -82,10 +82,10 @@ void TrackingAction::PostUserTrackingAction(const G4Track* track)
     MCParticle * particle = mc_truth_manager->GetMCParticle(track->GetTrackID());
 
     // set process
-    if (track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep() != 0) {
-      particle->SetProcess(track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
-    } else {
-      particle->SetProcess("User Limit");
+    if(track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep() == NULL){
+        particle->SetProcess("UserDefined"); // as defined in g4vprocess
+    }else{
+        particle->SetProcess(track->GetStep()->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
     }
 }
 

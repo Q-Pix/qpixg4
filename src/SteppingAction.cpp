@@ -25,12 +25,11 @@ SteppingAction::~SteppingAction()
 
 void SteppingAction::UserSteppingAction(const G4Step* step)
 {
-    AnalysisManager::Instance();
+    auto analysis_manager = AnalysisManager::Instance();
 
-    if (step->GetPostStepPoint()->GetProcessDefinedStep() != 0){
-      event.AddProcess(step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
-    } else {
-      event.AddProcess("User Limit");
+    if(step->GetPostStepPoint()->GetProcessDefinedStep() == NULL){
+        analysis_manager->AddProcess("UserDefined");
+    }else{
+        analysis_manager->AddProcess(step->GetPostStepPoint()->GetProcessDefinedStep()->GetProcessName());
     }
-
 }

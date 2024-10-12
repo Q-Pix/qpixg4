@@ -2,6 +2,14 @@
 cfg/nusperbin2d.root
 # ignore files in folders
 Build/*
+build/*
 
 # but keep the folder
 !Build/.keep
+# use a normal build directory for cmaketools
+build
+
+macros/long_macros
+macros/neutrino_macros
+output/*
+macros/*

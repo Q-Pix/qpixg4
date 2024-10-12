@@ -148,6 +148,17 @@ void ConfigManager::CreateCommands()
   msgGeometry_->DeclareProperty("detector_length", detectorLength_, "detector length");
   msgGeometry_->DeclareProperty("detector_width", detectorWidth_, "detector width");
   msgGeometry_->DeclareProperty("detector_height", detectorHeight_, "detector height");
+
+  // neutrino event messages  // axis of rotation
+  msgInputs_->DeclareProperty("axis_x", axis_x_, "axis x");
+  msgInputs_->DeclareProperty("axis_y", axis_y_, "axis y");
+  msgInputs_->DeclareProperty("axis_z", axis_z_, "axis z");
+  msgInputs_->DeclareProperty("nEvt", nEvt_, "nEvt");
+  // get a certain event within the file
+  msgInputs_->DeclareProperty("fsPdg", fsPdg_, "fsPdg");
+  msgInputs_->DeclarePropertyWithUnit("fsEnergy", "MeV", fsEnergy_, "fsEnergy");
+  msgInputs_->DeclareProperty("fsFHC", fsFHC_, "fsFHC");
+  msgInputs_->DeclareProperty("fsRun", fsRun_, "fsRun");
 }
 
 //-----------------------------------------------------------------------------
@@ -158,7 +169,7 @@ void ConfigManager::PrintConfig() const
      << G4endl
      << "Input -- Generator:                " << generator_ << G4endl
      << "Input -- Genie Format:             " << genieFormat_ << G4endl
-     << "Input -- Particle_Type:            " << particleType_ << G4endl
+     << "Input -- particle_type:            " << particleType_ << G4endl
      << "Input -- Decay_At_Time_Zero:       " << decayAtTimeZero_ << G4endl
      << "Input -- Isotropic:                " << isotropic_ << G4endl
      << "Input -- Override_Vertex_Position: " << overrideVertexPosition_ << G4endl

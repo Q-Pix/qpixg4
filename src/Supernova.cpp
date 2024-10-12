@@ -34,6 +34,8 @@ Supernova::Supernova()
     N_Po210_Decays_(ConfigManager::GetNPo210Decays()),
     N_Rn222_Decays_(ConfigManager::GetNRn222Decays())
 {
+    auto conf = ConfigManager::Instance();
+    std::cout << "config argon decays: " << conf->GetNAr42Decays() << std::endl;
 }
 
 //-----------------------------------------------------------------------------
@@ -49,7 +51,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_Ar39_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
 
         Generate_Radioisotope(event, 18, 39, decay_time, "Vol"); //Ar39 from Volume
     }
@@ -58,7 +60,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_Ar42_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 18, 42, decay_time, "Vol"); //Ar42 from Volume
     }
 
@@ -66,7 +68,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_Kr85_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
 
         Generate_Radioisotope(event, 36, 85, decay_time, "Vol"); //Kr85 from Volume
     }
@@ -75,7 +77,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_Co60_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 27, 60, decay_time, "CPA"); //Co60 from CPA
     }
     
@@ -83,7 +85,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_K40_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 19, 40, decay_time, "APA"); //K40 from APA
     }
 
@@ -91,7 +93,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_K42_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 19, 42, decay_time, "Vol"); //K42 from Volume
     }
 
@@ -99,7 +101,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_Bi214_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 83, 214, decay_time, "Vol"); //Bi214 from Volume
     }
 
@@ -107,7 +109,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_Pb214_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 82, 214, decay_time, "Vol"); //Pb214 from Volume
     }
 
@@ -115,7 +117,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_Po210_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 84, 210, decay_time, "APA"); //Po210 from APA
     }
     
@@ -123,7 +125,7 @@ void Supernova::Gen_Supernova_Background(G4Event* event)
     for (int ct=0; ct<N_Rn222_Decays_; ct++)
     {
         decay_time = G4UniformRand() * Event_Window_;
-        if (G4UniformRand() < 0.5){decay_time *= -1.0;}
+        // if (G4UniformRand() < 0.5){decay_time *= -1.0;}
         Generate_Radioisotope(event, 86, 222, decay_time, "Vol"); //Rn222 from Volume
     }
 

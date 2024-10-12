@@ -14,7 +14,7 @@
 #include <G4UserRunAction.hh>
 #include "G4GenericMessenger.hh"
 
-class AnalysisData;
+class G4RunManager;class AnalysisData;
 
 class RunAction: public G4UserRunAction
 {
@@ -34,9 +34,13 @@ class RunAction: public G4UserRunAction
         G4String        inputFile_;
         G4String        outputFile_;
         G4String        marleyJson_;
+        G4String ReadFrom_Root_;
         G4String        generator_;
         G4String        genieFormat_;
         G4bool          multirun_;
+        std::string TreeName_;
+        int particle_type_=-1;
+        G4RunManager * runManager;
         G4String        particleType_; 
 };
 

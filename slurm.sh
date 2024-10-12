@@ -10,9 +10,9 @@
 #SBATCH -e %A_%a.err        # Standard error                                                                                                                                                                                           
 
 # source the G4 stuff                                                                                                                                                                                                                  
-source /n/holystore01/LABS/guenette_lab/Users/amcdonald/Supernova_Qpix/johnny.sh
+source /n/holystore01/LABS/guenette_lab/Users/amcdonald/supernova_Qpix/johnny.sh
 # setup marley                                                                                                                                                                                                                         
-source /n/holystore01/LABS/guenette_lab/Users/amcdonald/Supernova_Qpix/marley/setup_marley.sh
+source /n/holystore01/LABS/guenette_lab/Users/amcdonald/supernova_Qpix/marley/setup_marley.sh
 
 ## Job options                                                                                                                                                                                                                         
 JOBNUMBER=${SLURM_ARRAY_TASK_ID}
@@ -24,10 +24,10 @@ OUT="${NAME}.root"
 MACRO="MACRO-${NAME}.mac"
 OUTFILE="/n/holyscratch01/guenette_lab/${OUT}"
 
-OUTPUTDIR='/n/holystore01/LABS/guenette_lab/Lab/data/QPIX/Supernova_Test/nu_e/'
+OUTPUTDIR='/n/holystore01/LABS/guenette_lab/Lab/data/QPIX/supernova_Test/nu_e/'
 
-MARLEY_json='/n/holystore01/LABS/guenette_lab/Users/amcdonald/Supernova_Qpix/Q_PIX_GEANT4/cfg/marley_config_supernova.js'
-HIST_file='/n/holystore01/LABS/guenette_lab/Users/amcdonald/Supernova_Qpix/nusperbin2d.root'
+MARLEY_json='/n/holystore01/LABS/guenette_lab/Users/amcdonald/supernova_Qpix/Q_PIX_GEANT4/cfg/marley_config_supernova.js'
+HIST_file='/n/holystore01/LABS/guenette_lab/Users/amcdonald/supernova_Qpix/nusperbin2d.root'
 
 ## making the macro                                                                                                                                                                                                                    
 INPUT_MACRO="/n/holyscratch01/guenette_lab/${MACRO}"
@@ -37,22 +37,22 @@ echo "/control/verbose 1"                             >>${INPUT_MACRO}
 echo "/run/verbose 1"                                 >>${INPUT_MACRO}
 echo "/tracking/verbose 0"                            >>${INPUT_MACRO}
 
-echo "/Inputs/Particle_Type MARLEY"                   >>${INPUT_MACRO}
-echo "/Inputs/MARLEY_json ${MARLEY_json}"             >>${INPUT_MACRO}
+echo "/inputs/particle_type MARLEY"                   >>${INPUT_MACRO}
+echo "/inputs/MARLEY_json ${MARLEY_json}"             >>${INPUT_MACRO}
 
 echo "/supernova/timing/on         true"              >>${INPUT_MACRO}
 echo "/supernova/timing/input_file ${HIST_file}"      >>${INPUT_MACRO}
 echo "/supernova/timing/th2_name   nusperbin2d_nue"   >>${INPUT_MACRO}
 
-echo "/Inputs/root_output ${OUTFILE}"                 >>${INPUT_MACRO}
+echo "/inputs/output_file ${OUTFILE}"                 >>${INPUT_MACRO}
 echo "/run/initialize"                                >>${INPUT_MACRO}
 echo "/random/setSeeds 0 ${SEED}"                     >>${INPUT_MACRO}
 
-echo "/Supernova/Event_Cutoff 10 s"                   >>${INPUT_MACRO}
+echo "/supernova/Event_Cutoff 10 s"                   >>${INPUT_MACRO}
 echo "/run/beamOn 1000"                               >>${INPUT_MACRO}
 
 
 
-/n/holystore01/LABS/guenette_lab/Users/amcdonald/Supernova_Qpix/Q_PIX_GEANT4/Build/app/G4Basic ${INPUT_MACRO} 
+/n/holystore01/LABS/guenette_lab/Users/amcdonald/supernova_Qpix/Q_PIX_GEANT4/Build/app/G4Basic ${INPUT_MACRO} 
 
 mv "${OUTFILE}" "${OUTPUTDIR}/"
