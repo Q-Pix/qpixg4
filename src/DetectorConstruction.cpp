@@ -32,18 +32,28 @@ DetectorConstruction::~DetectorConstruction()
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
   // Get Detector Geometry first to dicatate world_size
-  if(ConfigManager::GetUseHDDetectorConfiguration())
-  {
-    // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
-    // resemble an APA size
-    ConfigManager::SetDetectorWidth(2.3*CLHEP::m);   // detector_x
-    ConfigManager::SetDetectorHeight(6.0*CLHEP::m);  // detector_y
-    ConfigManager::SetDetectorLength(3.6*CLHEP::m);  // detector_z
+  if (ConfigManager::GetUseHDDetectorConfiguration()) {
+      // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
+     // Resemble an APA size
+      ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
+      ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
+      ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
+  } else if (ConfigManager::GetUseVDDetectorConfiguration()) {
+      // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
+      ConfigManager::SetDetectorHeight(13.0 * CLHEP::m); // detector_y
+      ConfigManager::SetDetectorLength(6.5 * CLHEP::m);  // detector_z
+      ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
+  } else if (ConfigManager::GetUseTSDetectorConfiguration()) {
+      // DETECTOR TS CONFIGURATION //////////////////////////////////////////////
+      ConfigManager::SetDetectorHeight(0.04 * CLHEP::m); // detector_y
+      ConfigManager::SetDetectorLength(0.04 * CLHEP::m);  // detector_z
+      ConfigManager::SetDetectorWidth(0.1 * CLHEP::m);  // detector_x
   } else {
-    // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
-    ConfigManager::SetDetectorHeight(13.0*CLHEP::m); // detector_y
-    ConfigManager::SetDetectorLength(6.5*CLHEP::m);  // detector_z
-    ConfigManager::SetDetectorWidth(20.0*CLHEP::m);  // detector_x
+      // DEFAULT TO HD CONFIGURATION ////////////////////////////////////////////
+      ConfigManager::SetUseHDDetectorConfiguration(true);
+      ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
+      ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
+      ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
   }
 
   // WORLD /////////////////////////////////////////////////
@@ -63,7 +73,15 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                       world_logic_vol, "world.physical", 0, false, 0, true);
                       
 
-  std::cout << " Detector configuration is: " << ConfigManager::GetUseHDDetectorConfiguration() << std::endl;
+  if (ConfigManager::GetUseHDDetectorConfiguration()) {
+      std::cout << " Detector configuration is: HD" << std::endl;
+  } else if (ConfigManager::GetUseVDDetectorConfiguration()) {
+      std::cout << " Detector configuration is: VD" << std::endl;
+  } else if (ConfigManager::GetUseTSDetectorConfiguration()) {
+      std::cout << " Detector configuration is: TS" << std::endl;
+  } else {
+      std::cout << " Detector configuration is: DEFAULT (HD)" << std::endl;
+  }
 
   // DETECTOR
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");

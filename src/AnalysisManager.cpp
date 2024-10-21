@@ -74,6 +74,8 @@ void AnalysisManager::Book(const std::string& file_path)
     metadata_->Branch("detector_length_y", &detector_length_y_, "detector_length_y/D");
     metadata_->Branch("detector_length_z", &detector_length_z_, "detector_length_z/D");
     metadata_->Branch("use_HD_detector_configuration", &useHDDetectorConfiguration_);
+    metadata_->Branch("use_VD_detector_configuration", &useVDDetectorConfiguration_);
+    metadata_->Branch("use_TS_detector_configuration", &useTSDetectorConfiguration_);
   }
 
   // check if event_tree_ is a null pointer, if so, create event tree
@@ -194,6 +196,8 @@ void AnalysisManager::FillMetadata()
   detector_length_y_ = ConfigManager::GetDetectorHeight();
   detector_length_z_ = ConfigManager::GetDetectorLength();
   useHDDetectorConfiguration_ = ConfigManager::GetUseHDDetectorConfiguration();
+  useVDDetectorConfiguration_ = ConfigManager::GetUseVSDetectorConfiguration();
+  useTSDetectorConfiguration_ = ConfigManager::GetUseTSDetectorConfiguration();
   metadata_->Fill();
 }
 
