@@ -3,6 +3,9 @@
 /run/verbose 1
 /tracking/verbose 0
 
+# The detector configuration (HD, VD, or TS)
+/geometry/detector_configuration HD
+
 # output path
 /Inputs/root_output ./output/single_pion.root
 
