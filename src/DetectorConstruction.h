@@ -27,7 +27,6 @@ class DetectorConstruction: public G4VUserDetectorConstruction
     void SetupHD();
     void SetupVD();
     void SetupTS();
-    void WorldBox_Air();
     void DetectorBox_lAr();
 };
 

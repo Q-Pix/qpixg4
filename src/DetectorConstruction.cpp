@@ -38,8 +38,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     {"TS", [this]() { SetupTS(); }}
   };
 
-  const std::string config = ConfigManager::GetDetectorConfiguration();
-
   // Check if the configuration exists in the map, else default to "HD"
   auto it = config_map.find(config);
   if (it != config_map.end()) {
@@ -51,6 +49,23 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
 
   std::cout << " Detector configuration is: " << ConfigManager::GetDetectorConfiguration() << std::endl;
 
+  // WORLD /////////////////////////////////////////////////
+
+  G4double world_size = std::max({ConfigManager::GetDetectorHeight(),ConfigManager::GetDetectorLength(),ConfigManager::GetDetectorWidth()})*CLHEP::m;
+  G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
+
+  G4Box* world_solid_vol =
+    new G4Box("world.solid", world_size/2., world_size/2., world_size/2.);
+
+  G4LogicalVolume* world_logic_vol =
+    new G4LogicalVolume(world_solid_vol, world_mat, "world.logical");
+  world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+  G4VPhysicalVolume* world_phys_vol =
+    new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
+                      world_logic_vol, "world.physical", 0, false, 0, true);
+
+  return world_phys_vol;
 }
 
 void DetectorConstruction::ConstructSDandField()
@@ -74,7 +89,6 @@ void DetectorConstruction::SetupHD()
   ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
   ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
   ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
-  WorldBox_Air();
   DetectorBox_lAr();
 }
 
@@ -84,7 +98,6 @@ void DetectorConstruction::SetupVD()
   ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
   ConfigManager::SetDetectorHeight(13.0 * CLHEP::m); // detector_y
   ConfigManager::SetDetectorLength(6.5 * CLHEP::m);  // detector_z
-  WorldBox_Air();
   DetectorBox_lAr();
 }
 
@@ -94,23 +107,7 @@ void DetectorConstruction::SetupTS()
   ConfigManager::SetDetectorWidth(0.04 * CLHEP::m);  // detector_x
   ConfigManager::SetDetectorHeight(0.04 * CLHEP::m); // detector_y
   ConfigManager::SetDetectorLength(0.1 * CLHEP::m);  // detector_z
-  WorldBox_Air();
   DetectorBox_lAr();
-}
-
-G4VPhysicalVolume* DetectorConstruction::WorldBox_Air()
-{
-  // WORLD SETUP ////////////////////////////////////////////
-  G4double world_size = std::max({ConfigManager::GetDetectorHeight(), ConfigManager::GetDetectorLength(), ConfigManager::GetDetectorWidth()}) * CLHEP::m;
-  G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
-
-  G4Box* world_solid_vol = new G4Box("world.solid", world_size/2., world_size/2., world_size/2.);
-
-  G4LogicalVolume* world_logic_vol = new G4LogicalVolume(world_solid_vol, world_mat, "world.logical");
-  world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
-
-  G4VPhysicalVolume* world_phys_vol = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), world_logic_vol, "world.physical", 0, false, 0, true);
-  return world_phys_vol;
 }
 
 void DetectorConstruction::DetectorBox_lAr()
