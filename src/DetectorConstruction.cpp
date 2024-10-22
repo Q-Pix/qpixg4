@@ -32,25 +32,25 @@ DetectorConstruction::~DetectorConstruction()
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
   // Get Detector Geometry first to dicatate world_size
-  if (ConfigManager::GetUseHDDetectorConfiguration()) {
+  if (ConfigManager::GetDetectorConfiguration() == "HD") {
       // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
      // Resemble an APA size
       ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
       ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
       ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
-  } else if (ConfigManager::GetUseVDDetectorConfiguration()) {
+  } else if (ConfigManager::GetDetectorConfiguration() == "VD") {
       // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
       ConfigManager::SetDetectorHeight(13.0 * CLHEP::m); // detector_y
       ConfigManager::SetDetectorLength(6.5 * CLHEP::m);  // detector_z
       ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
-  } else if (ConfigManager::GetUseTSDetectorConfiguration()) {
+  } else if (ConfigManager::GetDetectorConfiguration() == "TS") {
       // DETECTOR TS CONFIGURATION //////////////////////////////////////////////
       ConfigManager::SetDetectorHeight(0.04 * CLHEP::m); // detector_y
       ConfigManager::SetDetectorLength(0.04 * CLHEP::m);  // detector_z
       ConfigManager::SetDetectorWidth(0.1 * CLHEP::m);  // detector_x
   } else {
       // DEFAULT TO HD CONFIGURATION ////////////////////////////////////////////
-      ConfigManager::SetUseHDDetectorConfiguration(true);
+      ConfigManager::SetDetectorConfiguration("HD");
       ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
       ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
       ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z

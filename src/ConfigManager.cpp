@@ -51,7 +51,7 @@ ConfigManager::ConfigManager()
   nK42Decays_(0), nBi214Decays_(0), nPb214Decays_(0), nPo210Decays_(0), nRn222Decays_(0), eventCutoff_(0),
   eventWindow_(0),
   snTimingOn_(false), th2Name_("nusperbin2d_nue"),
-  useHDDetectorConfiguration_(false), useVDDetectorConfiguration_(false), useTSDetectorConfiguration_(false), 
+  detectorConfiguration_("HD"),
   detectorLength_(0), detectorWidth_(0), detectorHeight_(0)
 {
   CreateCommands();
@@ -77,7 +77,7 @@ ConfigManager::ConfigManager(const ConfigManager& master)
   nPo210Decays_(master.nPo210Decays_), nRn222Decays_(master.nRn222Decays_),
   eventCutoff_(master.eventCutoff_), eventWindow_(master.eventWindow_),
   snTimingOn_(master.snTimingOn_), th2Name_(master.th2Name_),
-  useHDDetectorConfiguration_(master.useHDDetectorConfiguration_), useVDDetectorConfiguration_(master.useVDDetectorConfiguration_), useTSDetectorConfiguration_(master.useTSDetectorConfiguration_), 
+  detectorConfiguration_(master.detectorConfiguration_), 
   detectorLength_(master.detectorLength_), detectorWidth_(master.detectorWidth_), detectorHeight_(master.detectorHeight_)
 {
   CreateCommands();
@@ -145,9 +145,7 @@ void ConfigManager::CreateCommands()
   msgSupernovaTiming_->DeclareProperty("th2_name", th2Name_, "name of TH2");
 
   // Declare all properties for msgGeometry
-  msgGeometry_->DeclareProperty("use_hd_detector_configuration", useHDDetectorConfiguration_, "True if HD, false if else");
-  msgGeometry_->DeclareProperty("use_vd_detector_configuration", useVDDetectorConfiguration_, "True if VD, false if else");
-  msgGeometry_->DeclareProperty("use_ts_detector_configuration", useTSDetectorConfiguration_, "True if TS, false if else");
+  msgGeometry_->DeclareProperty("detector_configuration", detectorConfiguration_, "detector configuration").SetCandidates("HD VD TS");
   msgGeometry_->DeclareProperty("detector_length", detectorLength_, "detector length");
   msgGeometry_->DeclareProperty("detector_width", detectorWidth_, "detector width");
   msgGeometry_->DeclareProperty("detector_height", detectorHeight_, "detector height");
@@ -191,9 +189,7 @@ void ConfigManager::PrintConfig() const
      << "SupernovaTiming -- Supernova_Timing_On: " << snTimingOn_ << G4endl
      << "SupernovaTiming -- TH2_Name:            " << th2Name_ << G4endl
      << G4endl
-     << "Geometry -- Use_HD_Detector_Configuration: " << useHDDetectorConfiguration_ << G4endl
-     << "Geometry -- Use_VD_Detector_Configuration: " << useVDDetectorConfiguration_ << G4endl
-     << "Geometry -- Use_TS_Detector_Configuration: " << useTSDetectorConfiguration_ << G4endl
+     << "Geometry -- Detector_Configuration:        " << detectorConfiguration_ << G4endl
      << "Geometry -- Detector_Length:               " << detectorLength_/CLHEP::m << " m" << G4endl
      << "Geometry -- Detector_Width:                " << detectorWidth_/CLHEP::m << " m" << G4endl
      << "Geometry -- Detector_Height:               " << detectorHeight_/CLHEP::m << " m" <<G4endl
