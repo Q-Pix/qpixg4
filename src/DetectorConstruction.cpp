@@ -40,14 +40,14 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
       ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
   } else if (ConfigManager::GetDetectorConfiguration() == "VD") {
       // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
+      ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
       ConfigManager::SetDetectorHeight(13.0 * CLHEP::m); // detector_y
       ConfigManager::SetDetectorLength(6.5 * CLHEP::m);  // detector_z
-      ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
   } else if (ConfigManager::GetDetectorConfiguration() == "TS") {
       // DETECTOR TS CONFIGURATION //////////////////////////////////////////////
+      ConfigManager::SetDetectorWidth(0.04 * CLHEP::m);  // detector_x
       ConfigManager::SetDetectorHeight(0.04 * CLHEP::m); // detector_y
-      ConfigManager::SetDetectorLength(0.04 * CLHEP::m);  // detector_z
-      ConfigManager::SetDetectorWidth(0.1 * CLHEP::m);  // detector_x
+      ConfigManager::SetDetectorLength(0.1 * CLHEP::m);  // detector_z
   } else {
       // DEFAULT TO HD CONFIGURATION ////////////////////////////////////////////
       ConfigManager::SetDetectorConfiguration("HD");
