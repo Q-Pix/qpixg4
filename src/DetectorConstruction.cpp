@@ -38,6 +38,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
     {"TS", [this]() { SetupTS(); }}
   };
 
+   const std::string config = ConfigManager::GetDetectorConfiguration();  // Ensure 'config' is defined
+
   // Check if the configuration exists in the map, else default to "HD"
   auto it = config_map.find(config);
   if (it != config_map.end()) {
