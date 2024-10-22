@@ -23,6 +23,12 @@ class DetectorConstruction: public G4VUserDetectorConstruction
   private:
     virtual G4VPhysicalVolume* Construct();
     virtual void ConstructSDandField();
+
+    void SetupHD();
+    void SetupVD();
+    void SetupTS();
+    void WorldBox_Air();
+    void DetectorBox_lAr();
 };
 
 #endif

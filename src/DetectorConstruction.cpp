@@ -31,74 +31,27 @@ DetectorConstruction::~DetectorConstruction()
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
-  // Get Detector Geometry first to dicatate world_size
-  if (ConfigManager::GetDetectorConfiguration() == "HD") {
-      // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
-     // Resemble an APA size
-      ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
-      ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
-      ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
-  } else if (ConfigManager::GetDetectorConfiguration() == "VD") {
-      // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
-      ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
-      ConfigManager::SetDetectorHeight(13.0 * CLHEP::m); // detector_y
-      ConfigManager::SetDetectorLength(6.5 * CLHEP::m);  // detector_z
-  } else if (ConfigManager::GetDetectorConfiguration() == "TS") {
-      // DETECTOR TS CONFIGURATION //////////////////////////////////////////////
-      ConfigManager::SetDetectorWidth(0.04 * CLHEP::m);  // detector_x
-      ConfigManager::SetDetectorHeight(0.04 * CLHEP::m); // detector_y
-      ConfigManager::SetDetectorLength(0.1 * CLHEP::m);  // detector_z
+   // Create a map of configuration strings to member functions
+  std::map<std::string, std::function<void()>> config_map = {
+    {"HD", [this]() { SetupHD(); }},
+    {"VD", [this]() { SetupVD(); }},
+    {"TS", [this]() { SetupTS(); }}
+  };
+
+  const std::string config = ConfigManager::GetDetectorConfiguration();
+
+  // Check if the configuration exists in the map, else default to "HD"
+  auto it = config_map.find(config);
+  if (it != config_map.end()) {
+    it->second();  // Call the appropriate setup function
   } else {
-      // DEFAULT TO HD CONFIGURATION ////////////////////////////////////////////
-      ConfigManager::SetDetectorConfiguration("HD");
-      ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
-      ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
-      ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
+    ConfigManager::SetDetectorConfiguration("HD");
+    SetupHD();
   }
 
-  // WORLD /////////////////////////////////////////////////
-
-  G4double world_size = std::max({ConfigManager::GetDetectorHeight(),ConfigManager::GetDetectorLength(),ConfigManager::GetDetectorWidth()})*CLHEP::m;
-  G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
-
-  G4Box* world_solid_vol =
-    new G4Box("world.solid", world_size/2., world_size/2., world_size/2.);
-
-  G4LogicalVolume* world_logic_vol =
-    new G4LogicalVolume(world_solid_vol, world_mat, "world.logical");
-  world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
-
-  G4VPhysicalVolume* world_phys_vol =
-    new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
-                      world_logic_vol, "world.physical", 0, false, 0, true);
-                      
-
-  if (ConfigManager::GetDetectorConfiguration() == "HD") {
-      std::cout << " Detector configuration is: HD" << std::endl;
-  } else if (ConfigManager::GetDetectorConfiguration() == "VD") {
-      std::cout << " Detector configuration is: VD" << std::endl;
-  } else if (ConfigManager::GetDetectorConfiguration() == "TS") {
-      std::cout << " Detector configuration is: TS" << std::endl;
-  } else {
-      std::cout << " Detector configuration is: DEFAULT (HD)" << std::endl;
-  }
-
-  // DETECTOR
-  G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
-
-  G4Box* detector_solid_vol =
-    new G4Box("detector.solid", ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
-
-  G4LogicalVolume* detector_logic_vol =
-    new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
-
-  G4ThreeVector offset(ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
-
-  new G4PVPlacement(0, offset,
-                    detector_logic_vol, "detector.physical", world_logic_vol, false, 0, true);
-  //////////////////////////////////////////////////////////
-
+  std::cout << " Detector configuration is: " << ConfigManager::GetDetectorConfiguration() << std::endl;
   return world_phys_vol;
+
 }
 
 void DetectorConstruction::ConstructSDandField()
@@ -114,4 +67,62 @@ void DetectorConstruction::ConstructSDandField()
   SetSensitiveDetector(detector_logic_vol, tracking_sd);
 
   //////////////////////////////////////////////////////////
+}
+
+void DetectorConstruction::SetupHD()
+{
+  // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
+  ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
+  ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
+  ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
+  WorldBox_Air();
+  DetectorBox_lAr();
+}
+
+void DetectorConstruction::SetupVD()
+{
+  // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
+  ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
+  ConfigManager::SetDetectorHeight(13.0 * CLHEP::m); // detector_y
+  ConfigManager::SetDetectorLength(6.5 * CLHEP::m);  // detector_z
+  WorldBox_Air();
+  DetectorBox_lAr();
+}
+
+void DetectorConstruction::SetupTS()
+{
+  // DETECTOR TS CONFIGURATION //////////////////////////////////////////////
+  ConfigManager::SetDetectorWidth(0.04 * CLHEP::m);  // detector_x
+  ConfigManager::SetDetectorHeight(0.04 * CLHEP::m); // detector_y
+  ConfigManager::SetDetectorLength(0.1 * CLHEP::m);  // detector_z
+  WorldBox_Air();
+  DetectorBox_lAr();
+}
+
+G4VPhysicalVolume* DetectorConstruction::WorldBox_Air()
+{
+  // WORLD SETUP ////////////////////////////////////////////
+  G4double world_size = std::max({ConfigManager::GetDetectorHeight(), ConfigManager::GetDetectorLength(), ConfigManager::GetDetectorWidth()}) * CLHEP::m;
+  G4Material* world_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_AIR");
+
+  G4Box* world_solid_vol = new G4Box("world.solid", world_size/2., world_size/2., world_size/2.);
+
+  G4LogicalVolume* world_logic_vol = new G4LogicalVolume(world_solid_vol, world_mat, "world.logical");
+  world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
+
+  G4VPhysicalVolume* world_phys_vol = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), world_logic_vol, "world.physical", 0, false, 0, true);
+}
+
+void DetectorConstruction::DetectorBox_lAr()
+{
+  // DETECTOR SETUP /////////////////////////////////////////
+  G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
+
+  G4Box* detector_solid_vol = new G4Box("detector.solid", ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
+
+  G4LogicalVolume* detector_logic_vol = new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
+
+  G4ThreeVector offset(ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
+
+  new G4PVPlacement(0, offset, detector_logic_vol, "detector.physical", G4LogicalVolumeStore::GetInstance()->GetVolume("world.logical"), false, 0, true);
 }
