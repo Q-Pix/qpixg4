@@ -50,7 +50,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   }
 
   std::cout << " Detector configuration is: " << ConfigManager::GetDetectorConfiguration() << std::endl;
-  return world_phys_vol;
 
 }
 
@@ -111,6 +110,7 @@ G4VPhysicalVolume* DetectorConstruction::WorldBox_Air()
   world_logic_vol->SetVisAttributes(G4VisAttributes::GetInvisible());
 
   G4VPhysicalVolume* world_phys_vol = new G4PVPlacement(0, G4ThreeVector(0.,0.,0.), world_logic_vol, "world.physical", 0, false, 0, true);
+  return world_phys_vol;
 }
 
 void DetectorConstruction::DetectorBox_lAr()
