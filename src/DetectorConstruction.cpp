@@ -68,16 +68,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                       world_logic_vol, "world.physical", 0, false, 0, true);
                       
 
-  if (ConfigManager::GetDetectorConfiguration() == "HD") {
-      std::cout << " Detector configuration is: HD" << std::endl;
-  } else if (ConfigManager::GetDetectorConfiguration() == "VD") {
-      std::cout << " Detector configuration is: VD" << std::endl;
-  } else if (ConfigManager::GetDetectorConfiguration() == "TS") {
-      std::cout << " Detector configuration is: TS" << std::endl;
-  } else {
-      std::cout << " Detector configuration is: DEFAULT (HD)" << std::endl;
-  }
-
   // DETECTOR
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
 
