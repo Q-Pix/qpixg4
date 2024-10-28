@@ -31,6 +31,13 @@ DetectorConstruction::~DetectorConstruction()
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
+
+  if (ConfigManager::GetDetectorConfiguration() == "HD") detector_logic_vol = BuildHDDetector();
+  if (ConfigManager::GetDetectorConfiguration() == "VD") detector_logic_vol = BuildVDDetector();
+  if (ConfigManager::GetDetectorConfiguration() == "TS") detector_logic_vol = BuildTSDetector();
+  
+  std::cout << " Detector configuration is: " << ConfigManager::GetDetectorConfiguration() << std::endl;
+
   // WORLD /////////////////////////////////////////////////
 
   G4double world_size = std::max({ConfigManager::GetDetectorHeight(),ConfigManager::GetDetectorLength(),ConfigManager::GetDetectorWidth()})*CLHEP::m;
@@ -48,11 +55,6 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
                       world_logic_vol, "world.physical", 0, false, 0, true);
 
   // Detector /////////////////////////////////////////////////     
-  if (ConfigManager::GetDetectorConfiguration() == "HD") detector_logic_vol = BuildHDDetector();
-  if (ConfigManager::GetDetectorConfiguration() == "VD") detector_logic_vol = BuildVDDetector();
-  if (ConfigManager::GetDetectorConfiguration() == "TS") detector_logic_vol = BuildTSDetector();
-  
-  std::cout << " Detector configuration is: " << ConfigManager::GetDetectorConfiguration() << std::endl;
 
   G4ThreeVector offset(ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
 
