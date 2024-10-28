@@ -65,7 +65,7 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   return world_phys_vol;
 }
 
-G4LogicalVolume* DetectorConstruction::BuildBoxDetector(const G4String& name) {
+G4LogicalVolume* DetectorConstruction::BuildBoxDetector() {
   G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
 
   G4Box* detector_solid_vol = new G4Box("detector.solid", 
@@ -73,7 +73,7 @@ G4LogicalVolume* DetectorConstruction::BuildBoxDetector(const G4String& name) {
                                         ConfigManager::GetDetectorHeight() / 2., 
                                         ConfigManager::GetDetectorLength() / 2.);
 
-  G4LogicalVolume* logic_vol = new G4LogicalVolume(detector_solid_vol, detector_mat, name);
+  G4LogicalVolume* logic_vol = new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
   return logic_vol;
 }
 
@@ -81,21 +81,21 @@ G4LogicalVolume* DetectorConstruction::BuildHDDetector() {
   ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
   ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
   ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
-  return BuildBoxDetector("HD.detector.logical");
+  return BuildBoxDetector();
 }
 
 G4LogicalVolume* DetectorConstruction::BuildVDDetector() {
   ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
   ConfigManager::SetDetectorHeight(13.0 * CLHEP::m); // detector_y
   ConfigManager::SetDetectorLength(6.5 * CLHEP::m);  // detector_z
-  return BuildBoxDetector("VD.detector.logical");
+  return BuildBoxDetector();
 }
 
 G4LogicalVolume* DetectorConstruction::BuildTSDetector() {
   ConfigManager::SetDetectorWidth(0.04 * CLHEP::m);  // detector_x
   ConfigManager::SetDetectorHeight(0.04 * CLHEP::m); // detector_y
   ConfigManager::SetDetectorLength(0.1 * CLHEP::m);  // detector_z
-  return BuildBoxDetector("TS.detector.logical");
+  return BuildBoxDetector();
 }
 
 void DetectorConstruction::ConstructSDandField()
