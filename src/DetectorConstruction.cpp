@@ -21,7 +21,7 @@
 #include "CLHEP/Units/SystemOfUnits.h"
 
 
-DetectorConstruction::DetectorConstruction(): G4VUserDetectorConstruction()
+DetectorConstruction::DetectorConstruction() : G4VUserDetectorConstruction(), detector_logic_vol(nullptr)
 {
 }
 
@@ -31,31 +31,11 @@ DetectorConstruction::~DetectorConstruction()
 
 G4VPhysicalVolume* DetectorConstruction::Construct()
 {
-  // Get Detector Geometry first to dicatate world_size
-  if (ConfigManager::GetDetectorConfiguration() == "HD") {
-      // DETECTOR HD CONFIGURATION //////////////////////////////////////////////
-     // Resemble an APA size
-      ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
-      ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
-      ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
-  } else if (ConfigManager::GetDetectorConfiguration() == "VD") {
-      // DETECTOR VD CONFIGURATION //////////////////////////////////////////////
-      ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
-      ConfigManager::SetDetectorHeight(13.0 * CLHEP::m); // detector_y
-      ConfigManager::SetDetectorLength(6.5 * CLHEP::m);  // detector_z
-  } else if (ConfigManager::GetDetectorConfiguration() == "TS") {
-      // DETECTOR TS CONFIGURATION //////////////////////////////////////////////
-      ConfigManager::SetDetectorWidth(0.04 * CLHEP::m);  // detector_x
-      ConfigManager::SetDetectorHeight(0.04 * CLHEP::m); // detector_y
-      ConfigManager::SetDetectorLength(0.1 * CLHEP::m);  // detector_z
-  } else {
-      // DEFAULT TO HD CONFIGURATION ////////////////////////////////////////////
-      ConfigManager::SetDetectorConfiguration("HD");
-      ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
-      ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
-      ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
-  }
 
+  if (ConfigManager::GetDetectorConfiguration() == "HD") detector_logic_vol = BuildHDDetector();
+  if (ConfigManager::GetDetectorConfiguration() == "VD") detector_logic_vol = BuildVDDetector();
+  if (ConfigManager::GetDetectorConfiguration() == "TS") detector_logic_vol = BuildTSDetector();
+  
   std::cout << " Detector configuration is: " << ConfigManager::GetDetectorConfiguration() << std::endl;
 
   // WORLD /////////////////////////////////////////////////
@@ -73,16 +53,8 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   G4VPhysicalVolume* world_phys_vol =
     new G4PVPlacement(0, G4ThreeVector(0.,0.,0.),
                       world_logic_vol, "world.physical", 0, false, 0, true);
-                      
 
-  // DETECTOR
-  G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
-
-  G4Box* detector_solid_vol =
-    new G4Box("detector.solid", ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
-
-  G4LogicalVolume* detector_logic_vol =
-    new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
+  // Detector /////////////////////////////////////////////////     
 
   G4ThreeVector offset(ConfigManager::GetDetectorWidth()/2., ConfigManager::GetDetectorHeight()/2., ConfigManager::GetDetectorLength()/2.);
 
@@ -93,16 +65,49 @@ G4VPhysicalVolume* DetectorConstruction::Construct()
   return world_phys_vol;
 }
 
+G4LogicalVolume* DetectorConstruction::BuildBoxDetector() {
+  G4Material* detector_mat = G4NistManager::Instance()->FindOrBuildMaterial("G4_lAr");
+
+  G4Box* detector_solid_vol = new G4Box("detector.solid", 
+                                        ConfigManager::GetDetectorWidth() / 2., 
+                                        ConfigManager::GetDetectorHeight() / 2., 
+                                        ConfigManager::GetDetectorLength() / 2.);
+
+  G4LogicalVolume* logic_vol = new G4LogicalVolume(detector_solid_vol, detector_mat, "detector.logical");
+  return logic_vol;
+}
+
+G4LogicalVolume* DetectorConstruction::BuildHDDetector() {
+  ConfigManager::SetDetectorWidth(2.3 * CLHEP::m);   // detector_x
+  ConfigManager::SetDetectorHeight(6.0 * CLHEP::m);  // detector_y
+  ConfigManager::SetDetectorLength(3.6 * CLHEP::m);  // detector_z
+  return BuildBoxDetector();
+}
+
+G4LogicalVolume* DetectorConstruction::BuildVDDetector() {
+  ConfigManager::SetDetectorWidth(20.0 * CLHEP::m);  // detector_x
+  ConfigManager::SetDetectorHeight(13.0 * CLHEP::m); // detector_y
+  ConfigManager::SetDetectorLength(6.5 * CLHEP::m);  // detector_z
+  return BuildBoxDetector();
+}
+
+G4LogicalVolume* DetectorConstruction::BuildTSDetector() {
+  ConfigManager::SetDetectorWidth(0.04 * CLHEP::m);  // detector_x
+  ConfigManager::SetDetectorHeight(0.04 * CLHEP::m); // detector_y
+  ConfigManager::SetDetectorLength(0.1 * CLHEP::m);  // detector_z
+  return BuildBoxDetector();
+}
+
 void DetectorConstruction::ConstructSDandField()
 {
   // SENSITIVE DETECTOR ////////////////////////////////////
+  if (!detector_logic_vol) {
+    G4cerr << "Error: detector_logic_vol is null in ConstructSDandField." << G4endl;
+    return;
+  }
 
   TrackingSD* tracking_sd = new TrackingSD("/G4QPIX/TRACKING", "TrackingHitsCollection");
   G4SDManager::GetSDMpointer()->AddNewDetector(tracking_sd);
-
-  G4LogicalVolume* detector_logic_vol =
-    G4LogicalVolumeStore::GetInstance()->GetVolume("detector.logical");
-
   SetSensitiveDetector(detector_logic_vol, tracking_sd);
 
   //////////////////////////////////////////////////////////
