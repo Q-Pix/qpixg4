@@ -101,13 +101,14 @@ G4LogicalVolume* DetectorConstruction::BuildTSDetector() {
 void DetectorConstruction::ConstructSDandField()
 {
   // SENSITIVE DETECTOR ////////////////////////////////////
+if (!detector_logic_vol) {
+  G4cerr << "Error: detector_logic_vol is null in ConstructSDandField." << G4endl;
+  return;
+}
+
   TrackingSD* tracking_sd = new TrackingSD("/G4QPIX/TRACKING", "TrackingHitsCollection");
   G4SDManager::GetSDMpointer()->AddNewDetector(tracking_sd);
+  SetSensitiveDetector(detector_logic_vol, tracking_sd);
 
-  if (detector_logic_vol) {
-    SetSensitiveDetector(detector_logic_vol, tracking_sd);
-  } else {
-    G4cerr << "Error: detector_logic_vol is null in ConstructSDandField." << G4endl;
-  }
   //////////////////////////////////////////////////////////
 }
