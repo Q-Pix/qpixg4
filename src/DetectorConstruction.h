@@ -22,7 +22,7 @@ class DetectorConstruction: public G4VUserDetectorConstruction
 
   private:
     G4LogicalVolume* detector_logic_vol;
-    G4LogicalVolume* BuildBoxDetector(const G4String& name);
+    G4LogicalVolume* BuildBoxDetector();
     G4LogicalVolume* BuildHDDetector();
     G4LogicalVolume* BuildVDDetector();
     G4LogicalVolume* BuildTSDetector();
