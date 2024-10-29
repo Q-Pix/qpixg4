@@ -58,7 +58,7 @@ class AnalysisManager {
     double detector_length_x_;
     double detector_length_y_;
     double detector_length_z_;
-    bool useHDDetectorConfiguration_;
+    std::string detector_configuration_;
 
 };
 
